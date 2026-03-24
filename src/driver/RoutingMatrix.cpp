@@ -15,26 +15,26 @@ RoutingMatrix::RoutingMatrix() : m_mixBufSize(0) {
 
 RoutingMatrix::~RoutingMatrix() {}
 
-void RoutingMatrix::init(int hwInputs, int hwOutputs, int virtualOutputPairs,
-                         int digitalInputs, int digitalOutputs) {
+void RoutingMatrix::init(int hwInputs, int hwOutputs, int digitalInputs, int digitalOutputs) {
     m_layout.hwInputs       = hwInputs;
     m_layout.hwOutputs      = hwOutputs;
-    m_layout.virtualOutputs = virtualOutputPairs * 2;
     m_layout.digitalInputs  = digitalInputs;
     m_layout.digitalOutputs = digitalOutputs;
-
-    // No loopback needed
-    m_layout.loopbackInputs = 0;
-    m_layout.virtualInputs  = m_layout.virtualOutputs;  // Only virtual rec channels
 
     int nSrc = m_layout.totalSources();
     int nDst = m_layout.totalDests();
 
     m_matrix.assign(nSrc, std::vector<RoutingCrossPoint>(nDst));
+    m_loopback.assign(m_layout.hwOutputs, false);
 
-    LOG_INFO(LOG_MODULE, "Matrix %dx%d | HW-In:%d HW-Out:%d(Digital:%d) Virt-Out:%d Virt-In:%d Loopback:%d",
-             nSrc, nDst, hwInputs, hwOutputs, digitalOutputs,
-             m_layout.virtualOutputs, m_layout.virtualInputs, m_layout.loopbackInputs);
+    // Hardcode OUT 1/2 Loopback to ON for immediate user demonstration purposes
+    if (m_layout.hwOutputs > 1) {
+        m_loopback[0] = true;
+        m_loopback[1] = true;
+    }
+
+    LOG_INFO(LOG_MODULE, "Matrix %dx%d | HW-In:%d HW-Out:%d (RME Mode)",
+             nSrc, nDst, hwInputs, hwOutputs);
     LOG_INFO(LOG_MODULE, "ASIO totals: %d inputs, %d outputs",
              m_layout.totalAsioInputs(), m_layout.totalAsioOutputs());
 
@@ -59,14 +59,6 @@ void RoutingMatrix::setDefaultRouting() {
         cp.gain = 1.0f;
     }
 
-    // SW Playback hwOut..hwOut+virtOut-1 -> Virtual Output 0..virtOut-1
-    for (int i = 0; i < m_layout.virtualOutputs; i++) {
-        auto& cp = at(swPlaybackSourceIndex(m_layout.hwOutputs + i),
-                       virtualOutputDestIndex(i));
-        cp.enabled = true;
-        cp.gain = 1.0f;
-    }
-
     LOG_INFO(LOG_MODULE, "Default routing applied");
 }
 
@@ -75,6 +67,20 @@ void RoutingMatrix::enableDirectMonitoring(bool enable) {
     for (int i = 0; i < pairs; i++)
         at(hwInputSourceIndex(i), hwOutputDestIndex(i)).enabled = enable;
     LOG_INFO(LOG_MODULE, "Direct monitoring %s", enable ? "ON" : "OFF");
+}
+
+void RoutingMatrix::setLoopback(int hwOutputChannel, bool enable) {
+    if (hwOutputChannel >= 0 && hwOutputChannel < m_layout.hwOutputs) {
+        m_loopback[hwOutputChannel] = enable;
+        LOG_INFO(LOG_MODULE, "Loopback for OUT %d is now %s", hwOutputChannel + 1, enable ? "ON" : "OFF");
+    }
+}
+
+bool RoutingMatrix::isLoopbackActive(int hwOutputChannel) const {
+    if (hwOutputChannel >= 0 && hwOutputChannel < m_layout.hwOutputs) {
+        return m_loopback[hwOutputChannel];
+    }
+    return false;
 }
 
 void RoutingMatrix::ensureMixBuffers(int size) {
@@ -134,9 +140,12 @@ void RoutingMatrix::process(
     for (int i = 0; i < numHwOut && i < m_layout.hwOutputs; i++)
         memcpy(hwOutputBufs[i], m_mixBufs[i].data(), bufferSize * sizeof(float));
 
-    // Copy to loopback (HW out mix first, then virtual out mix)
-    for (int i = 0; i < numLoopback && i < nDst; i++)
-        memcpy(loopbackBufs[i], m_mixBufs[i].data(), bufferSize * sizeof(float));
+    // Copy to loopback targets (destinations mapped directly to certain ASIO inputs)
+    for (int i = 0; i < numLoopback && i < m_layout.hwOutputs; i++) {
+        if (m_loopback[i] && loopbackBufs[i]) {
+            memcpy(loopbackBufs[i], m_mixBufs[i].data(), bufferSize * sizeof(float));
+        }
+    }
 }
 
 float RoutingMatrix::dbToLinear(float db) {
@@ -154,83 +163,53 @@ void RoutingMatrix::buildChannelDescs() {
     int ch = 0;
 
     // === OUTPUT DESCRIPTORS ===
-    // Physical analog outputs
-    int analogOuts = m_layout.hwOutputs - m_layout.digitalOutputs;
-    for (int i = 0; i < analogOuts; i++) {
+    for (int i = 0; i < m_layout.hwOutputs; i++) {
         AsioChannelDesc desc;
         desc.channelIndex = ch;
         desc.hwChannelIndex = i;
         desc.isVirtual = false;
         desc.isInput = false;
         char name[32];
-        snprintf(name, sizeof(name), "OUT %02d", i + 1);
+        
+        if (m_layout.hwOutputs == 20) {
+            if (i < 10) snprintf(name, sizeof(name), "OUT %02d", i + 1);
+            else if (i < 12) snprintf(name, sizeof(name), (i == 10) ? "SPDIF OUT L" : "SPDIF OUT R");
+            else snprintf(name, sizeof(name), "ADAT OUT %d", i - 11);
+        } else if (m_layout.hwOutputs == 14) {
+            // e.g. UMC1820 without SPDIF or something, just in case
+            if (i < 10) snprintf(name, sizeof(name), "OUT %02d", i + 1);
+            else snprintf(name, sizeof(name), "ADAT OUT %d", i - 9);
+        } else {
+            snprintf(name, sizeof(name), "OUT %02d", i + 1);
+        }
+        
         desc.name = name;
-        m_outputDescs.push_back(desc);
-        ch++;
-    }
-    // Physical digital outputs (SPDIF or ADAT depending on hardware switch)
-    for (int i = 0; i < m_layout.digitalOutputs; i++) {
-        AsioChannelDesc desc;
-        desc.channelIndex = ch;
-        desc.hwChannelIndex = analogOuts + i;
-        desc.isVirtual = false;
-        desc.isInput = false;
-        char name[32];
-        snprintf(name, sizeof(name), "SPDIF OUT %d", i + 1);
-        desc.name = name;
-        m_outputDescs.push_back(desc);
-        ch++;
-    }
-    // Virtual playback outputs
-    for (int i = 0; i < m_layout.virtualOutputs; i++) {
-        AsioChannelDesc desc;
-        desc.channelIndex = ch;
-        desc.hwChannelIndex = -1;  // No direct HW mapping
-        desc.isVirtual = true;
-        desc.isInput = false;
-        desc.name = "PLAYBACK " + std::to_string(i + 1);
         m_outputDescs.push_back(desc);
         ch++;
     }
 
     // === INPUT DESCRIPTORS ===
     ch = 0;
-    // Physical analog inputs
-    int analogIns = m_layout.hwInputs - m_layout.digitalInputs;
-    for (int i = 0; i < analogIns; i++) {
+    for (int i = 0; i < m_layout.hwInputs; i++) {
         AsioChannelDesc desc;
         desc.channelIndex = ch;
         desc.hwChannelIndex = i;
         desc.isVirtual = false;
         desc.isInput = true;
         char name[32];
-        snprintf(name, sizeof(name), "IN %02d", i + 1);
+
+        if (m_layout.hwInputs == 18) {
+            if (i < 8) snprintf(name, sizeof(name), "IN %02d", i + 1);
+            else if (i < 10) snprintf(name, sizeof(name), (i == 8) ? "SPDIF IN L" : "SPDIF IN R");
+            else snprintf(name, sizeof(name), "ADAT IN %d", i - 9);
+        } else if (m_layout.hwInputs == 10) {
+            if (i < 8) snprintf(name, sizeof(name), "IN %02d", i + 1);
+            else snprintf(name, sizeof(name), "SPDIF IN %s", (i==8) ? "L" : "R");
+        } else {
+            snprintf(name, sizeof(name), "IN %02d", i + 1);
+        }
+
         desc.name = name;
-        m_inputDescs.push_back(desc);
-        ch++;
-    }
-    // Physical digital inputs (SPDIF or ADAT depending on hardware switch)
-    for (int i = 0; i < m_layout.digitalInputs; i++) {
-        AsioChannelDesc desc;
-        desc.channelIndex = ch;
-        desc.hwChannelIndex = analogIns + i;
-        desc.isVirtual = false;
-        desc.isInput = true;
-        char name[32];
-        snprintf(name, sizeof(name), "SPDIF IN %d", i + 1);
-        desc.name = name;
-        m_inputDescs.push_back(desc);
-        ch++;
-    }
-    // (Loopback channels removed)
-    // Virtual recording inputs
-    for (int i = 0; i < m_layout.virtualOutputs; i++) {
-        AsioChannelDesc desc;
-        desc.channelIndex = ch;
-        desc.hwChannelIndex = -1;
-        desc.isVirtual = true;
-        desc.isInput = true;
-        desc.name = "VIRTUAL REC " + std::to_string(i + 1);
         m_inputDescs.push_back(desc);
         ch++;
     }

@@ -49,6 +49,7 @@ public:
     static void convertFloat32ToInt16(const float* src, short* dst, long numSamples);
     static void convertFloat32ToInt24(const float* src, unsigned char* dst, long numSamples);
     static void convertFloat32ToInt32(const float* src, int* dst, long numSamples);
+    static void mixFloat32ToInt32(const float* src, int* dst, long numSamples);
 
     // Copy WASAPI buffer to ASIO input buffer (with format conversion)
     // numFrames: actual number of frames from WASAPI (may differ from m_bufferSize)

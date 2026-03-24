@@ -1,34 +1,50 @@
-/*
- * BehringerASIO - 百灵达 UMC ASIO 驱动主类
- *
- * 方案: TUSBAUDIO 直连模式 (v6 - 纯原生直连终极版)
- * 通过逆向的 TUSBAUDIO 专有协议直接和 umc_audio.sys 通信，
- * 使用 DMA 内存映射传输音频，完全绕过官方 ASIO DLL。
- * 采用阴阳融合时序 (Event + WFB ACK) + ASIO ABI hi:lo 格式兼容。
- *
- * 数据流:
- *   DAW <-> BehringerASIO (TUSBAUDIO IOCTL) <-> umc_audio.sys <-> USB <-> 硬件
- */
-
 #pragma once
 
 #include <windows.h>
 #include "../asio/asio.h"
 #include "../asio/iasiodrv.h"
-#include "TusbAudioDirect.h"
+#include "../bridge/AsmrtopIPC.h"
 #include <vector>
-#include <string>
 #include <mutex>
 #include <atomic>
 
-// Driver Version
-#define BEHRINGER_ASIO_VERSION  6
+// Virtual Channels Settings
+#define NUM_VIRTUAL_PAIRS   4    // 4 stereo pairs = 8 virtual channels
+#define NUM_VIRTUAL_CH      (NUM_VIRTUAL_PAIRS * 2)
 
-// Driver Name
-#define BEHRINGER_ASIO_NAME     "Behringer UMC ASIO"
+// Inline conversions for ASIO float<->int formats
+inline void convertFloatToAsio(float f, uint8_t* rawOut, int idx, ASIOSampleType type) {
+    if (f > 1.0f) f = 1.0f; else if (f < -1.0f) f = -1.0f;
+    if (type == ASIOSTInt32LSB) {
+        int32_t val = (int32_t)(f * 2147483647.0f);
+        ((int32_t*)rawOut)[idx] = val;
+    } else if (type == ASIOSTFloat32LSB) {
+        ((float*)rawOut)[idx] = f;
+    } else if (type == ASIOSTInt24LSB) {
+        int32_t val = (int32_t)(f * 8388607.0f);
+        rawOut[idx * 3 + 0] = (uint8_t)(val & 0xFF);
+        rawOut[idx * 3 + 1] = (uint8_t)((val >> 8) & 0xFF);
+        rawOut[idx * 3 + 2] = (uint8_t)((val >> 16) & 0xFF);
+    } else if (type == ASIOSTInt16LSB) {
+        int16_t val = (int16_t)(f * 32767.0f);
+        ((int16_t*)rawOut)[idx] = val;
+    }
+}
 
-// Max channels for stack arrays in hot path
-#define MAX_ROUTING_CHANNELS 32
+inline float convertAsioToFloat(const uint8_t* rawIn, int idx, ASIOSampleType type) {
+    if (type == ASIOSTInt32LSB) {
+        return (float)(((int32_t*)rawIn)[idx]) / 2147483648.0f;
+    } else if (type == ASIOSTFloat32LSB) {
+        return ((float*)rawIn)[idx];
+    } else if (type == ASIOSTInt24LSB) {
+        int32_t val = rawIn[idx * 3] | (rawIn[idx * 3 + 1] << 8) | (rawIn[idx * 3 + 2] << 16);
+        if (val & 0x800000) val |= 0xFF000000;
+        return (float)val / 8388608.0f;
+    } else if (type == ASIOSTInt16LSB) {
+        return (float)(((int16_t*)rawIn)[idx]) / 32768.0f;
+    }
+    return 0.0f;
+}
 
 // CLSID for this driver
 EXTERN_C extern const GUID CLSID_BehringerASIO;
@@ -76,53 +92,43 @@ public:
     // Static factory method
     static HRESULT CreateInstance(LPUNKNOWN pUnk, REFIID riid, void** ppv);
 
-
 private:
-    // COM reference count
     volatile LONG m_refCount;
+    IASIO* m_baseAsio;             // The real hardware ASIO driver
 
-    // State
-    bool m_initialized;
-    bool m_buffersCreated;
-    bool m_running;
-    HWND m_sysHandle;
-
-    // === TUSBAUDIO 直连引擎 ===
-    TusbAudioDirect m_tusb;
-
-    // ASIO buffer pointers (Float32, converted from INT32 DMA)
-    struct AsioChannelBuf {
-        bool isInput;
-        int hwIndex;       // index in TusbAudioDirect's channel list
-        float* buf[2];     // double buffer (ASIO float32)
-    };
-    std::vector<AsioChannelBuf> m_asioBufs;
-
-    // Callbacks
-    ASIOCallbacks* m_callbacks;
+    // Original and wrapper callbacks
+    ASIOCallbacks m_ourCallbacks;
+    ASIOCallbacks* m_dawCallbacks;
     long m_bufferSize;
-
-    // Channel counts
-    int m_numInputChannels;
-    int m_numOutputChannels;
-
-    // Audio state
     ASIOSampleRate m_sampleRate;
 
-    // Sample position tracking
-    std::atomic<long long> m_samplePosition;
-    LARGE_INTEGER m_startTime;
+    // Channel metadata
+    long m_hwNumInputs, m_hwNumOutputs;
+    int m_numVirtualInputs;
+    int m_numVirtualOutputs;
+    ASIOSampleType m_vrtType; // Dynamically cloned from native hardware
 
-    // Error message
-    char m_errorMessage[256];
+    // Virtual Channels IPC (ASMRTOP WDM IPC)
+    AsmrtopIpcChannel m_playIpc[NUM_VIRTUAL_PAIRS];  // WDM -> DAW
+    AsmrtopIpcChannel m_capIpc[NUM_VIRTUAL_PAIRS];   // DAW -> WDM
+    
+    // Original buffer copies for proxying
+    struct ProxyBuffer {
+        ASIOBufferInfo original;
+        ASIOBufferInfo wrapper;
+    };
+    std::vector<ProxyBuffer> m_bufferMap;
+    std::vector<float*> m_rawVrtBufs;
 
-    // Mutex
-    std::recursive_mutex m_mutex;
+    // Helper functions for proxy callbacks
+    static void bufferSwitchProxy(long bufferIndex, ASIOBool directProcess);
+    static void sampleRateDidChangeProxy(ASIOSampleRate sRate);
+    static long asioMessageProxy(long selector, long value, void* message, double* opt);
+    static ASIOTime* bufferSwitchTimeInfoProxy(ASIOTime* params, long doubleBufferIndex, ASIOBool directProcess);
 
-    // Static callback bridge
-    static void bufferSwitchBridge(long bufferIndex, void* userData);
-    void onBufferSwitch(long bufferIndex);
+    // Instance ptr for static callbacks
+    static BehringerASIO* s_instance;
 
-    // Helpers
-    bool isRateSupported(double rate) const;
+    void onBufferSwitch_Read(long bufferIndex);
+    void onBufferSwitch_Write(long bufferIndex);
 };

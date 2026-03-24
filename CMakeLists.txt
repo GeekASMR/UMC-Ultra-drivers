@@ -16,10 +16,6 @@ set(ASIO_SOURCES
 set(DRIVER_SOURCES
     src/driver/BehringerASIO.cpp
     src/driver/BehringerASIO.h
-    src/driver/AsioProxy.cpp
-    src/driver/AsioProxy.h
-    src/driver/TusbAudioDirect.cpp
-    src/driver/TusbAudioDirect.h
 )
 
 set(COM_SOURCES
@@ -129,3 +125,63 @@ add_custom_target(unregister
     COMMAND regsvr32 /u /s "$<TARGET_FILE:BehringerASIO>"
     COMMENT "Unregistering ASIO driver..."
 )
+
+# === CLI Proxy for JS Web Frontend ===
+add_executable(UMCControlProxy
+    src/utils/UMCControlProxy.cpp
+    src/driver/TusbAudioDirect.cpp
+    src/driver/AudioBuffer.cpp
+    src/driver/RoutingMatrix.cpp
+)
+target_include_directories(UMCControlProxy PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_compile_definitions(UMCControlProxy PRIVATE _CRT_SECURE_NO_WARNINGS)
+
+install(TARGETS UMCControlProxy
+    RUNTIME DESTINATION bin
+)
+
+# === IPC Monitor Diagnostic Tool ===
+add_executable(ipc_monitor tools/ipc_monitor.cpp)
+target_compile_definitions(ipc_monitor PRIVATE _CRT_SECURE_NO_WARNINGS)
+
+# === IPC Quality Test Tool ===
+add_executable(ipc_quality_test tools/ipc_quality_test.cpp)
+target_compile_definitions(ipc_quality_test PRIVATE _CRT_SECURE_NO_WARNINGS)
+
+# === SRC Quality Test (Offline) ===
+add_executable(src_quality_test tools/src_quality_test.cpp)
+target_include_directories(src_quality_test PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_compile_definitions(src_quality_test PRIVATE _CRT_SECURE_NO_WARNINGS)
+
+# === IPC Data Format Check ===
+add_executable(ipc_data_check tools/ipc_data_check.cpp)
+target_compile_definitions(ipc_data_check PRIVATE _CRT_SECURE_NO_WARNINGS)
+
+# === Sine Wave Generator ===
+add_executable(gen_sine_wav tools/gen_sine_wav.cpp)
+target_compile_definitions(gen_sine_wav PRIVATE _CRT_SECURE_NO_WARNINGS)
+
+# === Audio Diagnostic Tool ===
+add_executable(audio_diag tools/audio_diag.cpp)
+target_compile_definitions(audio_diag PRIVATE _CRT_SECURE_NO_WARNINGS)
+
+# === Audio Diagnostic Tool v2 (Snapshot) ===
+add_executable(audio_diag2 tools/audio_diag2.cpp)
+target_compile_definitions(audio_diag2 PRIVATE _CRT_SECURE_NO_WARNINGS)
+
+# === SRC Diagnostic Tool ===
+add_executable(src_diag tools/src_diag.cpp)
+target_compile_definitions(src_diag PRIVATE _CRT_SECURE_NO_WARNINGS)
+
+# === IPC Output Test (Sine to REC_0) ===
+add_executable(ipc_output_test tools/ipc_output_test.cpp)
+target_compile_definitions(ipc_output_test PRIVATE _CRT_SECURE_NO_WARNINGS)
+
+# === IPC Pop/Click Detector ===
+add_executable(ipc_pop_detect tools/ipc_pop_detect.cpp)
+target_compile_definitions(ipc_pop_detect PRIVATE _CRT_SECURE_NO_WARNINGS)
+
+# === DirectSound Sine Test ===
+add_executable(ds_sine_test tools/ds_sine_test.cpp)
+target_compile_definitions(ds_sine_test PRIVATE _CRT_SECURE_NO_WARNINGS)
+target_link_libraries(ds_sine_test dsound dxguid ole32)

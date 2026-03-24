@@ -28,7 +28,7 @@ public:
     }
 
     void init(const char* logFilePath = nullptr) {
-        std::lock_guard<std::mutex> lock(m_mutex);
+        std::lock_guard<std::recursive_mutex> lock(m_mutex);
         if (logFilePath) {
             m_logFile.open(logFilePath, std::ios::out | std::ios::trunc);
         } else {
@@ -49,7 +49,7 @@ public:
     void log(Level level, const char* module, const char* fmt, ...) {
         if (level < m_level) return;
 
-        std::lock_guard<std::mutex> lock(m_mutex);
+        std::lock_guard<std::recursive_mutex> lock(m_mutex);
 
         // Get timestamp
         SYSTEMTIME st;
@@ -86,7 +86,7 @@ public:
     }
 
     void shutdown() {
-        std::lock_guard<std::mutex> lock(m_mutex);
+        std::lock_guard<std::recursive_mutex> lock(m_mutex);
         if (m_logFile.is_open()) {
             m_logFile.close();
         }
@@ -103,7 +103,7 @@ private:
     Level m_level;
     bool m_initialized;
     std::ofstream m_logFile;
-    std::mutex m_mutex;
+    std::recursive_mutex m_mutex;
 };
 
 // Convenience macros

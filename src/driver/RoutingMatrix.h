@@ -37,16 +37,13 @@ struct AsioChannelDesc {
 struct ChannelLayout {
     int hwInputs;             // Physical hardware input channels
     int hwOutputs;            // Physical hardware output channels
-    int virtualOutputs;       // Virtual playback channels (PLAYBACK 1~N)
-    int virtualInputs;        // Virtual recording channels (VIRTUAL REC 1~N, Loopback)
-    int loopbackInputs;       // Loopback channels (subset of virtualInputs, mirrors hwOutputs)
     int digitalInputs;         // Digital I/O input channels: SPDIF(2) or ADAT(4/8)
     int digitalOutputs;        // Digital I/O output channels: SPDIF(2) or ADAT(4/8)
 
-    int totalAsioInputs()  const { return hwInputs + virtualInputs; }
-    int totalAsioOutputs() const { return hwOutputs + virtualOutputs; }
-    int totalSources()     const { return hwInputs + totalAsioOutputs(); }
-    int totalDests()       const { return hwOutputs + virtualOutputs; }
+    int totalAsioInputs()  const { return hwInputs; }
+    int totalAsioOutputs() const { return hwOutputs; }
+    int totalSources()     const { return hwInputs + hwOutputs; }
+    int totalDests()       const { return hwOutputs; }
 };
 
 class RoutingMatrix {
@@ -54,16 +51,14 @@ public:
     RoutingMatrix();
     ~RoutingMatrix();
 
-    void init(int hwInputs, int hwOutputs, int virtualOutputPairs = 1,
-              int digitalInputs = 0, int digitalOutputs = 0);
+    void init(int hwInputs, int hwOutputs, int digitalInputs = 0, int digitalOutputs = 0);
 
     const ChannelLayout& getLayout() const { return m_layout; }
 
     // --- Source/Destination index helpers ---
     int hwInputSourceIndex(int ch)    const { return ch; }
     int swPlaybackSourceIndex(int ch) const { return m_layout.hwInputs + ch; }
-    int hwOutputDestIndex(int ch)      const { return ch; }
-    int virtualOutputDestIndex(int ch) const { return m_layout.hwOutputs + ch; }
+    int hwOutputDestIndex(int ch)     const { return ch; }
 
     // --- Channel descriptors for ASIO ---
     const std::vector<AsioChannelDesc>& getInputDescs()  const { return m_inputDescs; }
@@ -74,6 +69,9 @@ public:
 
     void setDefaultRouting();
     void enableDirectMonitoring(bool enable);
+    
+    void setLoopback(int hwOutputChannel, bool enable);
+    bool isLoopbackActive(int hwOutputChannel) const;
 
     void process(
         const float* const* hwInputBufs,  int numHwIn,
@@ -89,6 +87,7 @@ private:
     ChannelLayout m_layout;
     std::vector<std::vector<RoutingCrossPoint>> m_matrix;
     std::vector<std::vector<float>> m_mixBufs;
+    std::vector<bool> m_loopback;
     int m_mixBufSize;
 
     // Channel descriptors

@@ -221,6 +221,22 @@ void AudioBuffer::convertFloat32ToInt32(const float* src, int* dst, long numSamp
     }
 }
 
+void AudioBuffer::mixFloat32ToInt32(const float* src, int* dst, long numSamples) {
+    for (long i = 0; i < numSamples; i++) {
+        float val = src[i];
+        if (val == 0.0f) continue;
+        
+        long long existing = dst[i];
+        long long added = (long long)(val * 2147483647.0f);
+        long long sum = existing + added;
+        
+        if (sum > 2147483647LL) sum = 2147483647LL;
+        if (sum < -2147483648LL) sum = -2147483648LL;
+        
+        dst[i] = (int)sum;
+    }
+}
+
 void AudioBuffer::copyWasapiToInput(const BYTE* wasapiData, int wasapiChannels,
                                      int wasapiBytesPerSample, int bufferIndex,
                                      int channelOffset, int numChannels,

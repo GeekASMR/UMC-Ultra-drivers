@@ -513,10 +513,8 @@ void TusbAudioDirect::pollThreadFunc() {
             m_callback(bufferIndex, m_callbackUserData);
         }
 
-        // STEP 3: Send WAIT_FOR_BUFFER as ACK (NON-BLOCKING)
-        // Using timeout 0: just send the ACK, don't wait for next buffer completion.
-        // If WFB also blocks for one full period, it would halve our callback rate,
-        // causing Studio One to show 100% CPU.
+        // STEP 3: Send WAIT_FOR_BUFFER as ACK
+        // 按照官方驱动逻辑，提交 WAIT_FOR_BUFFER 等待硬件中断
         DWORD bytesReturned = 0;
         ResetEvent(hThreadEvent);
         memset(&threadOv, 0, sizeof(threadOv));
@@ -525,11 +523,9 @@ void TusbAudioDirect::pollThreadFunc() {
         BOOL ok = DeviceIoControl(m_hDevice, TUSB_IOCTL_WAIT_FOR_BUFFER,
                                   nullptr, 0, nullptr, 0, &bytesReturned, &threadOv);
         if (!ok && GetLastError() == ERROR_IO_PENDING) {
-            // Don't wait indefinitely - use short timeout so we don't double-block
-            WaitForSingleObject(hThreadEvent, 0);
-            // Cancel pending WFB to prevent OVERLAPPED corruption
-            CancelIoEx(m_hDevice, &threadOv);
-            WaitForSingleObject(hThreadEvent, 10);
+            // 直接等待 WFB 完成 （与硬件中断 m_eventsAuto 同步到达），无需粗暴地 CancelIoEx。
+            // 之前的 CancelIoEx 会瞬间破坏底层的时序状态，导致整个设备（包括 WDM）发生随机的噼啪声。
+            WaitForSingleObject(hThreadEvent, 500); 
         }
     }
 
