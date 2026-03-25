@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Behringer UMC ASIO — 项目开发时间线</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #0a0e17;
+    --bg-card: #111827;
+    --bg-card-hover: #1a2332;
+    --border: #1e293b;
+    --text: #e2e8f0;
+    --text-dim: #94a3b8;
+    --text-bright: #f8fafc;
+    --accent: #3b82f6;
+    --accent-glow: rgba(59, 130, 246, 0.3);
+    --green: #10b981;
+    --green-glow: rgba(16, 185, 129, 0.2);
+    --red: #ef4444;
+    --red-glow: rgba(239, 68, 68, 0.2);
+    --yellow: #f59e0b;
+    --yellow-glow: rgba(245, 158, 11, 0.2);
+    --purple: #8b5cf6;
+    --purple-glow: rgba(139, 92, 246, 0.2);
+    --cyan: #06b6d4;
+    --orange: #f97316;
+    --orange-glow: rgba(249, 115, 22, 0.2);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  .hero {
+    text-align: center;
+    padding: 80px 20px 60px;
+    background: linear-gradient(135deg, #0f1724 0%, #1a1040 50%, #0f1724 100%);
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%; width: 200%; height: 200%;
+    background: radial-gradient(circle at 30% 50%, var(--accent-glow) 0%, transparent 50%),
+                radial-gradient(circle at 70% 50%, var(--purple-glow) 0%, transparent 50%);
+    animation: pulse 8s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+  .hero h1 {
+    font-size: 2.8em; font-weight: 800;
+    background: linear-gradient(135deg, #60a5fa, #a78bfa, #f472b6);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    position: relative; margin-bottom: 12px;
+  }
+  .hero .subtitle { font-size: 1.2em; color: var(--text-dim); position: relative; margin-bottom: 24px; }
+  .hero .stats { display: flex; justify-content: center; gap: 40px; position: relative; flex-wrap: wrap; }
+  .hero .stat { text-align: center; }
+  .hero .stat-value { font-size: 2em; font-weight: 700; color: var(--accent); }
+  .hero .stat-label { font-size: 0.85em; color: var(--text-dim); }
+
+  .container { max-width: 1000px; margin: 0 auto; padding: 40px 20px; }
+  .section-title {
+    font-size: 1.6em; font-weight: 700; color: var(--text-bright);
+    margin: 50px 0 30px; padding-bottom: 12px;
+    border-bottom: 2px solid var(--accent);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-title .icon { font-size: 1.4em; }
+
+  /* Version cards */
+  .ver-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; margin: 20px 0; }
+  .ver-card {
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 20px; transition: all 0.3s ease;
+  }
+  .ver-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .ver-card.winner { border: 2px solid var(--green); box-shadow: 0 0 20px var(--green-glow); }
+  .ver-badge {
+    display: inline-block; padding: 4px 12px; border-radius: 8px;
+    font-weight: 800; font-size: 0.85em; color: #fff; margin-bottom: 8px;
+  }
+  .ver-card h3 { font-size: 1em; font-weight: 600; margin-bottom: 4px; }
+  .ver-card .tech { font-size: 0.82em; color: var(--text-dim); margin-bottom: 10px; }
+  .ver-card .status { font-size: 0.8em; font-weight: 600; }
+  .ver-card ul { list-style: none; padding: 0; font-size: 0.85em; color: var(--text-dim); }
+  .ver-card ul li { padding: 2px 0; }
+  .ver-card ul li::before { content: '• '; color: var(--text-dim); }
+
+  /* Timeline */
+  .timeline { position: relative; padding-left: 60px; }
+  .timeline::before {
+    content: ''; position: absolute; left: 24px; top: 0; bottom: 0; width: 3px;
+    background: linear-gradient(to bottom, var(--accent), var(--purple), var(--green)); border-radius: 2px;
+  }
+  .tl-item { position: relative; margin-bottom: 32px; animation: fadeInUp 0.5s ease-out; }
+  @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  .tl-dot {
+    position: absolute; left: -42px; top: 6px; width: 14px; height: 14px;
+    border-radius: 50%; border: 3px solid var(--accent); background: var(--bg); z-index: 1;
+  }
+  .tl-dot.milestone { background: var(--green); border-color: var(--green); box-shadow: 0 0 12px var(--green-glow); }
+  .tl-dot.bug { background: var(--red); border-color: var(--red); box-shadow: 0 0 12px var(--red-glow); }
+  .tl-dot.breakthrough { background: var(--yellow); border-color: var(--yellow); box-shadow: 0 0 12px var(--yellow-glow); width: 18px; height: 18px; left: -44px; top: 4px; }
+  .tl-dot.tool { background: var(--purple); border-color: var(--purple); box-shadow: 0 0 12px var(--purple-glow); }
+  .tl-card {
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 20px 24px; transition: all 0.3s ease;
+  }
+  .tl-card:hover { background: var(--bg-card-hover); border-color: var(--accent); box-shadow: 0 4px 20px rgba(0,0,0,0.3); transform: translateX(4px); }
+  .tl-time { font-size: 0.8em; color: var(--cyan); font-family: 'JetBrains Mono', monospace; font-weight: 500; margin-bottom: 6px; }
+  .tl-title { font-size: 1.1em; font-weight: 600; color: var(--text-bright); margin-bottom: 8px; }
+  .tl-desc { color: var(--text-dim); font-size: 0.92em; }
+  .tl-desc code { background: #1e293b; padding: 2px 6px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.88em; color: #93c5fd; }
+
+  .tag { display: inline-block; padding: 2px 10px; border-radius: 9999px; font-size: 0.75em; font-weight: 600; margin-right: 6px; margin-top: 8px; }
+  .tag-green { background: var(--green-glow); color: var(--green); border: 1px solid var(--green); }
+  .tag-red { background: var(--red-glow); color: var(--red); border: 1px solid var(--red); }
+  .tag-blue { background: var(--accent-glow); color: var(--accent); border: 1px solid var(--accent); }
+  .tag-yellow { background: var(--yellow-glow); color: var(--yellow); border: 1px solid var(--yellow); }
+  .tag-purple { background: var(--purple-glow); color: var(--purple); border: 1px solid var(--purple); }
+  .tag-orange { background: var(--orange-glow); color: var(--orange); border: 1px solid var(--orange); }
+
+  .arch-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; font-family: 'JetBrains Mono', monospace; font-size: 0.9em; line-height: 2; text-align: center; color: var(--cyan); margin: 20px 0; }
+  .arch-box .layer { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 10px 20px; margin: 8px auto; max-width: 500px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+  .arch-box .layer.highlight { border-color: var(--accent); background: rgba(59,130,246,0.1); box-shadow: 0 0 10px var(--accent-glow); }
+  .arch-box .arrow { color: var(--text-dim); font-size: 1.4em; }
+
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.9em; }
+  th { background: #1e293b; color: var(--text-bright); padding: 12px 16px; text-align: left; font-weight: 600; border-bottom: 2px solid var(--accent); }
+  td { padding: 10px 16px; border-bottom: 1px solid var(--border); color: var(--text-dim); }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+  .ok { color: var(--green); }
+  .no { color: var(--red); }
+
+  pre { background: #0d1117; border: 1px solid var(--border); border-radius: 8px; padding: 16px 20px; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.85em; line-height: 1.6; color: #c9d1d9; margin: 12px 0; }
+  pre .comment { color: #8b949e; }
+  pre .keyword { color: #ff7b72; }
+  pre .string { color: #a5d6ff; }
+  pre .number { color: #79c0ff; }
+
+  .abi-diagram { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+  .abi-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; }
+  .abi-box.wrong { border-color: var(--red); }
+  .abi-box.correct { border-color: var(--green); }
+  .abi-box h4 { margin-bottom: 10px; font-size: 0.95em; }
+  .abi-bytes { display: flex; justify-content: center; gap: 2px; margin: 8px 0; }
+  .abi-byte { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.75em; font-weight: 600; }
+  .abi-byte.hi { background: rgba(239,68,68,0.15); border: 1px solid var(--red); color: var(--red); }
+  .abi-byte.lo { background: rgba(16,185,129,0.15); border: 1px solid var(--green); color: var(--green); }
+  .abi-byte.zero { background: #1e293b; border: 1px solid #334155; color: var(--text-dim); }
+  .abi-label { font-size: 0.8em; color: var(--text-dim); margin-top: 4px; }
+
+  footer { text-align: center; padding: 40px 20px; color: var(--text-dim); font-size: 0.85em; border-top: 1px solid var(--border); margin-top: 60px; }
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<div class="hero">
+  <h1>🎛️ Behringer UMC ASIO Driver</h1>
+  <p class="subtitle">从 WASAPI 代理到纯原生直连 — 完整项目开发时间线</p>
+  <div class="stats">
+    <div class="stat"><div class="stat-value">6</div><div class="stat-label">版本迭代</div></div>
+    <div class="stat"><div class="stat-value">7</div><div class="stat-label">已修复 Bug</div></div>
+    <div class="stat"><div class="stat-value">7</div><div class="stat-label">逆向工具</div></div>
+    <div class="stat"><div class="stat-value">2</div><div class="stat-label">开发天数</div></div>
+    <div class="stat"><div class="stat-value">0%</div><div class="stat-label">最终 CPU</div></div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- Version Evolution -->
+  <div class="section-title"><span class="icon">🔄</span> 版本演进 (v1 → v6)</div>
+
+  <div class="ver-grid">
+    <div class="ver-card">
+      <div class="ver-badge" style="background:var(--yellow)">v1</div>
+      <h3>官方 DLL COM 代理</h3>
+      <div class="tech">COM 代理转发 · AsioProxy.cpp</div>
+      <div class="status" style="color:var(--yellow)">可用·受限</div>
+      <ul><li>完全兼容官方行为</li><li>18in/20out 全通道</li><li>依赖官方 DLL</li><li>~3ms 延迟</li></ul>
+    </div>
+    <div class="ver-card">
+      <div class="ver-badge" style="background:var(--red)">v2</div>
+      <h3>WASAPI 共享模式</h3>
+      <div class="tech">IAudioClient Shared · 经过混音器</div>
+      <div class="status" style="color:var(--red)">延迟高</div>
+      <ul><li>完全独立</li><li>仅 2in/2out</li><li>~10ms 延迟</li><li>不适合录音</li></ul>
+    </div>
+    <div class="ver-card">
+      <div class="ver-badge" style="background:var(--orange)">v3</div>
+      <h3>WASAPI 独占模式</h3>
+      <div class="tech">IAudioClient Exclusive · 绕过混音器</div>
+      <div class="status" style="color:var(--orange)">通道受限</div>
+      <ul><li>独立于官方 DLL</li><li>2~8ch 通道</li><li>~5ms 延迟</li><li>会独占声卡</li></ul>
+    </div>
+    <div class="ver-card">
+      <div class="ver-badge" style="background:var(--red)">v4</div>
+      <h3>Kernel Streaming 直连</h3>
+      <div class="tech">IOCTL_KS_* · 直接创建 KS Pin</div>
+      <div class="status" style="color:var(--red)">❌ 已废弃</div>
+      <ul><li>TUSBAUDIO KS Pin 非标准</li><li>CreatePin 始终失败</li><li>仅供代码参考</li></ul>
+    </div>
+    <div class="ver-card">
+      <div class="ver-badge" style="background:var(--accent)">v5</div>
+      <h3>TUSBAUDIO IOCTL 直连</h3>
+      <div class="tech">逆向 IOCTL · DMA 映射 · WFB 轮询</div>
+      <div class="status" style="color:var(--accent)">部分可用</div>
+      <ul><li>18in/20out 全通道</li><li>2.67ms 延迟</li><li>输出 DMA 被清零</li><li>CPU 100% 空转</li></ul>
+    </div>
+    <div class="ver-card winner">
+      <div class="ver-badge" style="background:linear-gradient(135deg,var(--green),var(--cyan))">v6 🏆</div>
+      <h3>纯原生直连终极版</h3>
+      <div class="tech">阴阳融合时序 · Event + WFB ACK · hi:lo ABI</div>
+      <div class="status ok">✅ 生产就绪</div>
+      <ul><li>18in/20out 全通道 ✅</li><li>2.67ms 延迟 ✅</li><li>输入输出双向完美 ✅</li><li>CPU 正常 (0%) ✅</li></ul>
+    </div>
+  </div>
+
+  <!-- Version Comparison -->
+  <div style="overflow-x:auto; margin: 20px 0;">
+  <table>
+    <tr>
+      <th>对比项</th><th>v1 代理</th><th>v2 共享</th><th>v3 独占</th><th>v4 KS</th><th>v5 直连</th><th style="color:var(--green)">v6 终极 🏆</th>
+    </tr>
+    <tr><td><strong>状态</strong></td><td>可用</td><td>可用</td><td>可用</td><td class="no">废弃</td><td>部分可用</td><td class="ok">✅ 完美</td></tr>
+    <tr><td><strong>输入</strong></td><td class="ok">18ch</td><td>2ch</td><td>2~8ch</td><td class="no">0</td><td class="ok">18ch</td><td class="ok">18ch ✅</td></tr>
+    <tr><td><strong>输出</strong></td><td class="ok">20ch</td><td>2ch</td><td>2~8ch</td><td class="no">0</td><td class="no">被清零</td><td class="ok">20ch ✅</td></tr>
+    <tr><td><strong>延迟</strong></td><td>~3ms</td><td>~10ms</td><td>~5ms</td><td>—</td><td class="ok">2.67ms</td><td class="ok">2.67ms</td></tr>
+    <tr><td><strong>依赖官方DLL</strong></td><td class="no">是</td><td class="ok">否</td><td class="ok">否</td><td class="ok">否</td><td class="ok">否</td><td class="ok">否</td></tr>
+    <tr><td><strong>DAW CPU表</strong></td><td class="ok">正常</td><td class="ok">正常</td><td class="ok">正常</td><td>—</td><td class="no">100%</td><td class="ok">正常 ✅</td></tr>
+  </table>
+  </div>
+
+  <!-- Architecture -->
+  <div class="section-title"><span class="icon">🏗️</span> 最终架构 (v6)</div>
+  <div class="arch-box">
+    <div class="layer">🎵 DAW Application (Studio One / Cubase)</div>
+    <div class="arrow">↕ ASIO COM Interface (bufferSwitch)</div>
+    <div class="layer highlight">⚡ BehringerASIO.dll — v6 纯原生直连驱动</div>
+    <div class="arrow">↕ TUSBAUDIO IOCTL (DeviceIoControl)</div>
+    <div class="layer">🔧 umc_audio.sys — Thesycon USB Audio 内核驱动</div>
+    <div class="arrow">↕ USB Audio Class</div>
+    <div class="layer">🎛️ Behringer UMC Hardware</div>
+  </div>
+
+  <!-- Timeline -->
+  <div class="section-title"><span class="icon">📅</span> 详细开发时间线</div>
+
+  <div class="timeline">
+
+    <!-- Phase 1: Project Start -->
+    <div class="tl-item">
+      <div class="tl-dot milestone"></div>
+      <div class="tl-card">
+        <div class="tl-time">2026-03-22 ~14:00</div>
+        <div class="tl-title">🚀 项目创建 — WASAPI 代理模式</div>
+        <div class="tl-desc">
+          初始版本采用 WASAPI Exclusive Mode 后端，通过代理转发官方 <code>umc_audioasio_x64.dll</code> 实现。
+          虽然能工作，但存在延迟和兼容性限制。目标：绕过 WASAPI，直连内核驱动。
+          <br><span class="tag tag-blue">WASAPI</span><span class="tag tag-blue">代理模式</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot tool"></div>
+      <div class="tl-card">
+        <div class="tl-time">2026-03-22 15:00 ~ 16:00</div>
+        <div class="tl-title">🔍 IOCTL 逆向工程 (ioctl_spy v1~v3)</div>
+        <div class="tl-desc">
+          编写了 3 个版本的 IOCTL 间谍工具来拦截官方 DLL 的 <code>DeviceIoControl</code> 调用。<br>
+          v1: 基础 IOCTL 抓包 (80KB 日志)<br>
+          v2: 改进版 (14KB)<br>
+          v3: 增加 VirtualAlloc / MapViewOfFile 内存分配追踪 (31KB)<br>
+          成功解码了所有 IOCTL 代码：<code>SELECT_CHANNEL</code>、<code>MAP_CHANNEL_BUFFER</code>、<code>SET_CALLBACKS</code> 等。
+          <br><span class="tag tag-purple">逆向工程</span><span class="tag tag-purple">IAT Hook</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-card">
+        <div class="tl-time">2026-03-22 16:00 ~ 17:00</div>
+        <div class="tl-title">🔧 TusbAudioDirect 直连引擎创建</div>
+        <div class="tl-desc">
+          基于逆向工程数据，实现了 <code>TusbAudioDirect</code> 类，直接通过 IOCTL 与内核驱动通信。
+          完成了设备打开 → 枚举通道 → 选择通道 → 映射 DMA 缓冲区的完整流程。
+          <br><strong>问题</strong>：输出 DMA 缓冲区的数据被内核驱动在 1-2 个 cycle 后清零！
+          <br><span class="tag tag-red">DMA 清零</span><span class="tag tag-blue">IOCTL 直连</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot tool"></div>
+      <div class="tl-card">
+        <div class="tl-time">2026-03-22 17:00 ~ 17:30</div>
+        <div class="tl-title">🔍 ioctl_spy v4 — 完整播放追踪</div>
+        <div class="tl-desc">
+          增强版间谍工具，在官方 DLL 播放正弦波过程中记录完整 IOCTL 序列和 DMA 缓冲区状态。
+          首次在回调中注入正弦波数据并监控 DMA 内存是否保持非零。
+          <br><span class="tag tag-purple">正弦波注入</span><span class="tag tag-purple">DMA 监控</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot bug"></div>
+      <div class="tl-card">
+        <div class="tl-time">2026-03-22 18:00 ~ 19:00</div>
+        <div class="tl-title">🐛 ioctl_spy5 崩溃排查 — NULL 回调指针</div>
+        <div class="tl-desc">
+          spy5 在运行 0.2 秒后进程闪退。经过 CDB 调试器分析，发现根因：<br>
+          我们在 <code>asioMessage(kAsioSupportsTimeInfo)</code> 中响应了支持 TimeInfo，
+          但 <code>ASIOCallbacks</code> 中的 <code>bufferSwitchTimeInfo</code> 指针为 NULL。<br>
+          官方驱动的内部线程解引用空指针 → <code>0xC0000005</code> 访问违规 → 进程崩溃。<br>
+          <strong>修复</strong>：正确提供 <code>bufferSwitchTimeInfo</code> 回调函数。
+          <br><span class="tag tag-red">空指针</span><span class="tag tag-green">已修复</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot breakthrough"></div>
+      <div class="tl-card">
+        <div class="tl-time">2026-03-22 19:00 ~ 19:30</div>
+        <div class="tl-title">⭐ 突破！ioctl_spy5 完整抓取成功</div>
+        <div class="tl-desc">
+          修复空指针后，spy5 成功运行完整的 5 秒播放周期，揭示了关键秘密：<br>
+          1. <code>ENABLE_STREAM (0x808828C0)</code> 参数 = BufferSize，是打开数据闸门的关键<br>
+          2. 内部线程以 48000/512=93.75 Hz 频率发送 <code>WAIT_FOR_BUFFER (0x808828F4)</code><br>
+          3. ctrlPage 计数器与 WFB 轮数 100% 同步<br>
+          4. <strong>DMA 没有被清零！</strong> WFB 是保活 DMA 输出的关键 ACK 机制
+          <br><span class="tag tag-yellow">突破性发现</span><span class="tag tag-green">WFB = ACK</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot bug"></div>
+      <div class="tl-card">
+        <div class="tl-time">2026-03-22 19:30 ~ 20:00</div>
+        <div class="tl-title">🐛 阴阳融合 — Event + WFB 时序发现</div>
+        <div class="tl-desc">
+          在实现纯 WFB 轮询后，发现了微妙的 ADC/DAC 交互问题：<br>
+          <table>
+            <tr><th>组合</th><th>输入 ADC</th><th>输出 DAC</th><th>原因</th></tr>
+            <tr><td>仅 WFB</td><td style="color:var(--red)">❌ 异常</td><td style="color:var(--green)">✅ 正常</td><td>WFB 扰乱 ADC 但保活 DAC</td></tr>
+            <tr><td>仅 Event</td><td style="color:var(--green)">✅ 正常</td><td style="color:var(--red)">❌ 无声</td><td>Event 不扰乱 ADC 但无 ACK</td></tr>
+            <tr><td><strong>Event + WFB</strong></td><td style="color:var(--green)">✅ 正常</td><td style="color:var(--green)">✅ 正常</td><td><strong>完美融合！</strong></td></tr>
+          </table>
+          <span class="tag tag-green">阴阳融合</span><span class="tag tag-green">核心时序</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot milestone"></div>
+      <div class="tl-card">
+        <div class="tl-time">🏆 2026-03-22 20:24</div>
+        <div class="tl-title">🎉 里程碑：纯原生直连 ASIO 驱动验证通过！</div>
+        <div class="tl-desc">
+          完全抛弃官方 <code>umc_audioasio_x64.dll</code>，通过 IOCTL 直连内核驱动实现零拷贝 DMA 音频传输。
+          输入输出双向完美，DAW 可正常使用。<br>
+          <strong>核心代码</strong>：<code>TusbAudioDirect.cpp</code> (轮询线程) + <code>BehringerASIO.cpp</code> (ASIO 接口)
+          <br><span class="tag tag-green">里程碑</span><span class="tag tag-green">验证通过</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 2: CPU 100% Debug -->
+    <div class="tl-item">
+      <div class="tl-dot bug"></div>
+      <div class="tl-card">
+        <div class="tl-time">2026-03-23 01:30</div>
+        <div class="tl-title">🐛 发现 Studio One ASIO 性能表显示 100%</div>
+        <div class="tl-desc">
+          在 Studio One DAW 中测试时，ASIO 性能监视器始终显示 CPU 100%。
+          但实际系统 CPU 占用正常，所有插件延迟 0.0ms。声音输出也正常。
+          开始漫长的调试之旅...
+          <br><span class="tag tag-red">CPU 100%</span><span class="tag tag-yellow">性能表</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-card">
+        <div class="tl-time">2026-03-23 01:30 ~ 02:15</div>
+        <div class="tl-title">🔄 9 次尝试均无效</div>
+        <div class="tl-desc">
+          <table>
+            <tr><th>#</th><th>尝试</th><th>结果</th></tr>
+            <tr><td>1</td><td><code>systemTime</code> 用合成时钟</td><td style="color:var(--red)">❌ 100%</td></tr>
+            <tr><td>2</td><td>移除 <code>kSystemTimeValid</code></td><td style="color:var(--red)">❌ 100%</td></tr>
+            <tr><td>3</td><td>用 <code>QueryPerformanceCounter</code></td><td style="color:var(--red)">❌ 100%</td></tr>
+            <tr><td>4</td><td>用 <code>timeGetTime() × 1000000</code></td><td style="color:var(--red)">❌ 100%</td></tr>
+            <tr><td>5</td><td>不支持 <code>kAsioSupportsTimeInfo</code></td><td style="color:var(--red)">❌ 100%</td></tr>
+            <tr><td>6</td><td><code>outputReady</code> → <code>ASE_NotPresent</code></td><td style="color:var(--red)">❌ 100%</td></tr>
+            <tr><td>7</td><td><code>directProcess</code> → <code>ASIOTrue</code></td><td style="color:var(--red)">❌ 100%</td></tr>
+            <tr><td>8</td><td><code>getLatencies</code> 匹配官方值</td><td style="color:var(--red)">❌ 100%</td></tr>
+            <tr><td>9</td><td>WFB 非阻塞（验证回调频率 374.9Hz ✅）</td><td style="color:var(--red)">❌ 100%</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-card">
+        <div class="tl-time">2026-03-23 02:15</div>
+        <div class="tl-title">🔑 关键对比：注册官方驱动</div>
+        <div class="tl-desc">
+          临时在注册表中注册了官方 <code>umc_audioasio_x64.dll</code>，在 Studio One 中同时显示两个驱动：<br>
+          <strong>Behringer UMC ASIO</strong>（我们的）→ CPU 100% ❌<br>
+          <strong>Behringer UMC Official</strong>（官方）→ CPU 1% ✅<br>
+          确认问题在我们的驱动代码中，不是硬件或 DAW 的问题。
+          <br><span class="tag tag-yellow">A/B 对比</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot breakthrough"></div>
+      <div class="tl-card">
+        <div class="tl-time">⭐ 2026-03-23 02:48</div>
+        <div class="tl-title">⭐ 转折！编写 test_asio_spy 截获官方驱动数据</div>
+        <div class="tl-desc">
+          编写了 <code>test_asio_spy.cpp</code>，直接加载官方 ASIO DLL 并截获所有回调参数。
+          运行 5 秒后获取了决定性的证据：<br>
+          <pre>
+<span class="comment">// 官方驱动 getSamplePosition 返回值:</span>
+sPos  = <span class="number">1099511627776</span>  <span class="comment">// = 256 << 32 ← hi:lo struct 格式！</span>
+tStamp= <span class="number">-3718894946179079636</span> <span class="comment">// ← 同样 hi:lo 格式</span>
+
+<span class="comment">// 我们的驱动返回:</span>
+sPos  = <span class="number">256</span>  <span class="comment">// ← 普通 long long（字节序完全不同！）</span></pre>
+          <span class="tag tag-yellow">关键发现</span><span class="tag tag-purple">间谍工具</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot bug"></div>
+      <div class="tl-card">
+        <div class="tl-time">2026-03-23 03:17</div>
+        <div class="tl-title">🔬 根因分析：ASIO ABI 二进制格式不兼容</div>
+        <div class="tl-desc">
+          Thesycon 官方驱动使用 <code>struct{unsigned long hi; unsigned long lo}</code> 格式（非 <code>NATIVE_INT64</code>），
+          但我们的代码使用标准 <code>long long</code>。由于 x86 小端序差异：
+          <div class="abi-diagram">
+            <div class="abi-box wrong">
+              <h4 style="color:var(--red)">❌ 我们之前 (long long = 256)</h4>
+              <div class="abi-bytes">
+                <div class="abi-byte hi">00</div>
+                <div class="abi-byte hi">01</div>
+                <div class="abi-byte zero">00</div>
+                <div class="abi-byte zero">00</div>
+                <div class="abi-byte zero">00</div>
+                <div class="abi-byte zero">00</div>
+                <div class="abi-byte zero">00</div>
+                <div class="abi-byte zero">00</div>
+              </div>
+              <div class="abi-label">DAW 读取 → hi=256, lo=0 → 值=256×2³² = 天文数字</div>
+            </div>
+            <div class="abi-box correct">
+              <h4 style="color:var(--green)">✅ 修复后 (hi=0, lo=256)</h4>
+              <div class="abi-bytes">
+                <div class="abi-byte zero">00</div>
+                <div class="abi-byte zero">00</div>
+                <div class="abi-byte zero">00</div>
+                <div class="abi-byte zero">00</div>
+                <div class="abi-byte lo">00</div>
+                <div class="abi-byte lo">01</div>
+                <div class="abi-byte zero">00</div>
+                <div class="abi-byte zero">00</div>
+              </div>
+              <div class="abi-label">DAW 读取 → hi=0, lo=256 → 值=256 ✅</div>
+            </div>
+          </div>
+          <span class="tag tag-red">ABI 不兼容</span><span class="tag tag-yellow">hi:lo 格式</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot milestone"></div>
+      <div class="tl-card">
+        <div class="tl-time">🏆 2026-03-23 03:24</div>
+        <div class="tl-title">🎉 终极修复！Studio One CPU 性能表恢复正常！</div>
+        <div class="tl-desc">
+          通过 <code>unsigned long*</code> 分别写入 hi/lo 两个 32 位分量，
+          完美匹配官方驱动的二进制格式。Studio One 性能表从 100% 降至正常水平，
+          与官方驱动完全一致：输入延时 4.17ms/200采样，输出延时 5.50ms/264采样。
+          <br><span class="tag tag-green">已修复</span><span class="tag tag-green">完美匹配官方</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot milestone"></div>
+      <div class="tl-card">
+        <div class="tl-time">2026-03-23 03:33</div>
+        <div class="tl-title">📝 文档更新与项目整理</div>
+        <div class="tl-desc">
+          更新了 README.md、DEVLOG.md 和源代码注释。创建了 <code>Doc/</code> 目录，
+          将所有日志文件和文档集中管理。生成本项目开发时间线 HTML。
+          <br><span class="tag tag-blue">文档</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- All Bugs -->
+  <div class="section-title"><span class="icon">🐛</span> 所有已修复 Bug</div>
+  <table>
+    <tr><th>#</th><th>Bug</th><th>根因</th><th>修复方案</th></tr>
+    <tr>
+      <td>1</td>
+      <td>输出 DMA 被内核清零</td>
+      <td>缺少 <code>WAIT_FOR_BUFFER</code> ACK 回应</td>
+      <td>在回调后发送 WFB IOCTL 作为确认</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>输入 ADC 采样异常/杂音</td>
+      <td>WFB 干扰 ADC 采样时序</td>
+      <td>先 Event 等待保护 ADC，再 WFB ACK</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>CPU 100% 死锁空转</td>
+      <td>轮询线程无阻塞等待</td>
+      <td><code>WaitForSingleObject(Event)</code> 挂起线程</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>OVERLAPPED 竞态条件</td>
+      <td>主线程和轮询线程共用 OVERLAPPED</td>
+      <td>轮询线程使用独立 Event + OVERLAPPED</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td style="color:var(--yellow)"><strong>Studio One 性能表 100%</strong></td>
+      <td style="color:var(--yellow)"><strong>ASIO ABI hi:lo 格式不兼容</strong></td>
+      <td style="color:var(--yellow)"><strong><code>getSamplePosition</code> 按 hi/lo 分写</strong></td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td>WFB OVERLAPPED 内存损坏</td>
+      <td>50ms 超时导致 OVERLAPPED 结构被复用</td>
+      <td>WFB 非阻塞 + <code>CancelIoEx</code></td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td>CancelIo 无法跨线程取消</td>
+      <td><code>CancelIo</code> 只能取消当前线程的 IO</td>
+      <td>升级为 <code>CancelIoEx</code></td>
+    </tr>
+  </table>
+
+  <!-- Tools -->
+  <div class="section-title"><span class="icon">🛠️</span> 开发工具清单</div>
+  <table>
+    <tr><th>工具</th><th>用途</th><th>关键发现</th></tr>
+    <tr><td><code>ioctl_spy.cpp</code> (v1)</td><td>基础 IOCTL 抓包</td><td>解码了全部 IOCTL 代码</td></tr>
+    <tr><td><code>ioctl_spy2.cpp</code> (v2)</td><td>改进版抓包</td><td>完善了参数解析</td></tr>
+    <tr><td><code>ioctl_spy3.cpp</code> (v3)</td><td>内存分配追踪</td><td>发现 DMA 缓冲区映射机制</td></tr>
+    <tr><td><code>ioctl_spy4.cpp</code> (v4)</td><td>完整播放追踪</td><td>首次记录了播放期间的 IOCTL 序列</td></tr>
+    <tr><td><code>ioctl_spy5.cpp</code> (v5)</td><td>完整 IOCTL + Event 追踪</td><td>发现 WFB 是 ACK 保活机制（核心突破）</td></tr>
+    <tr><td style="color:var(--yellow)"><strong><code>test_asio_spy.cpp</code></strong></td><td style="color:var(--yellow)"><strong>ASIO 驱动行为截获</strong></td><td style="color:var(--yellow)"><strong>发现 getSamplePosition hi:lo 格式（终极修复）</strong></td></tr>
+    <tr><td><code>test_tusbaudio.cpp</code></td><td>官方 API 功能测试</td><td>验证了 BufferSize/SampleRate 查询</td></tr>
+  </table>
+
+  <!-- Key Files -->
+  <div class="section-title"><span class="icon">📁</span> 核心源代码</div>
+  <table>
+    <tr><th>文件</th><th>行数</th><th>功能</th></tr>
+    <tr><td><code>src/driver/BehringerASIO.cpp</code></td><td>~300</td><td>ASIO 驱动主类：接口实现 + hi:lo 格式兼容</td></tr>
+    <tr><td><code>src/driver/TusbAudioDirect.cpp</code></td><td>~540</td><td>IOCTL 直连引擎：阴阳融合轮询线程</td></tr>
+    <tr><td><code>src/driver/TusbAudioDirect.h</code></td><td>~160</td><td>IOCTL 代码定义 + 通道/缓冲区结构</td></tr>
+    <tr><td><code>src/driver/TUsbAudioApi.h</code></td><td>~314</td><td>官方 API DLL 动态加载接口</td></tr>
+    <tr><td><code>src/com/dllmain.cpp</code></td><td>~187</td><td>COM 注册 + DLL 入口</td></tr>
+    <tr><td><code>src/asio/asio.h</code></td><td>~254</td><td>ASIO SDK 接口定义</td></tr>
+  </table>
+
+</div>
+
+<footer>
+  Behringer UMC ASIO Driver — 纯原生直连模式<br>
+  Generated: 2026-03-23 03:33 | Total Development Time: ~14 hours
+</footer>
+
+</body>
+</html>

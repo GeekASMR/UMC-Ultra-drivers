@@ -1,0 +1,9 @@
+ioctl_spy4.cpp
+Microsoft (R) Incremental Linker Version 14.44.35225.0
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+/out:ioctl_spy4.exe 
+ioctl_spy4.obj 
+ole32.lib 
+oleaut32.lib 
+dbghelp.lib 

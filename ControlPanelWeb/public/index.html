@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UMC TotalMix</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="top-bar">
+            <div class="logo">
+                <span class="logo-bold">UMC</span>TotalMix FX
+            </div>
+            <div class="status-indicator">
+                <div class="dot online"></div> Driver Connected
+            </div>
+        </header>
+        
+        <main class="mixer-layout">
+            <!-- Top Row: Hardware Inputs -->
+            <section class="row hardware-in-row">
+                <h2 class="row-title">HARDWARE INPUTS (Mic/Line/ADAT)</h2>
+                <div class="channel-strip-container" id="hwin-strips">
+                    <!-- JS will inject strips here -->
+                </div>
+            </section>
+
+            <!-- Middle Row: Software Playback -->
+            <section class="row software-row">
+                <h2 class="row-title">SOFTWARE PLAYBACK (DAW Outputs)</h2>
+                <div class="channel-strip-container" id="swplay-strips">
+                    <!-- JS will inject strips here -->
+                </div>
+            </section>
+
+            <!-- Bottom Row: Hardware Outputs -->
+            <section class="row hardware-out-row">
+                <h2 class="row-title">HARDWARE OUTPUTS (Physical DAC)</h2>
+                <div class="channel-strip-container" id="hwout-strips">
+                    <!-- JS will inject strips here -->
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

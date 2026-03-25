@@ -1,0 +1,9 @@
+[DriverInterface]
+InterfaceGUID = {215A80EF-69BD-4D85-AC71-0C6EA6E6BE17}
+
+[ASIO]
+AsioDriverGUID = {0351302F-B1F1-4A5D-8613-787F77C20EA4}
+AsioDisplayName = "UMC ASIO Driver"
+AsioControlPanel = "UMCAudioCplApp.exe"
+AsioControlPanelArgs = "-asio"
+

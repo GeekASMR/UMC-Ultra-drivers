@@ -1,0 +1,864 @@
+RME Intelligent Audio Solutions
+
+MADIface XT / XT II / USB / Pro, Fireface UFX+ / UFX II / UFX III, OctaMic XTC, ADI-2 Pro/AE/FS/DAC, ADI-2/4 Pro, Digiface USB / AVB / AES / Dante / Ravenna, USB.IO
+
+Treiber für Windows 8 / 10 / 11
+
+Hinweise zur Treiberversion 0.9845
+
+
+Installation
+-------------
+
+Neuester Treiber:
+https://www.rme-audio.de/downloads/driver_madiface_win_xxxx.zip
+
+
+Neueste Firmware:
+https://www.rme-audio.de/downloads/fut_madiface_win.zip
+
+Die Firmware kann nur aktualisiert werden wenn der Treiber bereits installiert ist.
+
+Folgen Sie den Anweisungen des RME Driver Wizard. Der Treiberinstallationsassistent installiert/aktualisiert die Treiber. Danach Gerät anschliessen (im Falle einer Erstinstallation) oder neu booten (für Treiberupdate).
+
+-------------------------------
+
+Neuigkeiten, Änderungen und Fixes
+
+Achtung: Dieser Treiber arbeitet nicht mehr unter Windows 7! W7 arbeitet mit Zertifikaten, und da diese abgelaufen sind lässt sich kein zertifizierter Treiber für W7 mehr erstellen. Der letzte zertifizierte Treiber für W7 ist Version 0.9827.
+
+
+V 0.9845 (30.09.2024)
+
+- Neuladen der WDM Devices funktionierte beim Digiface Dante nicht wie erwartet.
+
+
+Neu in TotalMix FX 1.96:
+
+- Alte Digiface/Multiface/RPM: Laden von Snapshots/Workspaces konnte unvollständig sein
+
+- Verschiedene Korrekturen für die Talkback-Funktion: Aktualisierung des Trim-Status, Korrektur der Gain-Einstellungen, Fader-Handhabung
+
+- Ext. In Gain-Einstellung (horizontaler Fader) funktionierte nicht in UFX+, UFX II, UFX III
+
+- Fix: Das Ändern der Samplefrequenz konnte zur Anzeige falscher Fader-Positionen führen
+
+- Kanäle, die aufgrund der aktuellen Samplefrequenz nicht verfügbar sind (SMUX aktiv) werden nun unten im Routing-Eintrag des Kanals als n.a. angezeigt
+
+- Import Optionen für Room EQ Presets erweitert mit Stereo, to Left Channel, to Right Channel.
+
+- Überarbeiteter Preferences Dialog für bessere Übersicht, Bedienung und Platz für noch mehr Optionen (siehe unten)
+
+- Neue Option Load Room EQs with Snapshots
+
+- Neue Option Save changes regularly (within 1 minute) - speichert Mixerzustände während des Betriebs, leicht verzögert
+
+- Anzeige des aktiven Loopback-Modus im jeweiligen Input-Kanal (kleines LED-Symbol)
+
+- PEQ: Eingabe beliebiger Frequenzwerte zwischen 20 Hz und 20000 Hz (keine Umrechnung in Inkremente wie bei der Einstellung per Maus)
+
+- Neue Mismatch-Meldungen mit verbessertem Text und TotalMix/Geräte-Schaltflächen anstelle von Ja/Nein
+
+- Beim Entfernen des Geräts wird die letzte Mismatch-Meldung automatisch beendet
+
+- Verbessertes TotalReset: setzt auch die Anzeige der Unterfenster zurück (Control Room, Sidebar)
+
+- ARC USB: Anzeige der Gerätenamen in der Titelzeile des ARC USB-Dialogs und in den Mixer-Einstellungsfenstern
+
+- ARC USB: neue Option Room EQ On/Off for Main Out
+
+- ARC USB: Neue Einstellung 'Usage of PC connected ARC USB' mit den Optionen Shared (Default), Ignore PC connected ARC USB, Disable when device is offline.
+
+- ARC USB: Save/Load speicherten/luden Snapshots anstelle von tmarc-Dateien
+
+- TM FX signalisiert jetzt den zuletzt gewählten Submix an die Netzwerk-Fernbedienung (für neue Option Follow Submix in TM FX Remote)
+
+- Save Workspace schreibt in die Recent-Liste; kein stationary flag gesetzt
+
+- Optimierung der Magic Mouse (Option zur Deaktivierung des Nachlaufs)
+
+- Verbesserte Handhabung der Begrenzung der maximalen Anzahl von Zeicheneingaben (27)
+
+
+OSC
+
+- OSC-Absturz behoben (kein Deskriptor gefunden)
+
+- Cue über OSC eingeschränkt: erlaubt kein Umschalten mehr auf Main Out und Speaker B
+
+- OSC-Skalierung jetzt umschaltbar auf korrekten Maximalwert für Gain, EQ-Band Type, Room EQ Scale, Expander Threshold,
+
+- Umstellung der Seite 4 für Room EQ (alte Seite 4 ungültig, nicht mehr funktionsfähig)
+
+- Senden von 0 für nicht existierende Elemente
+
+- Erhöhung der Crash-Sicherheit bei unerwarteten Daten
+
+- Einstellungen, Registerkarte OSC: Kompatibilitätsmodus-Option hinzugefügt, um neuere OSC-Funktionen von TM FX 1.96 zu deaktivieren.
+
+- Status Text für DURec Funktionen hinzugefügt
+
+- Neu: Anzeige des Pause-Status durch blinken
+
+- Die DURec Taster-, Status- und Aufnahmezeitinformationen werden nicht mehr ständig gesendet, sondern nur noch bei Änderungen
+
+Die aktualisierten OSC-Befehle sind über den bekannten Link erhältlich:
+<http://www.rme-audio.de/downloads/osc_table_totalmix_new.zip>
+
+
+------------------------------
+
+V 0.9843 (06.06.2024)
+
+- Unterstützt USB.IO Modul für Direct Out Prodigy und Maven
+
+- Unterstützt MADIface XT II
+
+
+Neu in TotalMix FX 1.95:
+
+- Unterstützt USB.IO Modul
+
+- Unterstützt MADface XT II (erfordert DSP Firmware 55 oder höher)
+
+- Crossfeed-Einstellungen wurden beim Fireface 802 FS nicht übernommen
+
+- Kleiner Fix für Device Index Anzeige in der Deviceauswahl
+
+- Korrigierter Warndialog zur Firmwareversion des Fireface 802, 802 FS und HDSPe MADI FX
+
+- ARC USB: Anpassung der Gain-Steuerung spezieller Kanäle (z.B. Instrument 3/4 des UCX II) korrigiert
+
+
+Neu in TotalMix FX 1.94:
+
+- Room EQ für Fireface 802 FS, HDSPe MADI FX 2.0 und MADIface XT II
+
+- Bugfix Listenback DIM bei Fireface UFX+, UFX II und UFX III
+
+
+-------------------------------
+
+V 0.9840 (03.05.2024)
+
+- Bei Änderungen der Samplefrequenz wurden die nicht mehr gültigen WDM Devices nicht zuverlässig gelöscht
+
+- Settings Dialog: überarbeitete Oberfläche für höhere Windows Kompatibilität
+
+- Settings Dialog: Hi-DPI Unterstützung hinzugefügt
+
+- Settings Dialog: Nach einem Neustart des Windows Explorers erscheint das Icon des Settings Dialogs wieder im Benachrichtigungsbereich der Taskleiste
+
+
+-------------------------------
+
+V 0.9833 (23.01.2024)
+
+- Input Status im Settingsdialog des UFX II zeigte Wechsel ADAT/SPDIF nicht an
+
+- Wechsel der Anzahl der WDM-Devices funktioniert bein Digiface Dante sofort
+
+-------------------------------
+
+V 0.9831 (08.01.2024)
+
+- Settingsdialog unterstützt unabhängige Nutzung von AES, ADAT1 und ADAT2 als 3-fach AES/SPDIF I/O für UFX II und UFX+. Erfordert Firmware-Update.
+
+Neu in TotalMix FX 1.93:
+
+- Zahlreiche kleinere Bugfixes und Verbesserungen
+
+- ROOM EQ für UFX II, UFX III, UFX+. Erfordert DSP Firmware-Update.
+
+- 3-band PEQ: Erweiterte Filterfunktionen und Q-Einstellungen für UFX II, UFX III, UFX+. Erfordert DSP Firmware-Update.
+
+- Neue Optionen in Options - Reset Mix: Total Reset without Room EQ, Clear channel effects without Room EQ.
+
+Neu seit TotalMix FX 1.86:
+
+- Verbesserte, erweiterte und fehlerbereinigte Hide Channel und Routing Menü Funktionen
+
+
+
+V 0.9827 (13.09.2023)
+
+- Geänderte Namen der MIDI Ports von 2 Pro und 2/4 Pro
+
+- Beim ADI-2/4 Pro wird kein TotalMix mehr installiert
+
+
+Neu in TotalMix FX 1.85:
+
+- UCX II: Mute bei Phase-Invert funktionierte nicht
+
+- Fix: PEQ Settings erlaubten in bestimmten Fällen eine ungültige Eingabe über Tastatur
+
+- Talkback im DAW-Mode hat nur in seltenen Fällen funktioniert
+
+- Umstellung Verhalten alte ARC für UFX und Co.: Bei Speaker-B-Selektion erfolgt temporäre Umstellung des Main-Outs, dadurch gleiche Verstellung (in 0.5dB-Schritten bei langsamer Verstellung) für beide Ausgänge und Anzeige des Volumes am Gerät.
+
+- Neue Auswahl "Volume (TotalMix)" in den Einstellungen, womit für die alte ARC die Volume-Steuerung durch TotalMix (ohne die 0.5dB-Schritte bei langsamer Verstellung, dafür deterministisch bezogen auf mechanische Encoderposition) aktiviert wird.
+
+- Reiter ARC and Function Keys: für UFX III und UCX II wurde die obere Sektion in 'Function Keys (Device)' umbenannt
+
+- Problem mit der Limitierung der MIDI-Kanäle beseitigt
+
+- Geräteabhängige Limitierung des Einstellbereichs für die Mic-Gain ergänzt
+
+
+-----------------------------
+
+V 0.9824 (22.06.2023)
+
+- Fügt einen MIDI Port für die ADI-2 Remote hinzu
+
+- Unterstützt kommende Firmwareversionen des ADI-2/4 Pro SE
+
+Neu in TotalMix FX 1.84:
+
+- Fix: seit v 1.80 hängt TM FX bei einer Erstinstallation
+
+-----------------------------
+
+V 0.9821 (23.05.2023)
+
+Enthält TotalMix FX 1.83
+
+-----------------------------
+
+V 0.9819 (4.05.2023)
+
+Neu in TotalMix FX 1.81:
+
+Fix: Mono Cue Bug in DAW Mode mit UFX+
+
+Hinzugefügt: DURec Tastenbelegung für das UCX II im Menü der ARC USB
+
+Geändert: Das Undo von DSP Daten-Uploads zum Gerät wurde komplett überarbeitet um es noch sicherer zu machen
+
+------------------------------
+
+V 0.9818 (2.05.2023)
+
+- Bugfix Audio gestört im Betrieb mit mehreren Interfaces (seit 0.9815)
+
+------------------------------
+
+V 0.9817 (28.04.2023)
+
+- Bugfix UFX II und UFX+ AES Ausgang: seit 0.9812 war die Kennung 'Non-Audio' dauerhaft aktiv.
+
+------------------------------
+
+V 0.9815 (28.03.2023)
+
+- Komplett überarbeitetes, internes Multiclient-Handling. Grund: Die Option WinRT MIDI in Cubase 12 führte zum Absturz
+
+
+V 0.9812 (17.03.2023)
+
+- Unterstützt das UFX III nach neuestem Firmware-Stand (USB 19 DSP 6)
+
+- Schreibfehler im Settingsdialog beseitigt (Digiace)
+
+
+Neu in TotalMix FX 1.80:
+
+- Unterstützt das UFX III
+
+- Verbessert: Erkennung eines Absturzes zum Laden des letzten Zustandes vor dem Crash
+
+- Verbessert: Wechsel des Digiface Ravenna von USB 2 zu USB 3 zeigte die zusätzlichen Kanäle erst nach Neustart
+
+- Bugfix Digiface Ravenna: MADI-Kanäle wurden mit aktiver Option Names als Ravenna-Kanäle angezeigt
+
+- Unterstützt 75 dB Mic Gain für das Digiface AES
+
+- Neue Funktion Offline-Device Setup (Options): erlaubt die Nutzung von TotalMix FX auch ohne angeschlossenes Gerät, inklusive Laden/Ändern/Speichern von Setups und Workspaces
+
+- Neue Funktion Color in Channel Layout: Der Kanalname kann von Weiss in 7 andere Farben geändert werden
+
+- Änderung: Unterstützung der Hotkeys ist nach Start im Hintergrund deaktiviert, zur Vermeidung unbemerkter Konfigurationsänderungen
+
+- Bugfix Network Remote Settings: Löschen eines Users erfolgte nicht korrekt
+
+- Verbessert: Öffnen der Network Remote Settings Geräte-abhängig, vermeidet Kollision mit Mixer Settings
+
+- Verbessert: Laden der User-Liste in Network Remote Settings
+
+- Neu ARC USB: Die ARC USB kann in den Mic-Kanälen den Digital-Gain der Dynamiksektion kontrollieren
+
+- Neu ARC USB: Alle Encoder-Funktionen sind nun auch als 'Push' verfügbar (nur akltiv solange gedrückt)
+
+- Neu PFL Modus: Im PFL-Modus schaltet der globale SOLO-Knopf (oben rechts) alle aktiven PFLs aus
+
+- Fix: Beim Anstecken eines Gerätes beendete sich TotalMix in seltenen Fällen
+
+
+- OSC Support erweitert. Die aktualisierte OSC Tabelle ist hier:
+
+http://www.rme-audio.de/downloads/osc_table_totalmix_new.zip
+
+Das OSC Archiv enthält auch ein neues touchOSC Template welches alle Funktionen aufzeigt.
+
+Neu in Page 1: CUE control als Kanal-unabhängige Funktion, Kontrolle über Link Speaker B, direkte Auswahl eines Kanals in in Page 2 als Start-Offset von Page 1.
+
+Neu in 'none paged': setOffsetInBank und loadQuickWorkspace hinzugefügt
+
+- Weitere kleinere Leistungsverbesserungen und Fixes
+
+
+----------------
+
+V 0.9808 (06.02.2023)
+
+- Start/Stop Verhalten verbessert
+
+- Intern: Neue relative Pfade nach Microsoft-Vorgabe
+
+- Workaround hinzugefügt für Programme, die relative Pfade für den ASIO-Treiber nicht verstehen
+
+
+Neu in TotalMix FX 1.79:
+
+- Unterstützung für die HDSPe Serie mit DriverKit kompatibler Firmware hinzugefügt
+
+- UCX II: unterstützt bis +24 dB Gain bei Inst und Line Input (erfordert Firmware USB v42 oder höher)
+
+
+-----------------
+
+V 0.9801 (17.11.2022)
+
+- Unterstützung neuer Geräte hinzugefügt
+
+Neu in TotalMix FX 1.78:
+
+- Unterstützung neuer Geräte hinzugefügt
+
+- Bugfix: in seltenen Fällen arbeitete das Hochladen der Mixerdaten aus dem UCX II nicht zuverlässig
+
+- Bugfix: bei gemuteten Routings auf Mono-Ausgangskanäle wurde beim UCX II eine Mismatch-Meldung für den Mix erzeugt
+
+-----------------
+
+V 0.9794 (09.09.2022)
+
+- WDM: die Zuweisung der Speaker Property zu einem Device konnte fehlschlagen und das Device entfernen
+
+-----------------
+
+V 0.9787 (05.09.2022)
+
+- Unterstützung für das Digiface Ravenna und den ADI-2/4 Pro SE hinzugefügt
+
+- ASIO: Diverse Latenzangaben korrigiert
+
+- Verbesserte Behandlung von Surprise Removal Events
+
+
+Neu in TotalMix FX 1.77:
+
+- Unterstützung neuer Geräte hinzugefügt
+
+- Verbesserte Reihenfolgenbehandlung im Mehrgerätebetrieb
+
+- Verbesserte Mismatch Meldung (korrekter Gerätename)
+
+- Bugfix Babyface Encoder Kommunikation
+
+- Verbesserte Übertragung/Behandlung großer Mixerdatenmengen
+
+- Bugfix für HDSPe MADI FX, MADIface XT und MADIface Pro: Reverb Level Meter wurde nicht aktualisiert (nur Windows).
+
+
+-----------------------
+
+V 0.9747 (09.12.2021)
+
+- Erweiterter Settingsdialog für das Digiface Dante. Erfodert Firmware 45 und Aktualisierung der Dante Firmware.
+
+Neu in TotalMix FX 1.75:
+
+- ARC USB: Einstellung des Mic Gain funktionierte nicht korrekt mit UC und UCX II
+
+- Fix: Seit Version 1.74 funktionierte das Output Routing des Digiface Dante und Digiface AVB nicht mehr
+
+-----------------------
+
+V 0.9736 (20.09.2021)
+
+- Digitale Wiedergabe von AC-3/DTS ist nun möglich
+
+Neu in TotalMix FX 1.73:
+
+- Touch screen: Die Geste der rechten Maustaste funktioniert nun auch für die Ausgangskanäle
+
+- Exclusive Solo auf gespiegelten Ausgängen (einschließlich Speaker B) funktionierte nicht korrekt
+
+- Mute Phones 1 bis 4 wurde in die Auswahlliste der ARC-USB-Tastenzuweisungen aufgenommen
+
+- DURec: Die Liste der Wiedergabekanäle (Dropdown-Menü) zeigt jetzt nicht vorhandene Kanäle an. Beispiel: Bei einer DURec-Aufnahme von 6 Kanälen werden die Kanäle 7 bis x in dieser Liste in Klammern angezeigt. Auf diese Weise ist es einfach zu sehen, wie viele Kanäle wirklich vorhanden sind, die für die Wiedergabe zugewiesen werden können. Für volle Kompatibilität und universellen Betrieb sind weiterhin alle Kanäle auswählbar.
+
+- Erkennung der Umschalt-Taste in TM FX verbessert. Diese funktioniert nun sogar meist wenn eine andere App im Fokus/Vordergrund ist.
+
+- ARC USB-Einstellungen: neue Default Encoder Funktionsoptionen Volume Main (Device), Volume Main (0.5 dB), Volume Main (0.1 dB). 
+
+Mode                    Shift ARC IF    Shift ARC PC*   Schritte
+Volume Main (Device)    Nein            Ja              0,5 dB, Beschleunigung*
+Volume Main (Default)   Ja              Ja              0,5/1,0/1,5/2,0/2,5/3,0
+Volume Main (0.5 dB)    Ja              Ja              0,5 dB
+Volume Main (0.1 dB)    Ja (0,5 dB)     Ja (0,5 dB)     0,1 dB
+
+Die Tabelle zeigt, dass wenn die ARC USB direkt am Interface angeschlossen wird (UFX+, UFX II) die Umschalttaste (Shift) im Modus 'Volume Main (Device)' aus technischen Gründen nicht funktioniert. Shift bewirkt einen Wechsel zu 0,1 dB Schritten (Feinmodus), außer im Modus Volume Main (0.1 dB), dort wird zu 0,5 dB gewechselt. 
+
+* UFX+ und UFX II: In diesem Modus mit der ARC USB am PC angeschlossen sind die Schritte aus technischen Gründen die gleichen wie im Default-Modus.
+
+-----------------------
+
+V 0.9735 (13.04.2021)
+
+- Entpackoption /manual funktioniert wieder
+
+Neu in TotalMix FX 1.72:
+
+- Preferences, Do not load: Die Auswahl von ‘Control Room Settings’ berücksichtigt nun den CRM Mute Status
+
+- Das Laden von Quick Workspaces via OSC wird nun unterstützt. Dies ist eine non-paged Funktion, siehe aktualisierte OSC Tabelle, http://www.rme-audio.de/downloads/osc_table_totalmix_new.zip
+
+- Einige Text-Verbesserungen (Locator, Flashen der Digiface Dante Settings…)
+
+- Ein interner Messaging-Fehler wurde behoben, der dazu führen konnte, dass der aktuelle Zustand beim Herunterfahren in bestimmten Einstellungskonfigurationen (z. B. Host-Server aktiv oder MIDI in Verwendung) nicht gespeichert wurde
+
+- Die Mehrgeräte-Unterstützung wurde verbessert, um sicherzustellen, dass die Nummerierung im Settings-Dialog und in TM FX in jedem Fall synchronisiert wird, einschließlich manueller Änderungen der Sortierreihenfolge, und dass ASIO Direct Monitoring das richtige Gerät verwendet.
+
+-----------------------
+
+V 0.9734 (24.11.2020)
+
+Interne Optimierungen
+
+-----------------------
+
+V 0.9728 (20.10.2020)
+
+- Mehrgerätebetrieb ASIO: Änderung der Reihenfolge (Settingsdialog, About) führte bei ADM zur Ansprache falscher Interfaces. Erfordert TotalMix FX 1.70 (via Forum) oder höher für volle Funktionalität
+
+Neu in TotalMix FX 1.67:
+
+- Version 1.66 erkannte das aktuelle Fireface UC (Generation 2) nicht mehr
+
+-----------------------
+
+V 0.9723 (18.09.2020)
+
+- ASIO: Optimierte Speicherprüfroutine für volle Kompatibilität und vorherige Performance von Version 0.9721
+
+Neu in TotalMix FX 1.66:
+
+- Erweiterter Mixer für Digiface Dante (maximale Anzahl der Knoten von 2048 auf 4096 erhöht). Erfordert Firmware 37 für die volle Knotenanzahl.
+
+- Nur Thunderbolt UFX+: ASIO Direct Monitoring funktionierte nicht mit Thunderbolt.
+
+- Optimierte Abschaltprozedur. Dies ist ein weiterer Versuch, die harmlose, aber ärgerliche Absturzmeldung von TM FX zu reduzieren, die einige Benutzer beim Herunterfahren des Computers erleben.
+
+-----------------------
+
+V 0.9722 (18.08.2020)
+
+- Bugfix ASIO: Seit Windows 10 v2004 konnte der Pause-Zustand einen BSOD verursachen wenn das Gerät entfernt wurde (Surprise Removal).
+
+-----------------------
+
+V 0.9716 (06.03.2020)
+
+- Bugfix UFX+: Clock Source MADI funktionierte nicht (seit 0.9700)
+
+-----------------------
+
+V 0.9700 (12.11.2019)
+
+Neu in TotalMix FX 1.63:
+
+- Babyface: OSC SetBankStart arbeitete nicht korrekt
+
+- UFX II / UFX+: behebt das Problem mit dem stummgeschalteten Lautsprecher B, wenn er An 1/2 zugewiesen wurde
+
+- UFX II / UFX+: behebt Pan-Problem beim Kanaltausch einer Software-Wiedergabe mittels Panorama von Monokanälen und Snapshots
+
+- UFX II / UFX+: Versteckt die Hi/Low-Taste des Phones 10 im Mono-Modus
+
+- ARC USB: neue Option 'Push-off or-on' für Talkback
+
+- Digiface AVB: Anzahl der Kanäle im Quad Speed Modus auf 64 erhöht
+
+-----------------------
+
+V 0.9685 (25.06.2019)
+
+- Unterstützung für MIDI over MADI des MADI I/O des Digiface Dante hinzugefügt (erfordert Firmware 36)
+
+Neu in TotalMix FX 1.61:
+
+- ARC USB: Neue Option Push-Off
+
+- ARC USB: Refreshproblem der Key Settings beseitigt
+
+- ARC USB: Key Settings sauber initialisiert (Wechsel Push auf Encoder)
+
+- ARC USB: Phantom und Inst leuchteten nicht auf wenn aktiv
+
+- Digiface Dante: Kanalzahl bei 192 kHz auf 64 erhöht
+
+- Verbessertes OSC Startverhalten bei verzögerter WLAN Erkennung
+
+- Fireface 800: Flasht alle 28 Kanäle als Current State in das Gerät
+
+- Neue Kommandozeilenoption /nc verhindert den Bestätigungsdialog beim Laden von Workspaces über die Kommandozeile
+
+
+----------------------
+
+V 0.9684 (23.04.2019)
+
+- Bugfix Digiface Dante WDM Aufnahme: die WDM Record Devices 5/6 und 7/8 erhielten das Signal 5/6, alle Kanäle über 7/8 waren um 2 Kanäle verschoben.
+
+----------------------
+
+V 0.9681 (25.02.2019)
+
+Neu in TotalMix FX 1.6:
+
+- Die Einstellungen für External Input und den aktuellen PFL-Modus werden nicht mehr per Snapshot geändert.
+
+- Solo/PFL funktionieren nun auch wenn ein Eingangskanal gemutet ist. Hinweis: Diese Funktion ist für UFX II und UFX+ nicht verfügbar. 
+
+- Settings, Mixer: Neue Option 'Exklusive Solo/PFL Mode'.
+
+- Settings, Mixer: Neue Option '2-Row Mode with only Input in first row '.
+
+- Settings, Aux Devices: Die Anzahl der Aux-Kanalbänke wurde auf 24 erhöht, so dass MADIface XT und HDSPe MADI FX einen OctaMic XTC auch am MADI-Anschluss 3 steuern können.
+
+- Preferences, Mixer Views: Neue Option 'Store channel open/close state in Layout Preset '.
+
+- Preferences, Snapshots: neue 'do not load' Optionen 'Main Volume, Main/Phones Volume, Control Room Settings'.
+
+- Preferences, Neue Option 'Einstellungen für alle Benutzer speichern'. Bisher hatte jeder Benutzer seinen eigenen TM FX Status/Einstellungen. Diese Option ermöglicht identische Einstellungen für alle Benutzer.
+
+- Vollständige Unterstützung für den Mehrbenutzerbetrieb. Bei einem Benutzerwechsel wird TM FX automatisch geschlossen und wieder geöffnet. Gemäß der obigen Option lädt es dann entweder spezifische Einstellungen für den aktuellen Benutzer, oder die gleichen Einstellungen für alle Benutzer.
+
+- Menü Datei: Neue Option 'Preload all Snapshots'. Lädt die 8 Snapshots eines Workspaces in die Snapshot-Slots, aktiviert aber keinen von ihnen. Andere Einstellungen innerhalb des Workspace (Fensterposition etc.) werden ignoriert.
+
+- Matrix: Umschalt + Klick zum Ändern der Phase, Strg + Klick zum Stummschalten (oder Doppelklick) in den Spalten mit dem vertikalen Kanalnamen.   
+
+- ARC USB: neuer Modus 'Push-or' hinzugefügt. Ermöglicht z.B. die Aktivierung von Talkback mit einer Taste und dem Fußschalter, ohne sich gegenseitig zu blockieren.
+
+- ARC USB, Betrieb: unterstützt den SysEx-Modus (erfordert Firmware-Update der ARC USB). Zusätzliche Option, um den vorherigen Modus zu deaktivieren. Firmware Download:
+
+http://www.rme-audio.de/download/fut_arcusb_mac_v7.zip
+
+
+Fixes:
+- Eine gesperrte Benutzeroberfläche erlaubte weiterhin den Doppelklick auf einen Fader.
+
+- In seltenen Situationen konnte die Mismatch-Message einen Absturz verursachen.
+
+- Beseitigt kleine Abweichungen in den Pegelanzeigen (0.05 dB)
+
+
+----------------------
+
+V 0.9680 (05.11.2018)
+
+- Kleine Verbesserung bei WDM Formatspeicherung.
+
+- Digiface Dante: Korrektur des Settingsdialogs im USB 2 Modus
+
+
+----------------------
+
+V 0.9673 (23.06.2018)
+
+- WDM Format beschränkt auf 2-Kanal (Stereo) und bis zu 7.1-Kanal (Multi-channel). Einstellung bleibt daher nach Neustart erhalten.
+
+- Fix für WDM Phones Out des Digiface USB bei Double und Quad Speed
+
+- Unterstützt Digiface AVB und Digiface Dante
+
+----------------------
+
+
+V 0.9654 (07.05.2018)
+
+- ASIO Latenzangaben von ADI-2 Pro und DAC korrigiert
+
+Neu in TotalMix FX 1.50 (3):
+
+Generell:
+
+- Problem beim Herunterfahren von Windows beseitigt
+- Zahl der möglichen Aux Devices auf 16 erhöht
+- Potentielle Crash-Ursache nach Änderung der Kanalzahl beseitigt
+- Im DAW-Modus wurden einige überflüssige Kontextmenü-Einträge entfernt
+- Unterstützt TotalMix Remote via TCP/IP
+- Peak Hold Time Einstellung ungenau
+- Z-Order von mehreren TM FX Fenstern wird möglichst wiederhergestellt
+- Fix für TM FX Crash wenn ADM aktiv ist und die Samplefrequenz von DS nach QS geändert wird
+- Fix für ADM-Problem beim UFX+ in 88,2/96 kHz
+
+
+ARC USB:
+
+- Ist die ARC USB keinem Interface zugewiesen wird sie nach 3 Sekunden freigegeben (zur Nutzung als Fernbedienung für andere Aufgaben)
+- Die ARC USB unterstützt nun die Umschalt-Taste für Fein-Verstellung
+- Die Drehung des Knopfes der ARC USB ist nun mit der Position des Faders gekoppelt, solange Min/Max nicht überschritten wird.
+- Presets der ARC USB Einstellungen können gespeichert und geladen werden
+- Öffnen/Schließen des TM FX Fensters per Hotkey oder ARC USB
+- Inst und +48V zur Liste der ARC USB Befehle hinzugefügt 
+
+TotalMix Remote:
+
+- Neue Option zur Fernsteuerung von TotalMix FX über TCP/IP (Ethernet, WiFi). Siehe beiliegendes PDF. Erfordert zusätzlichen Download von TotalMix Remote für Windows, MacOS oder iOS.
+
+
+-------------------------------
+
+V 0.9653 (29.03.2018)
+
+- ASIO: Beseitigt einen Crash bei Surprise Removal unter Cubase.
+
+-------------------------------
+
+V 0.9650 (09.03.2018)
+
+- Allgemein: Speicherleck bei Surprise Removal beseitigt.
+
+-------------------------------
+
+V 0.9634 (01.02.2018)
+
+- UFX+ USB 3.0: Die Option 'ISO Record' im Settingsdialog schaltete beim UFX+ nicht vom Bulk Modus zum isochronen Streaming um. Dies ist jedoch bei aktuellen AMD Rechnern (Ryzen) notwendig, da der Bulk-Modus für Audioübertragung störanfällig ist.
+
+- ADI-2 DAC: Die Aufnahmekanäle wurden von Analog auf SPDIF umbenannt.
+
+-------------------------------
+
+V 0.9619 (08.01.2018)
+
+- Im Settingsdialog, Tab About, lässt sich im Mehrgerätebetrieb nun die Reihenfolge der ASIO-Kanäle nach 2 Sortiermethoden festlegen. Dies bringt sie zum einen in die gewünschte Reihenfolge, und verhindert zum anderen den zufälligen Wechsel nach Neustart.
+
+- Änderung im Installer um Probleme mit den ASIO-Zugriffsrechten ohne Administratoraccount zu vermeiden
+
+-------------------------------
+
+V 0.9616 (27.11.2017)
+
+Unterstützt den ADI-2 DAC.
+
+-------------------------------
+
+V 0.9613 (4.10.2017)
+
+Bugfix: Die Option 'Limit ASIO to 32 channels' war in einigen Fällen dauerhaft aktiviert.
+
+-------------------------------
+
+V 0.9612 (25.08.2017)
+
+Dieses Treiberupdate unterstützt das aktuelle Flash Tool zur Aktualisierung des OctaMic XTC auf Version 47/26.
+
+-------------------------------
+
+V 0.9611 (6.07.2017)
+
+TotalMix FX 1.43:
+
+Fixes:
+- ARC USB: Wiederanstecken der ARC USB konnte einen Lautstärkesprung auslösen
+- ARC: Verhalten des Speaker B Faders im nicht gelinkten Zustand
+
+Für ARC USB:
+- Recall Volume (Main Out) hinzugefügt
+- Play - Next File, Play - Previous File (DURec UFX+/UFX II) hinzugefügt
+
+Unterstützt das DURec Update für UFX+ und UFX II (erfordert zusätzlich ein Firmware Update):
+- Neue Play Modi hinzugefügt: Repeat single, Repeat all, Single next (spielt den aktuellen Track und wechselt zum nächsten ohne diesen abzuspielen).
+- Neue Transport Tasten hinzugefügt: Previous file / Next file. Ist Pause aktiv führt Previous/Next nicht zum Start einer Wiedergabe.
+- Die Liste der Dateien auf dem Medium ist während Aufnahme/Wiedergabe nicht länger blockiert. Während der Wiedergabe erlaubt dies eine Vorauswahl der als nächstes abzuspielenden Datei.
+- Der Eintrag 'Remaining Time' im DURec Info Dialog zeigt nun die gleiche Info wie 'Remain (Rec.)' am Gerät – die verbleibende Zeit der aktuellen Aufnahme (die auf 100 Dateien begrenzt ist), nicht die theoretische maximale Aufnahmezeit des Mediums.
+
+Ein aktualisierter Wave File Batch Processor 1.2 ist auf der RME Website zum Download verfügbar, welcher die in den aktualisierten Handbüchern UFX+ und UFX II beschriebenen neuen Metadaten der DURec-Aufnahme unterstützt.
+
+Frühere Änderungen in TotalMix FX 1.42:
+
+Fixes:
+- Digiface USB: in der dritten Reihe funktionierte die Over-Anzeige nicht
+- Basic und Advanced Remote: Springen/Zittern beim Ändern der Lautstärke beseitigt
+
+Neu:
+- Das aktuell geladene Channel Layout wird durch dauerhaftes Leuchten des jeweiligen Knopfes angezeigt
+- Erweiterte OSC Befehle wie in diesem Thread, Post 6, beschrieben:
+https://www.forum.rme-audio.de/viewtopic.php?id=25205
+
+
+----------------------
+
+V 0.9610 (27.04.2017)
+
+- ADI-2 Pro: Bugfix ASIO native Aufnahme funktionierte mit einigen Programmen nicht
+
+
+----------------------
+
+V 0.9609 (30.03.2017)
+
+- MADIface USB: Das Abschalten von TMS entfernt die Informationen im MADI Eingangskanal 2
+
+Neu in TotalMix FX 1.41:
+
+- Digiface USB: In der dritten Reihe funktionierte die Over-Anzeige nicht
+
+----------------------
+
+V 0.9606 (17.02.2017)
+
+ADI-2 Pro:
+
+- ASIO native Aufnahme/Wiedergabe für DSD hinzugefügt
+
+
+----------------------
+
+V 0.9590 (15.12.2016)
+
+ADI-2 Pro:
+
+- WDM Devicenamen korrigiert
+
+- WDM Record Devices AES und SPDIF waren vertauscht
+
+- Microsoft sAPO bei 352,8/384 kHz entfernt, da von Windows nicht unterstützt
+
+- WASAPI Format 32 Bit hinzugefügt
+
+- Überflüssige 4/6/8 Kanal Formate entfernt
+
+- ASIO Buffersize 32k funktionierte nicht korrekt
+ 
+
+MADIface Pro:
+
+- Input Status im Settingsdialog zeigte bei Double Speed falsche Kanalzahlen an
+
+- WDM: Per Default wurden alle Wiedergabekanäle als Speaker aktiviert
+
+
+Allgemein:
+
+- Neue Option 'Limit ASIO to 32 channels' auf der About-Seite
+
+- Fix Crash von ASIO bei Surprise Removal
+
+
+Neu in TotalMix FX 1.40:
+
+- Verbesserter Betrieb und Stabilität der MIDI I/O Funktionalität (Remote), inklusive Gerätenentfernung und Sleep/Wake Zustände
+
+- Der Name der aktuell geladenen Workspace- und Snapshot-Datei und des aktuell geladenen Quick Workspace werden in der Titelzeile angezeigt
+
+- Vollständige Mehrgeräteunterstützung für die kommende ARC USB hinzugefügt
+
+- Einige Menüeinträge wurden umbenannt, um die Bedeutung/Funktion eindeutiger zu beschreiben
+
+- Text des Gain Dialogs korigiert
+
+- Text 'FX Send' in diversen Dialogen korrigiert
+
+- Aktives Trim und Anwahl eines anderen Submix konnte zur Unleserlichkeit des Routing Menüs führen
+
+- DAW Mode Dialog: Abbrechen durch Cancel ersetzt
+
+- Fix: Das Deaktivieren der Aux Device Remote Control mit einem XTC und geöffnetem Settings-Panel verstellte den Gain auf 0
+
+- Die Liste der Aux Devices beim UFX+ beinhaltet nun alle 8 MADI 8-Kanal Gruppen
+
+- Fehler mit Mute Gruppen und Speaker B Mute bei Mains/Speaker B beseitigt
+
+- Global Mute Display: beim UFX+ führten nur Mutes des Output Channels zu einer helleren Darstellung
+
+- Global Mute Display: falsches Farbschema bei 135% Zoom
+
+- Beim Anschluss eines Gerätes wird der Zoom-Status der Fenster auf den vorherigen Zustand gesetzt
+
+- Das Ändern des Main Out per OSC Remote wurde nicht an die Remote gesendet wenn 'Submix linked to MIDI control' ausgeschaltet war
+
+- Verschiedene kleinere Fehlerbehebungen und Leistungsverbesserungen
+
+
+-------------------------------
+
+V 0.9583 (10.11.2016)
+
+- Verbesserte Kompatibilität von Installer und Treiberdateien zu allen OS
+
+- Signiert für Windows 7, 8 und 10 (inklusive Redstone)
+
+Neu in TotalMix FX 1.35:
+
+- Die minimale Verzögerungszeit im Echo beim MADIface Pro lässt sich nun bis auf Null herunter einstellen. Allerdings ist die tatsächliche kleinste Zeit von der aktuellen Latenz (Puffergröße) abhängig, da FX dieses Gerätes auf der CPU des Computers berechnet werden.
+
+- Allgemeine Stabilitätsverbesserungen wenn ein Gerät eingeschaltet wird und TM FX schon aktiv ist
+
+- Phantomspeisung und Mic-Gain können nun auf Seite 1 gesteuert werden, wenn OSC für 8-Kanal Modus konfiguriert wurde
+
+- Cue von einer Remote Control gesteuert funktioniert auch wenn 'Cue/PFL to' nicht auf Main konfiguriert ist (sondern Phones etc.)
+
+- Die OSC Settings konnten bei einer großen Zahl von Mono-Kanälen abstürzen
+
+-------------------------------
+
+V 0.9574 (11.10.2016)
+
+- Bugfix UFX+ ASIO: ADAT-Kanäle wurden bei Double und Quad Speed nicht entfernt.
+
+-------------------------------
+
+V 0.9573 (05.10.2016)
+
+- Reupload. Zusätzlich signiert für Windows 7 und 8.
+
+-------------------------------
+
+V 0.9573 (26.09.2016)
+
+- Diverse Verbesserungen und Fixes zum Release des ADI-2 Pro und des UFX+.
+
+- Unterstützt den OctaMic XTC (WDM / ASIO). Erfordert Firmwareversion 46!
+
+- Signiert für Windows 10 Redstone
+
+-------------------------------
+
+
+V 0.9554 (22.07.2016)
+
+- Unterstützt den ADI-2 Pro und das UFX+
+
+- Settingsdialog ließ sich nicht von ASIO-Programmen heraus aufrufen
+
+Neu in TotalMix FX 1.31:
+
+- Verbesserte Unterstützung von Mono-Ausgängen mit ASIO Direct Monitoring.
+
+- Unterstützung für mehr als 8 Kanäle in OSC. Über eine zusätzliche Einstellung sind  8 (Default), 12, 16 oder 24 Kanäle wählbar.
+
+- Eine OSC Remote kann jetzt einem beliebigen Submix fest zugeordnet werden.
+
+- Neuer DAW Modus. Diese alternative, vereinfachte Oberfläche richtet sich an Anwender die TotalMix FX nicht benutzen, und alle Routing- und Monitoringaufgaben in ihrer DAW-Software vornehmen. Bei Auswahl des DAW-Modus wird TotalMix FX neu gestartet und erscheint als 2-Reihen Oberfläche ohne Playback-Reihe, und ohne Mixerschieberegler in der Eingangsreihe. Das Routing ist fest 1:1. Nur Gain, Phantomspeisung (so vorhanden) und die Hardware Ausgangspegel sind einstellbar.
+
+
+-------------------------------
+
+
+Copyright RME 09/2024
+Alle Rechte vorbehalten. Windows 7/8/10/11 ist ein Warenzeichen der Microsoft Corporation. ASIO ist ein Warenzeichen der Steinberg Media Technologies GmbH.

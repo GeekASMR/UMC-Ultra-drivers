@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<!-- Mixer Control Configuration File -->
+
+<AppConfig FormatVersionMajor="1" FormatVersionMinor="1">
+    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <!-- GUID required to locate the driver DLL.
+         IMORTANT: This GUID must be equal to the one specified in the 
+         InterfaceGUID= statement in custom.ini. -->
+    <DriverInterfaceGUID>{BF222278-C221-42AC-87B3-3FF59C69B864}</DriverInterfaceGUID>
+    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <!-- Supported values: Select, Simple, Advanced -->
+    <StartWindow>Select</StartWindow>
+    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <AdvancedMixer>
+        <Node>
+            <!-- Color value format: RRGGBB (Hexadecimal)  
+                 Example: 12FF00 (corresponds to Red=18, Green=255, Blue = 0)-->            
+            <Colors>
+                <Connected>00FF00</Connected>
+                <NotConnected>FF0000</NotConnected>
+            </Colors>
+        </Node>
+        <Channels>
+            <MaxChannelCountDeviceOutput>8</MaxChannelCountDeviceOutput>
+            <MaxChannelCountDeviceInput>8</MaxChannelCountDeviceInput>
+            <MaxChannelCountAppPlayback>8</MaxChannelCountAppPlayback>
+            <MaxChannelCountAppRecording>8</MaxChannelCountAppRecording>
+            <MaxChannelCountAppPlaybackVirt>12</MaxChannelCountAppPlaybackVirt>
+            <MaxChannelCountAppRecordingVirt>12</MaxChannelCountAppRecordingVirt>
+        </Channels>
+    </AdvancedMixer>
+</AppConfig>
+

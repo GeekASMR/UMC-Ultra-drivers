@@ -1,0 +1,96 @@
+
+************* Preparing the environment for Debugger Extensions Gallery repositories **************
+   ExtensionRepository : Implicit
+   UseExperimentalFeatureForNugetShare : true
+   AllowNugetExeUpdate : true
+   NonInteractiveNuget : true
+   AllowNugetMSCredentialProviderInstall : true
+   AllowParallelInitializationOfLocalRepositories : true
+
+   EnableRedirectToV8JsProvider : false
+
+   -- Configuring repositories
+      ----> Repository : LocalInstalled, Enabled: true
+      ----> Repository : UserExtensions, Enabled: true
+
+>>>>>>>>>>>>> Preparing the environment for Debugger Extensions Gallery repositories completed, duration 0.016 seconds
+
+************* Waiting for Debugger Extensions Gallery to Initialize **************
+
+>>>>>>>>>>>>> Waiting for Debugger Extensions Gallery to Initialize completed, duration 0.000 seconds
+   ----> Repository : UserExtensions, Enabled: true, Packages count: 0
+   ----> Repository : LocalInstalled, Enabled: true, Packages count: 43
+
+Microsoft (R) Windows Debugger Version 10.0.26100.6584 AMD64
+Copyright (c) Microsoft Corporation. All rights reserved.
+
+CommandLine: .\ioctl_spy5.exe 
+
+************* Path validation summary **************
+Response                         Time (ms)     Location
+Deferred                                       srv*
+Symbol search path is: srv*
+Executable search path is: 
+ModLoad: 00007ff6`2a900000 00007ff6`2a92d000   image00007ff6`2a900000
+ModLoad: 00007ffc`7bd90000 00007ffc`7bf88000   ntdll.dll
+ModLoad: 00007ffc`79ed0000 00007ffc`79f92000   C:\Windows\System32\KERNEL32.DLL
+ModLoad: 00007ffc`79a00000 00007ffc`79cf6000   C:\Windows\System32\KERNELBASE.dll
+ModLoad: 00007ffc`78e00000 00007ffc`79001000   C:\Windows\SYSTEM32\dbghelp.dll
+ModLoad: 00007ffc`79780000 00007ffc`79880000   C:\Windows\System32\ucrtbase.dll
+(495c.1894): Break instruction exception - code 80000003 (first chance)
+ntdll!LdrpDoDebuggerBreak+0x30:
+00007ffc`7be60860 cc              int     3
+0:000> bp kernel32!ExitProcess
+Couldn't resolve error at 'kernel32!ExitProcess'
+0:000> bp ntdll!RtlExitUserProcess
+0:000> g
+ModLoad: 00007ffc`61050000 00007ffc`61097000   C:\Program Files\BEHRINGER\UMC_Audio_Driver\x64\umc_audioasio_x64.dll
+ModLoad: 00007ffc`7adc0000 00007ffc`7af61000   C:\Windows\System32\USER32.dll
+ModLoad: 00007ffc`79900000 00007ffc`79922000   C:\Windows\System32\win32u.dll
+ModLoad: 00007ffc`69cc0000 00007ffc`69ce7000   C:\Windows\SYSTEM32\WINMM.dll
+ModLoad: 00007ffc`79010000 00007ffc`7905b000   C:\Windows\SYSTEM32\POWRPROF.dll
+ModLoad: 00007ffc`7b030000 00007ffc`7b0ce000   C:\Windows\System32\msvcrt.dll
+ModLoad: 00007ffc`7a670000 00007ffc`7a790000   C:\Windows\System32\RPCRT4.dll
+ModLoad: 00007ffc`7a2e0000 00007ffc`7a30b000   C:\Windows\System32\GDI32.dll
+ModLoad: 00007ffc`794b0000 00007ffc`795c9000   C:\Windows\System32\gdi32full.dll
+ModLoad: 00007ffc`79960000 00007ffc`799fd000   C:\Windows\System32\msvcp_win.dll
+ModLoad: 00007ffc`7bb80000 00007ffc`7bc31000   C:\Windows\System32\ADVAPI32.dll
+ModLoad: 00007ffc`7af70000 00007ffc`7b00f000   C:\Windows\System32\sechost.dll
+ModLoad: 00007ffc`79930000 00007ffc`79957000   C:\Windows\System32\bcrypt.dll
+ModLoad: 00007ffc`7b2e0000 00007ffc`7b40b000   C:\Windows\System32\ole32.dll
+ModLoad: 00007ffc`7a310000 00007ffc`7a664000   C:\Windows\System32\combase.dll
+ModLoad: 00007ffc`7a790000 00007ffc`7ac00000   C:\Windows\System32\SETUPAPI.dll
+ModLoad: 00007ffc`795d0000 00007ffc`7961e000   C:\Windows\System32\cfgmgr32.dll
+ModLoad: 00007ffc`78b50000 00007ffc`78b62000   C:\Windows\SYSTEM32\UMPDC.dll
+ModLoad: 00007ffc`7a1d0000 00007ffc`7a1ff000   C:\Windows\System32\IMM32.DLL
+ModLoad: 00007ffc`791b0000 00007ffc`791e3000   C:\Windows\SYSTEM32\DEVOBJ.dll
+ModLoad: 00007ffc`79880000 00007ffc`798f3000   C:\Windows\System32\WINTRUST.dll
+ModLoad: 00007ffc`79620000 00007ffc`7977d000   C:\Windows\System32\CRYPT32.dll
+ModLoad: 00007ffc`78b70000 00007ffc`78b82000   C:\Windows\SYSTEM32\MSASN1.dll
+ModLoad: 00007ffc`775e0000 00007ffc`775f2000   C:\Windows\SYSTEM32\kernel.appcore.dll
+(495c.533c): Access violation - code c0000005 (first chance)
+First chance exceptions are reported before any exception handling.
+This exception may be expected and handled.
+00000000`00000000 ??              ???
+0:004> kb
+RetAddr               : Args to Child                                                           : Call Site
+00007ffc`61052bea     : 00000000`00000000 00000000`00000000 00000000`0045de68 00000000`0000bb80 : 0x0
+00007ffc`6105332a     : 00000508`49cc4100 00007ffc`79a7580e 00000000`0045dfd8 00000000`0045de68 : umc_audioasio_x64+0x2bea
+00007ffc`6105319c     : 00000000`0045d6e0 00000000`0045d6e0 00000000`00000000 00000000`00000000 : umc_audioasio_x64+0x332a
+00007ffc`61069a02     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : umc_audioasio_x64+0x319c
+00007ffc`79ee7374     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : umc_audioasio_x64!DllGetClassObject+0x13792
+00007ffc`7bddcc91     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : KERNEL32!BaseThreadInitThunk+0x14
+00000000`00000000     : 00000000`00000000 00000000`00000000 00000000`00000000 00000000`00000000 : ntdll!RtlUserThreadStart+0x21
+0:004> q
+quit:
+NatVis script unloaded from 'C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\Visualizers\atlmfc.natvis'
+NatVis script unloaded from 'C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\Visualizers\concurrency.natvis'
+NatVis script unloaded from 'C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\Visualizers\cpp_rest.natvis'
+NatVis script unloaded from 'C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\Visualizers\stl.natvis'
+NatVis script unloaded from 'C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\Visualizers\Windows.Data.Json.natvis'
+NatVis script unloaded from 'C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\Visualizers\Windows.Devices.Geolocation.natvis'
+NatVis script unloaded from 'C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\Visualizers\Windows.Devices.Sensors.natvis'
+NatVis script unloaded from 'C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\Visualizers\Windows.Media.natvis'
+NatVis script unloaded from 'C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\Visualizers\windows.natvis'
+NatVis script unloaded from 'C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\Visualizers\winrt.natvis'
+NatVis script unloaded from 'C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\Visualizers\ObjectiveC.natvis'

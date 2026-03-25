@@ -1,0 +1,5 @@
+bp kernel32!ExitProcess
+bp ntdll!RtlExitUserProcess
+g
+kb
+q

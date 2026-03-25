@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SetupFX FormatVersionMajor="4" FormatVersionMinor="1">
+    <Task Id="IsCurrentSystemSupported">
+        <Action Id="IsCurrentSystemSupported" SupportedOS="OSSupportedBySetup" SupportedProcessorArchitectures="ProcessorArchitecturesSupportedBySetup"/>
+    </Task>
+    <Task Id="CheckRequirementsToStart">
+        <Action Id="WaitForPendingPnPInstallation"/>
+    </Task>
+    <Task Id="ValidateTargetPathRoot">
+        <Action Id="CheckTargetPath" OnlyRoot="True"/>
+    </Task>
+    <Task Id="LegacyUninstall">
+        <Action Id="ExecuteLegacyUninstall" RegKey="BEHRINGER\umc_audio\Setup"/>
+        <Action Id="AbortOnReboot" Reason="ToContinue"/>
+    </Task>
+    <Task Id="PrepareInstall">
+        <Action Id="IsCurrentUserAdmin"/>
+        <Action Id="UnregisterInProcessServer" ServerFiles="Driver.Pkg.Register"/>
+        <Action Id="UninstallDevices" DevicesByInfs="Driver.Pkg.InfBus" UseTargetPath="True"/>
+        <Action Id="UninstallDevices" DevicesByInfs="Driver.Pkg.Inf" UseTargetPath="True"/>
+        <Action Id="UninstallDrivers" DriversByInfs="Driver.Pkg.InfBus" DeviceSetupClasses="Driver.Pkg.ExtensionSet" ExcludeClasses="True" UseTargetPath="True"/>
+        <Action Id="UninstallDrivers" DriversByInfs="Driver.Pkg.Inf" DeviceSetupClasses="Driver.Pkg.ExtensionSet" ExcludeClasses="True" UseTargetPath="True"/>
+        <Action Id="AbortOnReboot" Reason="ToContinue"/>
+    </Task>
+    <Task Id="Install">
+        <Action Id="CheckTargetPath"/>
+        <Action Id="RegisterInProcessServer" ServerFiles="Driver.Pkg.Register"/>
+        <Action Id="InstallDrivers" InfFiles="Driver.Pkg.Inf"/>
+        <Action Id="InstallDrivers" InfFiles="Driver.Pkg.InfBus"/>
+        <Action Id="AbortOnReboot" Reason="ToComplete"/>
+    </Task>
+    <Task Id="PostInstall"/>
+    <Task Id="PrepareUninstall"/>
+    <Task Id="Uninstall">
+        <Action Id="IsCurrentUserAdmin"/>
+        <Action Id="UnregisterInProcessServer" ServerFiles="Driver.Pkg.Register"/>
+        <Action Id="UninstallDevices" DevicesByInfs="Driver.Pkg.InfBus" UseTargetPath="True" ForceRemoval="True"/>
+        <Action Id="UninstallDevices" DevicesByInfs="Driver.Pkg.Inf" UseTargetPath="True" ForceRemoval="True"/>
+        <Action Id="UninstallDrivers" DriversByInfs="Driver.Pkg.InfBus" DeviceSetupClasses="Driver.Pkg.ExtensionSet" ExcludeClasses="True" UseTargetPath="True"/>
+        <Action Id="UninstallDrivers" DriversByInfs="Driver.Pkg.Inf" DeviceSetupClasses="Driver.Pkg.ExtensionSet" ExcludeClasses="True" UseTargetPath="True"/>
+        <Action Id="AbortOnReboot" Reason="ToComplete"/>
+    </Task>
+    <Task Id="UninstallForUpdate">
+        <Action Id="IsCurrentUserAdmin"/>
+        <Action Id="UnregisterInProcessServer" ServerFiles="Driver.Pkg.Register"/>
+        <Action Id="UninstallDevices" DevicesByInfs="Driver.Pkg.InfBus" UseTargetPath="True"/>
+        <Action Id="UninstallDevices" DevicesByInfs="Driver.Pkg.Inf" UseTargetPath="True"/>
+        <Action Id="UninstallDrivers" DriversByInfs="Driver.Pkg.InfBus" DeviceSetupClasses="Driver.Pkg.ExtensionSet" ExcludeClasses="True" UseTargetPath="True"/>
+        <Action Id="UninstallDrivers" DriversByInfs="Driver.Pkg.Inf" DeviceSetupClasses="Driver.Pkg.ExtensionSet" ExcludeClasses="True" UseTargetPath="True"/>
+        <Action Id="AbortOnReboot" Reason="ToContinue"/>
+    </Task>
+    <Task Id="DoInstall">
+        <Action Id="Forward" Task="IsCurrentSystemSupported"/>
+        <Action Id="Forward" Task="CheckRequirementsToStart"/>
+        <Action Id="Forward" Task="ValidateTargetPathRoot"/>
+        <Action Id="Forward" Task="LegacyUninstall"/>
+        <Action Id="Forward" Task="PrepareInstall"/>
+        <Action Id="AbortOnReboot" Reason="ToContinue"/>
+        <Action Id="Forward" Task="Install"/>
+        <Action Id="Forward" Task="PostInstall"/>
+        <Action Id="AbortOnReboot" Reason="ToComplete"/>
+    </Task>
+    <Task Id="DoUninstallForUpdate">
+        <Action Id="Forward" Task="IsCurrentSystemSupported"/>
+        <Action Id="Forward" Task="CheckRequirementsToStart"/>
+        <Action Id="Forward" Task="PrepareUninstall"/>
+        <Action Id="Forward" Task="UninstallForUpdate"/>
+        <Action Id="AbortOnReboot" Reason="ToContinue"/>
+    </Task>
+    <Task Id="DoUninstall">
+        <Action Id="Forward" Task="IsCurrentSystemSupported"/>
+        <Action Id="Forward" Task="CheckRequirementsToStart"/>
+        <Action Id="Forward" Task="PrepareUninstall"/>
+        <Action Id="Forward" Task="Uninstall"/>
+        <Action Id="AbortOnReboot" Reason="ToComplete"/>
+    </Task>
+    <OSVersionSet Id="OSSupportedBySetup">
+        <OSVersion>W10_1507+</OSVersion>
+        <OSVersion>S2016+</OSVersion>
+    </OSVersionSet>
+    <ProcessorArchitectureSet Id="ProcessorArchitecturesSupportedBySetup">
+        <ProcessorArchitecture>x64</ProcessorArchitecture>
+    </ProcessorArchitectureSet>
+    <Component Id="Driver">
+        <DriverPackage Id="Pkg">
+            <GuidSet Id="ExtensionSet">
+                <Guid Id="ExtensionClass">{e2f84ce7-8efa-411c-aa69-97454ca4cb57}</Guid>
+            </GuidSet>
+            <FileSet Id="Inf">
+                <FileName>umc_audioks.inf</FileName>
+            </FileSet>
+            <FileSet Id="InfBus">
+                <FileName>umc_audio.inf</FileName>
+            </FileSet>
+            <FileSet Id="Register">
+                <FileName>umc_audioapi.dll</FileName>
+                <FileName>umc_audioapi_x64.dll</FileName>
+                <FileName>umc_audioasio.dll</FileName>
+                <FileName>umc_audioasio_x64.dll</FileName>
+            </FileSet>
+        </DriverPackage>
+    </Component>
+</SetupFX>

@@ -1,0 +1,233 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ResolveNugetPackages>false</ResolveNugetPackages>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{675B0295-DA36-33E1-8766-56116EFD85EF}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.26100.0</WindowsTargetPlatformVersion>
+    <Platform>x64</Platform>
+    <ProjectName>ALL_BUILD</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\Autigravity\UMCasio\CMakeLists.txt">
+      <UseUtf8Encoding>Always</UseUtf8Encoding>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule D:/Autigravity/UMCasio/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\Python311\Lib\site-packages\cmake\data\bin\cmake.exe" -SD:/Autigravity/UMCasio -BD:/Autigravity/UMCasio/build --check-stamp-file D:/Autigravity/UMCasio/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\CMakeCXXInformation.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\CMakeGenericSystem.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\CMakeLanguageInformation.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\CMakeRCInformation.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Compiler\MSVC.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Internal\CMakeCXXLinkerInformation.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Internal\CMakeCommonLinkerInformation.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Linker\MSVC-CXX.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Linker\MSVC.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Platform\Linker\Windows-MSVC-CXX.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Platform\Linker\Windows-MSVC.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Platform\Windows-Initialize.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Platform\Windows.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Platform\WindowsPaths.cmake;D:\Autigravity\UMCasio\build\CMakeFiles\4.2.3\CMakeCXXCompiler.cmake;D:\Autigravity\UMCasio\build\CMakeFiles\4.2.3\CMakeRCCompiler.cmake;D:\Autigravity\UMCasio\build\CMakeFiles\4.2.3\CMakeSystem.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\Autigravity\UMCasio\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule D:/Autigravity/UMCasio/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\Python311\Lib\site-packages\cmake\data\bin\cmake.exe" -SD:/Autigravity/UMCasio -BD:/Autigravity/UMCasio/build --check-stamp-file D:/Autigravity/UMCasio/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\CMakeCXXInformation.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\CMakeGenericSystem.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\CMakeLanguageInformation.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\CMakeRCInformation.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Compiler\MSVC.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Internal\CMakeCXXLinkerInformation.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Internal\CMakeCommonLinkerInformation.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Linker\MSVC-CXX.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Linker\MSVC.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Platform\Linker\Windows-MSVC-CXX.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Platform\Linker\Windows-MSVC.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Platform\Windows-Initialize.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Platform\Windows.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Platform\WindowsPaths.cmake;D:\Autigravity\UMCasio\build\CMakeFiles\4.2.3\CMakeCXXCompiler.cmake;D:\Autigravity\UMCasio\build\CMakeFiles\4.2.3\CMakeRCCompiler.cmake;D:\Autigravity\UMCasio\build\CMakeFiles\4.2.3\CMakeSystem.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\Autigravity\UMCasio\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule D:/Autigravity/UMCasio/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+"C:\Program Files\Python311\Lib\site-packages\cmake\data\bin\cmake.exe" -SD:/Autigravity/UMCasio -BD:/Autigravity/UMCasio/build --check-stamp-file D:/Autigravity/UMCasio/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\CMakeCXXInformation.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\CMakeGenericSystem.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\CMakeLanguageInformation.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\CMakeRCInformation.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Compiler\MSVC.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Internal\CMakeCXXLinkerInformation.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Internal\CMakeCommonLinkerInformation.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Linker\MSVC-CXX.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Linker\MSVC.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Platform\Linker\Windows-MSVC-CXX.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Platform\Linker\Windows-MSVC.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Platform\Windows-Initialize.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Platform\Windows.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Platform\WindowsPaths.cmake;D:\Autigravity\UMCasio\build\CMakeFiles\4.2.3\CMakeCXXCompiler.cmake;D:\Autigravity\UMCasio\build\CMakeFiles\4.2.3\CMakeRCCompiler.cmake;D:\Autigravity\UMCasio\build\CMakeFiles\4.2.3\CMakeSystem.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">D:\Autigravity\UMCasio\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule D:/Autigravity/UMCasio/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+"C:\Program Files\Python311\Lib\site-packages\cmake\data\bin\cmake.exe" -SD:/Autigravity/UMCasio -BD:/Autigravity/UMCasio/build --check-stamp-file D:/Autigravity/UMCasio/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\CMakeCXXInformation.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\CMakeGenericSystem.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\CMakeLanguageInformation.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\CMakeRCInformation.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Compiler\MSVC.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Internal\CMakeCXXLinkerInformation.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Internal\CMakeCommonLinkerInformation.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Linker\MSVC-CXX.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Linker\MSVC.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Platform\Linker\Windows-MSVC-CXX.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Platform\Linker\Windows-MSVC.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Platform\Windows-Initialize.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Platform\Windows.cmake;C:\Program Files\Python311\Lib\site-packages\cmake\data\share\cmake-4.2\Modules\Platform\WindowsPaths.cmake;D:\Autigravity\UMCasio\build\CMakeFiles\4.2.3\CMakeCXXCompiler.cmake;D:\Autigravity\UMCasio\build\CMakeFiles\4.2.3\CMakeRCCompiler.cmake;D:\Autigravity\UMCasio\build\CMakeFiles\4.2.3\CMakeSystem.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">D:\Autigravity\UMCasio\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="D:\Autigravity\UMCasio\build\ZERO_CHECK.vcxproj">
+      <Project>{3F7B28DA-15E0-3CFC-8E2F-53222BD4086E}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="D:\Autigravity\UMCasio\build\BehringerASIO.vcxproj">
+      <Project>{1C321030-1F6F-3978-98CF-C5C26F6D344B}</Project>
+      <Name>BehringerASIO</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Autigravity\UMCasio\build\UMCControlProxy.vcxproj">
+      <Project>{5A1F4855-8A38-344D-AE99-D52ECA614B38}</Project>
+      <Name>UMCControlProxy</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Autigravity\UMCasio\build\audio_diag.vcxproj">
+      <Project>{C41831F7-147F-313F-89AF-7B96EED3E867}</Project>
+      <Name>audio_diag</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Autigravity\UMCasio\build\audio_diag2.vcxproj">
+      <Project>{5E074625-EB93-30BB-9028-CF11AECCD386}</Project>
+      <Name>audio_diag2</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Autigravity\UMCasio\build\ds_sine_test.vcxproj">
+      <Project>{1AC66002-6A85-3A90-9367-6C196D8156A6}</Project>
+      <Name>ds_sine_test</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Autigravity\UMCasio\build\gen_sine_wav.vcxproj">
+      <Project>{B2BBD92F-F9A7-39FC-A0A2-DE57EF0DC732}</Project>
+      <Name>gen_sine_wav</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Autigravity\UMCasio\build\ipc_data_check.vcxproj">
+      <Project>{05F0C296-4A53-324E-94D3-B852A4351250}</Project>
+      <Name>ipc_data_check</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Autigravity\UMCasio\build\ipc_monitor.vcxproj">
+      <Project>{82CDB965-C940-37F8-978A-895E21DD5838}</Project>
+      <Name>ipc_monitor</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Autigravity\UMCasio\build\ipc_output_test.vcxproj">
+      <Project>{4DE9E5FB-F223-3CAA-AEEC-967C7A7E7165}</Project>
+      <Name>ipc_output_test</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Autigravity\UMCasio\build\ipc_pop_detect.vcxproj">
+      <Project>{31DE856F-5455-3EA7-868E-A2BF20E1A4B2}</Project>
+      <Name>ipc_pop_detect</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Autigravity\UMCasio\build\ipc_quality_test.vcxproj">
+      <Project>{14F517D3-FCFD-36F7-8A2B-1AD418977983}</Project>
+      <Name>ipc_quality_test</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Autigravity\UMCasio\build\src_diag.vcxproj">
+      <Project>{6FCF11B9-2DFA-3DF1-A9E9-7AB57A3400F1}</Project>
+      <Name>src_diag</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Autigravity\UMCasio\build\src_quality_test.vcxproj">
+      <Project>{F608BCFB-675A-3205-A8FE-E8205939E65B}</Project>
+      <Name>src_quality_test</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

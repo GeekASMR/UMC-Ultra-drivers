@@ -1,0 +1,62 @@
+=== ASIO Official Driver Spy ===
+Driver: UMC ASIO Driver v1352
+Channels: 18 in, 20 out
+BufferSize: min=8 max=2048 pref=256 gran=-1
+SampleRate: 48000
+future(kAsioSupportsTimeInfo) = -1000 (ASE_SUCCESS=0x3F4847A0)
+outputReady() = -1000
+getLatencies (before create): err=0 in=328 out=408
+asioMessage: selector=7 value=0
+asioMessage: selector=1 value=2
+asioMessage: selector=2 value=0
+asioMessage: selector=1 value=3
+asioMessage: selector=1 value=4
+asioMessage: selector=1 value=5
+asioMessage: selector=1 value=6
+createBuffers(256) = 0
+getLatencies (after create): err=0 in=328 out=408
+bufferSwitchTimeInfo[1] idx=0 direct=1
+  speed=1.000 sysTime=-3718894946179079636 sPos=0 rate=48000 flags=0x7
+start() = 0
+  QPC_ns=37575961540400 timeGetTime_ns=37575803000000
+  getSP: err=0 sPos=0 tStamp=-3718894946179079636
+bufferSwitchTimeInfo[2] idx=1 direct=1
+  speed=1.000 sysTime=-3680240240515079636 sPos=1099511627776 rate=48000 flags=0x7
+  QPC_ns=37575969991000 timeGetTime_ns=37575812000000
+  getSP: err=0 sPos=1099511627776 tStamp=-3680240240515079636
+bufferSwitchTimeInfo[3] idx=0 direct=1
+  speed=1.000 sysTime=-3658765404035079636 sPos=2199023255552 rate=48000 flags=0x7
+  QPC_ns=37575974990500 timeGetTime_ns=37575817000000
+  getSP: err=0 sPos=2199023255552 tStamp=-3658765404035079636
+bufferSwitchTimeInfo[4] idx=1 direct=1
+  speed=1.000 sysTime=-3637290567555079636 sPos=3298534883328 rate=48000 flags=0x7
+  QPC_ns=37575979992100 timeGetTime_ns=37575822000000
+  getSP: err=0 sPos=3298534883328 tStamp=-3637290567555079636
+bufferSwitchTimeInfo[5] idx=0 direct=1
+  speed=1.000 sysTime=-3611520763779079636 sPos=4398046511104 rate=48000 flags=0x7
+  QPC_ns=37575986082900 timeGetTime_ns=37575828000000
+  getSP: err=0 sPos=4398046511104 tStamp=-3611520763779079636
+bufferSwitchTimeInfo[6] idx=1 direct=1
+  speed=1.000 sysTime=-3590045927299079636 sPos=5497558138880 rate=48000 flags=0x7
+  QPC_ns=37575990989000 timeGetTime_ns=37575833000000
+  getSP: err=0 sPos=5497558138880 tStamp=-3590045927299079636
+bufferSwitchTimeInfo[7] idx=0 direct=1
+  speed=1.000 sysTime=-3568571090819079636 sPos=6597069766656 rate=48000 flags=0x7
+  QPC_ns=37575995988100 timeGetTime_ns=37575838000000
+  getSP: err=0 sPos=6597069766656 tStamp=-3568571090819079636
+bufferSwitchTimeInfo[8] idx=1 direct=1
+  speed=1.000 sysTime=-3542801287043079636 sPos=7696581394432 rate=48000 flags=0x7
+  QPC_ns=37576001988500 timeGetTime_ns=37575844000000
+  getSP: err=0 sPos=7696581394432 tStamp=-3542801287043079636
+bufferSwitchTimeInfo[9] idx=0 direct=1
+  speed=1.000 sysTime=-3521326450563079636 sPos=8796093022208 rate=48000 flags=0x7
+  QPC_ns=37576006987600 timeGetTime_ns=37575849000000
+  getSP: err=0 sPos=8796093022208 tStamp=-3521326450563079636
+bufferSwitchTimeInfo[10] idx=1 direct=1
+  speed=1.000 sysTime=-3499851614083079636 sPos=9895604649984 rate=48000 flags=0x7
+  QPC_ns=37576011994600 timeGetTime_ns=37575854000000
+  getSP: err=0 sPos=9895604649984 tStamp=-3499851614083079636
+bufferSwitchTimeInfo[500] idx=1 direct=1
+  speed=1.000 sysTime=7727192897660920365 sPos=548656302260224 rate=48000 flags=0x7
+  QPC_ns=37578625972400 timeGetTime_ns=37578468000000
+  getSP: err=0 sPos=548656302260224 tStamp=7727192897660920365

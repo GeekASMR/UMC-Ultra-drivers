@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SetupFX FormatVersionMajor="4" FormatVersionMinor="1">
+    <Task Id="IsCurrentSystemSupported">
+        <Action Id="Forward" Task="IsCurrentSystemSupported" ConfigFile="xml_files.drv" UseTargetPath="False"/>
+    </Task>
+    <Task Id="CheckRequirementsToStart">
+        <Action Id="Forward" Task="CheckRequirementsToStart" ConfigFile="xml_files.drv" UseTargetPath="False"/>
+    </Task>
+    <Task Id="ValidateTargetPathRoot">
+        <Action Id="CheckTargetPath" OnlyRoot="True"/>
+    </Task>
+    <Task Id="LegacyUninstall">
+        <Action Id="Forward" Task="LegacyUninstall" ConfigFile="xml_files.drv" UseTargetPath="False"/>
+        <Action Id="AbortOnReboot" Reason="ToContinue"/>
+    </Task>
+    <Task Id="PrepareInstall">
+        <Action Id="Forward" Task="PrepareInstall" ConfigFile="xml_files.apps" UseTargetPath="False"/>
+        <Action Id="Forward" Task="PrepareInstall" ConfigFile="xml_files.drv" UseTargetPath="False"/>
+        <Action Id="AbortOnReboot" Reason="ToContinue"/>
+    </Task>
+    <Task Id="Install">
+        <Action Id="Forward" Task="Install" ConfigFile="xml_files.drv" UseTargetPath="True"/>
+        <Action Id="AbortOnReboot" Reason="ToComplete"/>
+    </Task>
+    <Task Id="PostInstall">
+        <Action Id="Forward" Task="PostInstall" ConfigFile="xml_files.drv" UseTargetPath="True"/>
+        <Action Id="Forward" Task="Install" ConfigFile="xml_files.apps" UseTargetPath="True"/>
+        <Action Id="AbortOnReboot"/>
+    </Task>
+    <Task Id="PrepareUninstall">
+        <Action Id="Forward" Task="Uninstall" ConfigFile="xml_files.apps" UseTargetPath="True"/>
+    </Task>
+    <Task Id="Uninstall">
+        <Action Id="Forward" Task="Uninstall" ConfigFile="xml_files.apps" UseTargetPath="True"/>
+        <Action Id="Forward" Task="Uninstall" ConfigFile="xml_files.drv" UseTargetPath="True"/>
+        <Action Id="AbortOnReboot"/>
+    </Task>
+    <Task Id="UninstallForUpdate">
+        <Action Id="Forward" Task="Uninstall" ConfigFile="xml_files.apps" UseTargetPath="True"/>
+        <Action Id="Forward" Task="UninstallForUpdate" ConfigFile="xml_files.drv" UseTargetPath="True"/>
+        <Action Id="AbortOnReboot"/>
+    </Task>
+    <Task Id="DoInstall">
+        <Action Id="Forward" Task="IsCurrentSystemSupported"/>
+        <Action Id="Forward" Task="CheckRequirementsToStart"/>
+        <Action Id="Forward" Task="ValidateTargetPathRoot"/>
+        <Action Id="Forward" Task="LegacyUninstall"/>
+        <Action Id="Forward" Task="PrepareInstall"/>
+        <Action Id="AbortOnReboot"/>
+        <Action Id="Forward" Task="Install"/>
+        <Action Id="Forward" Task="PostInstall"/>
+        <Action Id="AbortOnReboot"/>
+    </Task>
+    <Task Id="DoUninstallForUpdate">
+        <Action Id="Forward" Task="IsCurrentSystemSupported"/>
+        <Action Id="Forward" Task="CheckRequirementsToStart"/>
+        <Action Id="Forward" Task="PrepareUninstall"/>
+        <Action Id="Forward" Task="UninstallForUpdate"/>
+        <Action Id="AbortOnReboot"/>
+    </Task>
+    <Task Id="DoUninstall">
+        <Action Id="Forward" Task="IsCurrentSystemSupported"/>
+        <Action Id="Forward" Task="CheckRequirementsToStart"/>
+        <Action Id="Forward" Task="PrepareUninstall"/>
+        <Action Id="Forward" Task="Uninstall"/>
+        <Action Id="AbortOnReboot"/>
+    </Task>
+    <OSVersionSet Id="OSSupportedBySetup">
+        <OSVersion>W10_1507+</OSVersion>
+        <OSVersion>S2016+</OSVersion>
+    </OSVersionSet>
+    <ProcessorArchitectureSet Id="ProcessorArchitecturesSupportedBySetup">
+        <ProcessorArchitecture>x64</ProcessorArchitecture>
+    </ProcessorArchitectureSet>
+    <Component Id="xml_files">
+        <File Id="drv">
+            <FileName>tlsetupfx_drv.xml</FileName>
+        </File>
+        <File Id="apps">
+            <FileName>tlsetupfx_apps.xml</FileName>
+        </File>
+    </Component>
+</SetupFX>

@@ -1,0 +1,9 @@
+[DriverInterface]
+InterfaceGUID = {BF222278-C221-42AC-87B3-3FF59C69B864}
+
+[ASIO]
+AsioDriverGUID = {F5D326CC-B9D8-4ECD-824B-7088C6758772}
+AsioDisplayName = "Midiplus USB Audio"
+AsioControlPanel = "MidiplusUsbAudioCpl.exe"
+AsioControlPanelArgs = "-asio"
+
