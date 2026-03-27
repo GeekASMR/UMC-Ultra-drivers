@@ -1,8 +1,12 @@
 cmake_minimum_required(VERSION 3.16)
-project(BehringerASIO VERSION 1.0.0 LANGUAGES CXX)
+project(BehringerASIO VERSION 6.2.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+if(MSVC)
+    add_compile_options("/utf-8")
+endif()
 
 # Output directory
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -16,6 +20,10 @@ set(ASIO_SOURCES
 set(DRIVER_SOURCES
     src/driver/BehringerASIO.cpp
     src/driver/BehringerASIO.h
+    src/driver/AudioBuffer.cpp
+    src/driver/AudioBuffer.h
+    src/driver/TusbAudioDirect.cpp
+    src/driver/TusbAudioDirect.h
 )
 
 set(COM_SOURCES
@@ -48,6 +56,8 @@ add_library(BehringerASIO SHARED
 target_include_directories(BehringerASIO PRIVATE
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/src/asio
+    ${CMAKE_SOURCE_DIR}/libusb/VS2022/MS64/dll
+    ${CMAKE_SOURCE_DIR}/libusb/include
 )
 
 # Link Windows libraries
@@ -58,6 +68,8 @@ target_link_libraries(BehringerASIO PRIVATE
     setupapi
     avrt
     winmm
+    winhttp
+    ${CMAKE_SOURCE_DIR}/libusb/VS2022/MS64/dll/libusb-1.0.lib
 )
 
 # Compiler definitions
@@ -79,9 +91,10 @@ if(MSVC)
         /utf-8       # Source and execution charset UTF-8
     )
     
-    # Set subsystem
+    # Set subsystem and static CRT
     set_target_properties(BehringerASIO PROPERTIES
         LINK_FLAGS "/SUBSYSTEM:WINDOWS"
+        MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>"
     )
 endif()
 
@@ -133,8 +146,15 @@ add_executable(UMCControlProxy
     src/driver/AudioBuffer.cpp
     src/driver/RoutingMatrix.cpp
 )
-target_include_directories(UMCControlProxy PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_include_directories(UMCControlProxy PRIVATE 
+    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/libusb/include
+)
 target_compile_definitions(UMCControlProxy PRIVATE _CRT_SECURE_NO_WARNINGS)
+
+target_link_libraries(UMCControlProxy PRIVATE
+    ${CMAKE_SOURCE_DIR}/libusb/VS2022/MS64/dll/libusb-1.0.lib
+)
 
 install(TARGETS UMCControlProxy
     RUNTIME DESTINATION bin

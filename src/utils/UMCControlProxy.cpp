@@ -140,6 +140,8 @@ public:
     void onBufferSwitch(long bufIdx) {
         // === HW Input → Virtual Mic (CAP) ===
         for (int p = 0; p < NUM_PAIRS; p++) {
+            if (!capChannels[p].isOpen()) continue; // OPTIMIZATION: Fast path bypass
+
             int chL = p * 2;
             int chR = p * 2 + 1;
             
@@ -154,10 +156,8 @@ public:
             else memset(inR[p], 0, bufSize * sizeof(float));
             
             // Write to virtual mic ring buffer
-            if (capChannels[p].isOpen()) {
-                // USB Hardware clock to WDM clock (nominally 48k to 48k)
-                capChannels[p].writeStereoSRC(inL[p], inR[p], bufSize, 48000.0, 48000.0);
-            }
+            // USB Hardware clock to WDM clock (nominally 48k to 48k)
+            capChannels[p].writeStereoSRC(inL[p], inR[p], bufSize, 48000.0, 48000.0);
         }
 
         // === Virtual Speaker (PLAY) → HW Output ===
@@ -165,20 +165,23 @@ public:
             int chL = p * 2;
             int chR = p * 2 + 1;
             
-            // Read from virtual speaker ring buffer
-            if (playChannels[p].isOpen()) {
-                playChannels[p].readStereoAdaptive(outL[p], outR[p], bufSize, 48000.0, 48000.0);
-            } else {
-                memset(outL[p], 0, bufSize * sizeof(float));
-                memset(outR[p], 0, bufSize * sizeof(float));
-            }
-            
-            // Convert float → write to DMA output buffers
             int* dmaOutL = (int*)tusb.getChannelBuffer(false, chL, bufIdx);
             int* dmaOutR = (int*)tusb.getChannelBuffer(false, chR, bufIdx);
+
+            if (!dmaOutL && !dmaOutR) continue; // No HW outputs connected
             
-            if (dmaOutL) AudioBuffer::convertFloat32ToInt32(outL[p], dmaOutL, bufSize);
-            if (dmaOutR) AudioBuffer::convertFloat32ToInt32(outR[p], dmaOutR, bufSize);
+            if (playChannels[p].isOpen()) {
+                // Read from virtual speaker ring buffer
+                playChannels[p].readStereoAdaptive(outL[p], outR[p], bufSize, 48000.0, 48000.0);
+                
+                // Convert float → write to DMA output buffers
+                if (dmaOutL) AudioBuffer::convertFloat32ToInt32(outL[p], dmaOutL, bufSize);
+                if (dmaOutR) AudioBuffer::convertFloat32ToInt32(outR[p], dmaOutR, bufSize);
+            } else {
+                // OPTIMIZATION: Bypass float conversion loop, direct silence hardware DMA
+                if (dmaOutL) memset(dmaOutL, 0, bufSize * sizeof(int));
+                if (dmaOutR) memset(dmaOutR, 0, bufSize * sizeof(int));
+            }
         }
     }
 };

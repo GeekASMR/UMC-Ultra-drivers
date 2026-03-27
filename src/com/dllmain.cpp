@@ -20,8 +20,8 @@ static HMODULE g_hModule = nullptr;
 static volatile LONG g_dllRefCount = 0;
 
 // Driver info for registration
-static const char* DRIVER_NAME   = "Behringer UMC ASIO";
-static const char* DRIVER_DESC   = "Behringer UMC Series ASIO Driver";
+static const char* DRIVER_NAME   = "UMC Ultra By ASMRTOP";
+static const char* DRIVER_DESC   = "UMC Ultra By ASMRTOP";
 static const char* DRIVER_CLSID  = "{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}";
 
 //-------------------------------------------------------------------
@@ -46,7 +46,6 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) {
 //-------------------------------------------------------------------
 
 // Official Behringer UMC ASIO CLSID (for backward compatibility with DAW cached configs)
-// {0351302F-B1F1-4A5D-8613-787F77C20EA4}
 static const GUID CLSID_OfficialBehringer =
     { 0x0351302f, 0xb1f1, 0x4a5d, { 0x86, 0x13, 0x78, 0x7f, 0x77, 0xc2, 0x0e, 0xa4 } };
 

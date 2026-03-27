@@ -54,20 +54,9 @@ bool TUsbAudioEngine::init() {
     // IMPORTANT: Must use the official install location - copies in System32 cause
     // enumeration failures (0xEE001006) due to missing registry configuration.
     
-    if (!m_api.load(L"C:\\Program Files\\BEHRINGER\\UMC_Audio_Driver\\x64\\umc_audioapi_x64.dll")) {
-        // Try System32 as fallback
-        wchar_t sysDir[MAX_PATH];
-        GetSystemDirectoryW(sysDir, MAX_PATH);
-        std::wstring apiPath = std::wstring(sysDir) + L"\\umc_audioapi_x64.dll";
-        if (!m_api.load(apiPath.c_str())) {
-            // Try current directory
-            if (!m_api.load(L"umc_audioapi_x64.dll")) {
-                if (!m_api.load(nullptr)) {
-                    LOG_ERROR(LOG_MODULE, "Failed to load TUSBAUDIO API DLL (umc_audioapi_x64.dll)");
-                    return false;
-                }
-            }
-        }
+    if (!m_api.load()) {
+        LOG_ERROR(LOG_MODULE, "Failed to locate and load any Thesycon TUSBAUDIO API DLL across the system");
+        return false;
     }
     LOG_INFO(LOG_MODULE, "TUSBAUDIO API DLL loaded successfully");
 
@@ -126,15 +115,12 @@ bool TUsbAudioEngine::init() {
                  i, props.usbVendorId, props.usbProductId,
                  props.productString, props.manufacturerString);
 
-        // Check if Behringer device (VID 0x1397)
-        if (props.usbVendorId == 0x1397) {
-            if (targetDevice < 0) {
-                targetDevice = (int)i;
-                m_deviceHandle = tmpHandle;
-                m_deviceProps = props;
-            } else {
-                m_api.fn.TUSBAUDIO_CloseDevice(tmpHandle);
-            }
+        // No more rigid Behringer VIP locking (0x1397). Just attach to whatever 
+        // valid interface the loaded Thesycon DLL owns.
+        if (targetDevice < 0) {
+            targetDevice = (int)i;
+            m_deviceHandle = tmpHandle;
+            m_deviceProps = props;
         } else {
             m_api.fn.TUSBAUDIO_CloseDevice(tmpHandle);
         }

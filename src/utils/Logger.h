@@ -30,16 +30,30 @@ public:
     void init(const char* logFilePath = nullptr) {
         std::lock_guard<std::recursive_mutex> lock(m_mutex);
         if (logFilePath) {
-            m_logFile.open(logFilePath, std::ios::out | std::ios::trunc);
+            m_logFile.open(logFilePath, std::ios::out | std::ios::app);
         } else {
-            // Default log location
-            char path[MAX_PATH];
-            GetTempPathA(MAX_PATH, path);
-            std::string defaultPath = std::string(path) + "BehringerASIO.log";
-            m_logFile.open(defaultPath, std::ios::out | std::ios::trunc);
+            // 固定日志路径到公共文档目录，追加写入
+            std::string defaultPath = "C:\\Users\\Public\\Documents\\UMCUltra_Debug.log";
+            m_logFile.open(defaultPath, std::ios::out | std::ios::app);
         }
         m_initialized = true;
-        log(LOG_INFO, "BehringerASIO", "Logger initialized");
+        log(LOG_INFO, "BehringerASIO", "===== Logger Started (v6.2.0) =====");
+        
+        // --- 获取 CPU 型号 ---
+        char cpuName[256] = "Unknown CPU";
+        HKEY hKey;
+        if (RegOpenKeyExA(HKEY_LOCAL_MACHINE, "HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0", 0, KEY_READ, &hKey) == ERROR_SUCCESS) {
+            DWORD dwSize = sizeof(cpuName);
+            RegQueryValueExA(hKey, "ProcessorNameString", nullptr, nullptr, (LPBYTE)cpuName, &dwSize);
+            RegCloseKey(hKey);
+        }
+        // --- 获取 物理内存 ---
+        MEMORYSTATUSEX statex;
+        statex.dwLength = sizeof(statex);
+        GlobalMemoryStatusEx(&statex);
+        DWORD ramGB = (DWORD)(statex.ullTotalPhys / (1024ULL * 1024ULL * 1024ULL));
+        
+        log(LOG_INFO, "SystemInfo", "CPU: %s | RAM: %lu GB", cpuName, ramGB);
     }
 
     void setLevel(Level level) {

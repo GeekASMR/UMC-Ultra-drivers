@@ -10,6 +10,8 @@
 #pragma once
 
 #include <windows.h>
+#include <vector>
+#include <string>
 
 // ============================================================================
 // Constants
@@ -192,17 +194,59 @@ public:
     bool load(const wchar_t* dllPath = nullptr) {
         if (m_hModule) return true;
 
-        // Try paths in order
-        const wchar_t* paths[] = {
-            dllPath,
-            L"umc_audioapi_x64.dll",           // Same dir as our DLL
-            L"C:\\Program Files\\BEHRINGER\\UMC\\umc_audioapi_x64.dll",
-            nullptr
-        };
+        std::vector<std::wstring> pathsToTry;
+        
+        // 1. Config file override (ASMRTOP_Target)
+        wchar_t configPath[MAX_PATH];
+        ExpandEnvironmentStringsW(L"%PROGRAMDATA%\\ASMRTOP\\target_api.ini", configPath, MAX_PATH);
+        wchar_t overridePath[MAX_PATH] = {0};
+        GetPrivateProfileStringW(L"Target", L"DllPath", L"", overridePath, MAX_PATH, configPath);
+        if (wcslen(overridePath) > 0) {
+            pathsToTry.push_back(overridePath);
+        }
 
-        for (int i = 0; paths[i]; i++) {
-            m_hModule = LoadLibraryW(paths[i]);
-            if (m_hModule) break;
+        // 2. Direct paths provided by engine
+        if (dllPath) pathsToTry.push_back(dllPath);
+
+        // 3. Behringer UMC HD Series
+        pathsToTry.push_back(L"umc_audioapi_x64.dll");
+        pathsToTry.push_back(L"C:\\Program Files\\BEHRINGER\\UMC_Audio_Driver\\x64\\umc_audioapi_x64.dll");
+        pathsToTry.push_back(L"C:\\Program Files\\BEHRINGER\\UMC\\umc_audioapi_x64.dll");
+
+        // 4. Audient iD & EVO Series
+        pathsToTry.push_back(L"AudientUsbAudioApi_x64.dll");
+        pathsToTry.push_back(L"C:\\Program Files\\Audient\\iD\\AudientUsbAudioApi_x64.dll");
+        pathsToTry.push_back(L"C:\\Program Files\\Audient\\EVO\\AudientUsbAudioApi_x64.dll");
+
+        // 5. Solid State Logic (SSL)
+        pathsToTry.push_back(L"SslUsbAudioApi_x64.dll");
+        pathsToTry.push_back(L"C:\\Program Files\\Solid State Logic\\SSL 2 USB Audio Driver\\x64\\SslUsbAudioApi_x64.dll");
+
+        // 6. TASCAM Series
+        pathsToTry.push_back(L"TascamUsbAudioApi_x64.dll");
+        pathsToTry.push_back(L"C:\\Program Files\\TASCAM\\US-HR\\x64\\TascamUsbAudioApi_x64.dll");
+
+        // 7. FiiO / Topping / XMOS Generic Audiophile
+        pathsToTry.push_back(L"FiiO_AudioApi_x64.dll");
+        pathsToTry.push_back(L"C:\\Program Files\\FiiO\\FiiO_USB_Audio_Driver\\x64\\FiiO_AudioApi_x64.dll");
+        pathsToTry.push_back(L"ToppingUsbAudioApi_x64.dll");
+        pathsToTry.push_back(L"C:\\Program Files\\Topping\\USB Audio Driver\\x64\\ToppingUsbAudioApi_x64.dll");
+        pathsToTry.push_back(L"xmos_audioapi_x64.dll");
+        pathsToTry.push_back(L"TUsbAudioApi_x64.dll");
+
+        for (const auto& path : pathsToTry) {
+            m_hModule = LoadLibraryW(path.c_str());
+            if (m_hModule) {
+               // Verify it is a valid Thesycon API by probing the core function
+               if (GetProcAddress(m_hModule, "TUSBAUDIO_GetApiVersion")) {
+                   break;
+               } else {
+                   // Some vendors prefix it, let's check one alternative just in case
+                   // but usually they leave standard exports alone
+                   FreeLibrary(m_hModule);
+                   m_hModule = nullptr;
+               }
+            }
         }
 
         if (!m_hModule) return false;

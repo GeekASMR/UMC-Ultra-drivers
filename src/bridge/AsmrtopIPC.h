@@ -39,7 +39,8 @@ public:
         m_readPos(0), m_readPosFrac(0.0), m_lastReadL(0.0f), m_lastReadR(0.0f),
         m_writePosFrac(0.0), m_lastWriteL(0.0f), m_lastWriteR(0.0f),
         m_channelId(-1), m_callCount(0), m_playing(false),
-        m_driftRatio(1.0), m_driftFrac(0.0) {
+        m_driftRatio(1.0), m_driftFrac(0.0),
+        m_lastSeenWritePos(0), m_staleCounter(0) {
         m_direction[0] = '\0';
     }
 
@@ -80,6 +81,17 @@ public:
     void close() {
         if (m_buf) { UnmapViewOfFile(m_buf); m_buf = nullptr; }
         if (m_hMap) { CloseHandle(m_hMap); m_hMap = NULL; }
+        // Reset all reader/writer state for clean reconnection
+        m_readPos = 0;
+        m_readPosFrac = 0.0;
+        m_lastReadL = 0.0f;
+        m_lastReadR = 0.0f;
+        m_writePosFrac = 0.0;
+        m_lastWriteL = 0.0f;
+        m_lastWriteR = 0.0f;
+        m_lastSeenWritePos = 0;
+        m_staleCounter = 0;
+        m_callCount = 0;
     }
 
     bool isOpen() const { return m_buf != nullptr; }
@@ -89,13 +101,30 @@ public:
     // We detect this cheaply via VirtualQuery every ~100 calls.
     void validateOrReconnect() {
         if (!m_buf) return;
+
+        // Stale detection: if writePos hasn't changed for ~150 callbacks (~0.8s @ 48k/256),
+        // the kernel driver likely destroyed and recreated the shared memory section.
+        // Our old mapping handle keeps dead pages alive, so VirtualQuery can't detect it.
+        // Force close + reopen to pick up the new section.
+        uint32_t currentWp = m_buf->writePos.load(std::memory_order_relaxed);
+        if (currentWp == m_lastSeenWritePos) {
+            if (++m_staleCounter > 150) {
+                close();
+                tryOpen();
+                return;
+            }
+        } else {
+            m_lastSeenWritePos = currentWp;
+            m_staleCounter = 0;
+        }
+
+        // Periodic memory validity check (backup: catches driver unload etc.)
         if (++m_callCount < 100) return;
         m_callCount = 0;
 
         MEMORY_BASIC_INFORMATION mbi;
         if (VirtualQuery(m_buf, &mbi, sizeof(mbi)) == 0 ||
             mbi.State != MEM_COMMIT) {
-            // Memory is gone — driver was restarted
             close();
             tryOpen();
         }
@@ -114,10 +143,19 @@ public:
 
         uint32_t wp = m_buf->writePos.load(std::memory_order_relaxed);
 
-        for (int i = 0; i < numFrames; i++) {
-            uint32_t wIdx = (wp + i) & IPC_RING_MASK;
-            m_buf->ringL[wIdx] = left  ? left[i]  : 0.0f;
-            m_buf->ringR[wIdx] = right ? right[i] : 0.0f;
+        if (left && right) {
+            // AVX Fast Path
+            for (int i = 0; i < numFrames; i++) {
+                uint32_t wIdx = (wp + i) & IPC_RING_MASK;
+                m_buf->ringL[wIdx] = left[i];
+                m_buf->ringR[wIdx] = right[i];
+            }
+        } else {
+            for (int i = 0; i < numFrames; i++) {
+                uint32_t wIdx = (wp + i) & IPC_RING_MASK;
+                m_buf->ringL[wIdx] = left  ? left[i]  : 0.0f;
+                m_buf->ringR[wIdx] = right ? right[i] : 0.0f;
+            }
         }
 
         m_buf->writePos.store(wp + numFrames, std::memory_order_release);
@@ -178,42 +216,49 @@ public:
             samplesToConsume = available;
         }
 
-        // Read with linear resampling when samplesToConsume != numFrames
-        for (int i = 0; i < numFrames; i++) {
-            // Map output sample i to input position
-            double srcIdx = (samplesToConsume == numFrames) ?
-                (double)i :
-                (double)i * samplesToConsume / numFrames;
+        // Create a fast path for perfect sync (99% of calls)
+        if (samplesToConsume == numFrames && available >= numFrames && left && right) {
+            // Seamless AVX auto-vectorization block
+            for (int i = 0; i < numFrames; i++) {
+                uint32_t idx = (r + i) & IPC_RING_MASK;
+                left[i]  = m_buf->ringL[idx];
+                right[i] = m_buf->ringR[idx];
+            }
+            m_lastReadL = left[numFrames - 1];
+            m_lastReadR = right[numFrames - 1];
+        } else {
+            // Drift compensation slow-path
+            for (int i = 0; i < numFrames; i++) {
+                double srcIdx = (samplesToConsume == numFrames) ? (double)i : (double)i * samplesToConsume / numFrames;
 
-            int s = (int)srcIdx;
-            if (s >= samplesToConsume) s = samplesToConsume - 1;
+                int s = (int)srcIdx;
+                if (s >= samplesToConsume) s = samplesToConsume - 1;
 
-            if (s < available) {
-                float sL, sR;
-                if (s + 1 < available && s + 1 < samplesToConsume) {
-                    // Linear interpolation between s and s+1
-                    float frac = (float)(srcIdx - s);
-                    uint32_t i0 = (r + s) & IPC_RING_MASK;
-                    uint32_t i1 = (r + s + 1) & IPC_RING_MASK;
-                    sL = m_buf->ringL[i0] * (1.0f - frac) + m_buf->ringL[i1] * frac;
-                    sR = m_buf->ringR[i0] * (1.0f - frac) + m_buf->ringR[i1] * frac;
+                if (s < available) {
+                    float sL, sR;
+                    if (s + 1 < available && s + 1 < samplesToConsume) {
+                        float frac = (float)(srcIdx - s);
+                        uint32_t i0 = (r + s) & IPC_RING_MASK;
+                        uint32_t i1 = (r + s + 1) & IPC_RING_MASK;
+                        sL = m_buf->ringL[i0] + (m_buf->ringL[i1] - m_buf->ringL[i0]) * frac;
+                        sR = m_buf->ringR[i0] + (m_buf->ringR[i1] - m_buf->ringR[i0]) * frac;
+                    } else {
+                        uint32_t idx = (r + s) & IPC_RING_MASK;
+                        sL = m_buf->ringL[idx];
+                        sR = m_buf->ringR[idx];
+                    }
+                    if (left)  left[i]  = sL;
+                    if (right) right[i] = sR;
+                    m_lastReadL = sL;
+                    m_lastReadR = sR;
                 } else {
-                    uint32_t idx = (r + s) & IPC_RING_MASK;
-                    sL = m_buf->ringL[idx];
-                    sR = m_buf->ringR[idx];
+                    m_lastReadL *= 0.95f;
+                    m_lastReadR *= 0.95f;
+                    if (left)  left[i]  = m_lastReadL;
+                    if (right) right[i] = m_lastReadR;
+                    if (fabsf(m_lastReadL) < 1e-7f) m_lastReadL = 0.0f;
+                    if (fabsf(m_lastReadR) < 1e-7f) m_lastReadR = 0.0f;
                 }
-                if (left)  left[i]  = sL;
-                if (right) right[i] = sR;
-                m_lastReadL = sL;
-                m_lastReadR = sR;
-            } else {
-                // Underrun: smooth fade
-                m_lastReadL *= 0.95f;
-                m_lastReadR *= 0.95f;
-                if (left)  left[i]  = m_lastReadL;
-                if (right) right[i] = m_lastReadR;
-                if (fabsf(m_lastReadL) < 1e-7f) m_lastReadL = 0.0f;
-                if (fabsf(m_lastReadR) < 1e-7f) m_lastReadR = 0.0f;
             }
         }
 
@@ -266,15 +311,27 @@ public:
             return;
         }
 
-        // Linear interpolation resample
-        for (int i = 0; i < numFrames; i++) {
-            double srcPos = m_readPosFrac + i * ratio;
-            int s = (int)srcPos;
-            float f = (float)(srcPos - s);
-            uint32_t idx0 = (r + s)     & IPC_RING_MASK;
-            uint32_t idx1 = (r + s + 1) & IPC_RING_MASK;
-            if (left)  left[i]  = m_buf->ringL[idx0] * (1.0f - f) + m_buf->ringL[idx1] * f;
-            if (right) right[i] = m_buf->ringR[idx0] * (1.0f - f) + m_buf->ringR[idx1] * f;
+        // Math optimization & Hoisted branch
+        if (left && right) {
+            for (int i = 0; i < numFrames; i++) {
+                double srcPos = m_readPosFrac + i * ratio;
+                int s = (int)srcPos;
+                float f = (float)(srcPos - s);
+                uint32_t idx0 = (r + s)     & IPC_RING_MASK;
+                uint32_t idx1 = (r + s + 1) & IPC_RING_MASK;
+                left[i]  = m_buf->ringL[idx0] + (m_buf->ringL[idx1] - m_buf->ringL[idx0]) * f;
+                right[i] = m_buf->ringR[idx0] + (m_buf->ringR[idx1] - m_buf->ringR[idx0]) * f;
+            }
+        } else {
+            for (int i = 0; i < numFrames; i++) {
+                double srcPos = m_readPosFrac + i * ratio;
+                int s = (int)srcPos;
+                float f = (float)(srcPos - s);
+                uint32_t idx0 = (r + s)     & IPC_RING_MASK;
+                uint32_t idx1 = (r + s + 1) & IPC_RING_MASK;
+                if (left)  left[i]  = m_buf->ringL[idx0] + (m_buf->ringL[idx1] - m_buf->ringL[idx0]) * f;
+                if (right) right[i] = m_buf->ringR[idx0] + (m_buf->ringR[idx1] - m_buf->ringR[idx0]) * f;
+            }
         }
 
         if (left  && numFrames > 0) m_lastReadL = left[numFrames - 1];
@@ -308,20 +365,43 @@ public:
         if (numOut <= 0) return;
 
         uint32_t wp = m_buf->writePos.load(std::memory_order_relaxed);
+        double step = srcRate / dstRate;
 
-        for (int i = 0; i < numOut; i++) {
-            double srcPos = m_writePosFrac + i * (srcRate / dstRate);
-            int idx = (int)srcPos;
-            float frac = (float)(srcPos - idx);
+        if (left && right) {
+            for (int i = 0; i < numOut; i++) {
+                double srcPos = m_writePosFrac + i * step;
+                int idx = (int)srcPos;
+                float frac = (float)(srcPos - idx);
 
-            float sL0 = (idx >= 0 && idx < numFrames && left)  ? left[idx]  : m_lastWriteL;
-            float sR0 = (idx >= 0 && idx < numFrames && right) ? right[idx] : m_lastWriteR;
-            float sL1 = (idx + 1 >= 0 && idx + 1 < numFrames && left)  ? left[idx + 1]  : sL0;
-            float sR1 = (idx + 1 >= 0 && idx + 1 < numFrames && right) ? right[idx + 1] : sR0;
+                float sL0, sR0, sL1, sR1;
+                if (idx < numFrames) {
+                    sL0 = left[idx]; sR0 = right[idx];
+                    sL1 = (idx + 1 < numFrames) ? left[idx + 1] : sL0;
+                    sR1 = (idx + 1 < numFrames) ? right[idx + 1] : sR0;
+                } else {
+                    sL0 = sL1 = m_lastWriteL;
+                    sR0 = sR1 = m_lastWriteR;
+                }
 
-            uint32_t wIdx = (wp + i) & IPC_RING_MASK;
-            m_buf->ringL[wIdx] = sL0 * (1.0f - frac) + sL1 * frac;
-            m_buf->ringR[wIdx] = sR0 * (1.0f - frac) + sR1 * frac;
+                uint32_t wIdx = (wp + i) & IPC_RING_MASK;
+                m_buf->ringL[wIdx] = sL0 + (sL1 - sL0) * frac;
+                m_buf->ringR[wIdx] = sR0 + (sR1 - sR0) * frac;
+            }
+        } else {
+            for (int i = 0; i < numOut; i++) {
+                double srcPos = m_writePosFrac + i * step;
+                int idx = (int)srcPos;
+                float frac = (float)(srcPos - idx);
+
+                float sL0 = (idx >= 0 && idx < numFrames && left)  ? left[idx]  : m_lastWriteL;
+                float sR0 = (idx >= 0 && idx < numFrames && right) ? right[idx] : m_lastWriteR;
+                float sL1 = (idx + 1 >= 0 && idx + 1 < numFrames && left)  ? left[idx + 1]  : sL0;
+                float sR1 = (idx + 1 >= 0 && idx + 1 < numFrames && right) ? right[idx + 1] : sR0;
+
+                uint32_t wIdx = (wp + i) & IPC_RING_MASK;
+                m_buf->ringL[wIdx] = sL0 + (sL1 - sL0) * frac;
+                m_buf->ringR[wIdx] = sR0 + (sR1 - sR0) * frac;
+            }
         }
 
         m_lastWriteL = left  ? left[numFrames - 1]  : 0.0f;
@@ -357,4 +437,8 @@ private:
     // Clock drift compensation
     double m_driftRatio;     // Current read speed ratio (1.0 = normal)
     double m_driftFrac;      // Fractional read position accumulator
+
+    // Stale shared memory detection (hot-switch fix)
+    uint32_t m_lastSeenWritePos;  // Last observed writePos value
+    int m_staleCounter;           // Consecutive callbacks with unchanged writePos
 };
