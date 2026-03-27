@@ -20,8 +20,8 @@ static HMODULE g_hModule = nullptr;
 static volatile LONG g_dllRefCount = 0;
 
 // Driver info for registration
-static const char* DRIVER_NAME   = "UMC Ultra By ASMRTOP";
-static const char* DRIVER_DESC   = "UMC Ultra By ASMRTOP";
+static const char* DRIVER_NAME   = "UMC Ultra";
+static const char* DRIVER_DESC   = "UMC Ultra";
 static const char* DRIVER_CLSID  = "{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}";
 
 //-------------------------------------------------------------------
