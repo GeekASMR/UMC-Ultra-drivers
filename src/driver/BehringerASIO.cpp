@@ -141,9 +141,9 @@ void BehringerASIO::getDriverName(char* name) {
     } else {
         int rem = lic.getTrialMinutesRemaining();
         if (rem > 0) {
-            snprintf(name, 32, "UMC Ultra By ASMRTOP (%dm)", rem);
+            snprintf(name, 32, "UMC Ultra By ASMRTOP(trial)");
         } else {
-            snprintf(name, 32, "UMC Ultra By ASMRTOP [EXP]");
+            snprintf(name, 32, "UMC Ultra By ASMRTOP(Expired)");
         }
     }
 }
