@@ -373,6 +373,15 @@ void TusbAudioDirect::disposeBuffers() {
 
     for (auto& ch : m_inputChannels) { ch.dmaBuffer = nullptr; ch.dmaBuffer2 = nullptr; ch.dmaBufferSize = 0; }
     for (auto& ch : m_outputChannels) { ch.dmaBuffer = nullptr; ch.dmaBuffer2 = nullptr; ch.dmaBufferSize = 0; }
+    for (int idx : m_selectedInputs) {
+        if (idx >= 0 && idx < (int)m_inputChannels.size())
+            sendIoctl(TUSB_IOCTL_DESELECT_CHANNEL, m_inputChannels[idx].rawEntry, 16);
+    }
+    for (int idx : m_selectedOutputs) {
+        if (idx >= 0 && idx < (int)m_outputChannels.size())
+            sendIoctl(TUSB_IOCTL_DESELECT_CHANNEL, m_outputChannels[idx].rawEntry, 16);
+    }
+
     m_selectedInputs.clear();
     m_selectedOutputs.clear();
 }
@@ -436,16 +445,6 @@ bool TusbAudioDirect::stop() {
 
     // STOP_STREAMING (real stop = 0x808828C4)
     sendIoctl(TUSB_IOCTL_STOP_STREAMING);
-
-    // DESELECT all channels
-    for (int idx : m_selectedInputs) {
-        if (idx >= 0 && idx < (int)m_inputChannels.size())
-            sendIoctl(TUSB_IOCTL_DESELECT_CHANNEL, m_inputChannels[idx].rawEntry, 16);
-    }
-    for (int idx : m_selectedOutputs) {
-        if (idx >= 0 && idx < (int)m_outputChannels.size())
-            sendIoctl(TUSB_IOCTL_DESELECT_CHANNEL, m_outputChannels[idx].rawEntry, 16);
-    }
 
     LOG_INFO(LOG_MODULE, "Streaming stopped");
     return true;

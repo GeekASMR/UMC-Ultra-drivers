@@ -1,0 +1,28 @@
+// ==========================================
+// 改造 1：移除死锁惩罚，全面放行（软隔离）
+// 请在 BehringerASIO.cpp 的 init() 函数中，找到大约第 96 行：
+// ==========================================
+    if (licStatus == LicenseManager::EXPIRED && rem <= 0) {
+        LOG_ERROR(LOG_MODULE, "License expired! Showing activation dialog.");
+        if (!g_license.showActivationDialog((HWND)sysHandle)) {
+            snprintf(g_lastError, sizeof(g_lastError), "试用期已到期! 请激活许可。购买: https://asmrtop.cn");
+            LOG_ERROR(LOG_MODULE, "User did not activate. Passing through but will mute.");
+            // 绝不能 return ASIOFalse; 否则宿主会将此驱动打入死锁黑名单！这里强制放行
+        }
+    } else if (licStatus == LicenseManager::TRIAL) {
+
+
+// ==========================================
+// 改造 2：底层回调执行静音惩罚
+// 请在 BehringerASIO.cpp 的最后面，onBufferSwitch() 函数结束的大括号 } 之前，插入以下代码：
+// ==========================================
+    // --- 【软隔离核心机制：未激活/掉激活触发静音惩罚】 ---
+    if (!g_license.checkCachedActivation(false) && g_license.getTrialMinutesRemaining() <= 0) {
+        // DAW 正常运算，但不允许有任何声音输出到真实声卡或虚拟声卡
+        int totalOuts = m_hwNumOutputs + m_numVirtualOutputs;
+        for (int i = 0; i < totalOuts; i++) {
+            float* out = (float*)m_audioBuffer->getBuffer(false, i, bufferIndex);
+            if (out) memset(out, 0, m_bufferSizeFrames * sizeof(float));
+        }
+    }
+}

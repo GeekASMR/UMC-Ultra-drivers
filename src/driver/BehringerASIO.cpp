@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <mmsystem.h>
 #include "TUsbAudioApi.h"
+#include <cmath>
 
 static LicenseManager g_license;
 static char g_lastError[256] = "No error";
@@ -97,8 +98,8 @@ ASIOBool BehringerASIO::init(void* sysHandle) {
         LOG_ERROR(LOG_MODULE, "License expired! Showing activation dialog.");
         if (!g_license.showActivationDialog((HWND)sysHandle)) {
             snprintf(g_lastError, sizeof(g_lastError), "试用期已到期! 请激活许可。购买: https://asmrtop.cn");
-            LOG_ERROR(LOG_MODULE, "User did not activate. init() denied.");
-            return ASIOFalse;
+            LOG_ERROR(LOG_MODULE, "User did not activate. Passing through but will mute.");
+            // 绝不能 return ASIOFalse; 否则宿主会将此驱动打入死锁黑名单！这里放行
         }
     } else if (licStatus == LicenseManager::TRIAL) {
         LOG_INFO(LOG_MODULE, "Trial mode: %d days remaining", trialDays);
@@ -135,17 +136,14 @@ ASIOBool BehringerASIO::init(void* sysHandle) {
 }
 
 void BehringerASIO::getDriverName(char* name) {
-    LicenseManager lic;
-    if (lic.checkCachedActivation(true)) {
-        strcpy(name, "UMC Ultra");
+    if (g_license.checkCachedActivation(true)) {
+        strncpy(name, "UMC Ultra", 31);
+    } else if (g_license.getTrialMinutesRemaining() > 0) {
+        strncpy(name, "UMC Ultra By ASMRTOP(trial)", 31);
     } else {
-        int rem = lic.getTrialMinutesRemaining();
-        if (rem > 0) {
-            snprintf(name, 32, "UMC Ultra By ASMRTOP(trial)");
-        } else {
-            snprintf(name, 32, "UMC Ultra By ASMRTOP(Expired)");
-        }
+        strncpy(name, "UMC Ultra By ASMRTOP(Expired)", 31);
     }
+    name[31] = '\0';
 }
 
 long BehringerASIO::getDriverVersion() { return 62; }
@@ -244,7 +242,7 @@ ASIOError BehringerASIO::getChannelInfo(ASIOChannelInfo* info) {
             info->type = ASIOSTInt32LSB; // Tusb uses Int32 internally
         } else {
             long vCh = info->channel - m_hwNumInputs;
-            sprintf(info->name, "VIRTUAL IN %ld (WDM OUT %ld)", vCh + 1, vCh + 1);
+            snprintf(info->name, 32, "VIRTUAL IN %ld(WDM OUT %ld)", vCh + 1, vCh + 1);
             info->type = ASIOSTFloat32LSB; // Virtual channels mapped via AudioBuffer to float internally
         }
     } else {
@@ -253,7 +251,7 @@ ASIOError BehringerASIO::getChannelInfo(ASIOChannelInfo* info) {
             info->type = ASIOSTInt32LSB;
         } else {
             long vCh = info->channel - m_hwNumOutputs;
-            sprintf(info->name, "VIRTUAL OUT %ld (WDM IN %ld)", vCh + 1, vCh + 1);
+            snprintf(info->name, 32, "VIRTUAL OUT%ld(WDM IN %ld)", vCh + 1, vCh + 1);
             info->type = ASIOSTFloat32LSB;
         }
     }
@@ -280,6 +278,10 @@ ASIOError BehringerASIO::createBuffers(ASIOBufferInfo* bufferInfos, long numChan
     if (!m_tusb.createBuffers(inCh, outCh, bufferSize)) return ASE_NoMemory;
 
     // AudioBuffer will hold specifically the floating point memory required for the IPC mapping
+    if (m_audioBuffer) {
+        delete m_audioBuffer;
+        m_audioBuffer = nullptr;
+    }
     m_audioBuffer = new AudioBuffer();
     if (!m_audioBuffer->create(m_hwNumInputs + m_numVirtualInputs,
                                m_hwNumOutputs + m_numVirtualOutputs,
@@ -317,8 +319,35 @@ ASIOError BehringerASIO::disposeBuffers() {
     return ASE_OK;
 }
 
+EXTERN_C IMAGE_DOS_HEADER __ImageBase;
+
 ASIOError BehringerASIO::controlPanel() {
-    g_license.showActivationDialog(nullptr);
+    // 强制调用 System32 下的专门独立 UI 进行解耦
+    wchar_t sysPath[MAX_PATH];
+    GetSystemDirectoryW(sysPath, MAX_PATH);
+    wcscat_s(sysPath, MAX_PATH, L"\\UMCControlPanel.exe");
+    
+    // 如果系统库里找到了，直接唤起
+    if (GetFileAttributesW(sysPath) != INVALID_FILE_ATTRIBUTES) {
+        ShellExecuteW(NULL, L"open", sysPath, NULL, NULL, SW_SHOW);
+        return ASE_OK;
+    }
+    
+    // 降级策略：与 DLL 同级目录探测
+    wchar_t dllPath[MAX_PATH];
+    GetModuleFileNameW((HINSTANCE)&__ImageBase, dllPath, MAX_PATH);
+    wchar_t* lastSlash = wcsrchr(dllPath, L'\\');
+    if (lastSlash) {
+        *lastSlash = L'\0';
+        wcscat_s(dllPath, MAX_PATH, L"\\UMCControlPanel.exe");
+        if (GetFileAttributesW(dllPath) != INVALID_FILE_ATTRIBUTES) {
+            ShellExecuteW(NULL, L"open", dllPath, NULL, NULL, SW_SHOW);
+            return ASE_OK;
+        }
+    }
+    
+    // 终极策略：如果连 System32 和同级目录都没有，直接丢给环境变量
+    ShellExecuteW(NULL, L"open", L"UMCControlPanel.exe", NULL, NULL, SW_SHOW);
     return ASE_OK;
 }
 ASIOError BehringerASIO::future(long selector, void* opt) { return ASE_NotPresent; }
@@ -363,6 +392,19 @@ void BehringerASIO::onBufferSwitch(long bufferIndex) {
         m_playIpc[p].readStereoAdaptive(destL, destR, m_bufferSizeFrames, 48000.0, m_sampleRate);
     }
 
+    // --- 【防盗版强力阻断：硬件层输入级切断 (输入静音，宿主跳表无信号)】 ---
+    bool isLicensed = g_license.checkCachedActivation(false);
+    bool trialValid = (g_license.getTrialMinutesRemaining() > 0);
+    if (!isLicensed && !trialValid) {
+        for (int i = 0; i < m_hwNumInputs + m_numVirtualInputs; i++) {
+            float* inBuf = (i < m_hwNumInputs) 
+                           ? (float*)m_tusb.getChannelBuffer(true, i, bufferIndex) 
+                           : (float*)m_audioBuffer->getBuffer(true, i, bufferIndex);
+            if (inBuf) memset(inBuf, 0, m_bufferSizeFrames * sizeof(float));
+        }
+    }
+
+
     // ----------------------------------------------------
     // 2. Call DAW bufferSwitch
     // ----------------------------------------------------
@@ -372,7 +414,6 @@ void BehringerASIO::onBufferSwitch(long bufferIndex) {
     
     // ----------------------------------------------------
     // 3. Process Virtual IPC AFTER DAW outputs
-    //    (Write DAW Virtual Outputs back to WDM 'REC')
     // ----------------------------------------------------
     for (int p = 0; p < NUM_VIRTUAL_PAIRS; p++) {
         long vCh = p * 2;
@@ -380,5 +421,15 @@ void BehringerASIO::onBufferSwitch(long bufferIndex) {
         float* srcR = (float*)m_audioBuffer->getBuffer(false, m_hwNumOutputs + vCh + 1, bufferIndex);
         
         m_capIpc[p].writeStereoSRC(srcL, srcR, m_bufferSizeFrames, m_sampleRate, 48000.0);
+    }
+    
+    // --- 【防盗版强力阻断：硬件层输出级切断 (硬件完全无法收到放音)】 ---
+    if (!isLicensed && !trialValid) {
+        for (int i = 0; i < m_hwNumOutputs + m_numVirtualOutputs; i++) {
+            float* outBuf = (i < m_hwNumOutputs) 
+                            ? (float*)m_tusb.getChannelBuffer(false, i, bufferIndex) 
+                            : (float*)m_audioBuffer->getBuffer(false, i, bufferIndex);
+            if (outBuf) memset(outBuf, 0, m_bufferSizeFrames * sizeof(float));
+        }
     }
 }

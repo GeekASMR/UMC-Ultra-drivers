@@ -18,6 +18,13 @@
 
 #define PI 3.14159265358979323846
 
+inline float hermite_interp(float v0, float v1, float v2, float v3, float f) {
+    float c = (v1 - v2) * 0.5f - v0 * 0.5f + v3 * 0.5f;
+    float a = v0 - v1 - c;
+    float b = v2 - v0;
+    return (((a * f) + b) * f + c) * f + v1;
+}
+
 int main() {
     printf("=== Hermite SRC Quality Test (Offline) ===\n\n");
     

@@ -109,6 +109,33 @@ if (isset($_GET['reset_machine'])) {
     exit;
 }
 
+// ---- 删除日志 ----
+if (isset($_GET['del_log'])) {
+    $rel = str_replace("\0", '', $_GET['del_log']);
+    if (strpos($rel, '..') === false) {
+        $logPath = realpath(__DIR__ . '/logs/' . $rel);
+        if ($logPath && strpos($logPath, realpath(__DIR__ . '/logs/')) === 0) {
+            unlink($logPath);
+            header("Location: admin.php?msg=" . urlencode("日志文件已成功删除！"));
+            exit;
+        }
+    }
+}
+
+// ---- 查看日志内容 ----
+if (isset($_GET['view_log'])) {
+    $rel = str_replace("\0", '', $_GET['view_log']);
+    if (strpos($rel, '..') === false) {
+        $logPath = realpath(__DIR__ . '/logs/' . $rel);
+        if ($logPath && strpos($logPath, realpath(__DIR__ . '/logs/')) === 0) {
+            header("Content-Type: text/plain; charset=utf-8");
+            readfile($logPath);
+            exit;
+        }
+    }
+    die("❌ 找不到指定的日志文件！");
+}
+
 // 查询数据
 $totalOrders = $pdo->query("SELECT COUNT(*) FROM orders WHERE status='paid'")->fetchColumn();
 $totalRev = $pdo->query("SELECT SUM(money) FROM orders WHERE status='paid'")->fetchColumn() ?: '0.00';
@@ -140,6 +167,19 @@ try {
     $machines = $pdo->query("SELECT * FROM machines ORDER BY last_seen DESC LIMIT 100")->fetchAll();
 } catch (Exception $e) {
     $machines = [];
+}
+
+// 查询日志文件 (支持用户子目录)
+$logFiles = array_merge(
+    (array)glob(__DIR__ . '/logs/*.log'),
+    (array)glob(__DIR__ . '/logs/*/*.log')
+);
+if (!empty($logFiles)) {
+    usort($logFiles, function($a, $b) {
+        return filemtime($b) - filemtime($a);
+    });
+} else {
+    $logFiles = [];
 }
 ?>
 <!DOCTYPE html>
@@ -215,6 +255,7 @@ try {
     <button class="tab-btn active" onclick="switchTab('tab-users')" style="padding: 10px 20px; background: transparent; color: white; border: none; border-bottom: 2px solid #38bdf8; cursor: pointer; font-size: 16px;">💻 用户大盘 (<?php echo count($machines); ?>)</button>
     <button class="tab-btn" onclick="switchTab('tab-licenses')" style="padding: 10px 20px; background: transparent; color: #9ca3af; border: none; cursor: pointer; font-size: 16px;">🔑 卡密管理</button>
     <button class="tab-btn" onclick="switchTab('tab-orders')" style="padding: 10px 20px; background: transparent; color: #9ca3af; border: none; cursor: pointer; font-size: 16px;">💰 订单流水</button>
+    <button class="tab-btn" onclick="switchTab('tab-logs')" style="padding: 10px 20px; background: transparent; color: #9ca3af; border: none; cursor: pointer; font-size: 16px;">📜 诊断日志</button>
 </div>
 
 <div id="tab-licenses" class="tab-content" style="display: none;">
@@ -305,6 +346,32 @@ try {
             <?php else: ?>
             <span style="color: #64748b; font-size:13px;">无须重置</span>
             <?php endif; ?>
+        </td>
+    </tr>
+    <?php endforeach; ?>
+</table>
+</div>
+
+<div id="tab-logs" class="tab-content" style="display: none;">
+<h3 style="color:#38bdf8;">用户终端诊断日志 (Diagnostic Logs)</h3>
+<table>
+    <tr>
+        <th>日志文件名 (Log File)</th>
+        <th>大小 (Size)</th>
+        <th>上传时间 (Upload Time)</th>
+        <th>操作 (Actions)</th>
+    </tr>
+    <?php foreach ($logFiles as $lf): 
+        $relPath = str_replace(__DIR__ . DIRECTORY_SEPARATOR . 'logs' . DIRECTORY_SEPARATOR, '', $lf);
+        $relPath = str_replace('\\', '/', $relPath); // 统一为正斜杠以便 URL 传输
+    ?>
+    <tr>
+        <td style="font-family: monospace; color:#fbbf24;"><?php echo htmlspecialchars($relPath); ?></td>
+        <td><?php echo round(filesize($lf)/1024, 1); ?> KB</td>
+        <td><?php echo date("Y-m-d H:i:s", filemtime($lf)); ?></td>
+        <td>
+            <a href="?view_log=<?php echo urlencode($relPath); ?>" target="_blank" class="btn" style="background:#10b981; text-decoration:none; padding:4px 8px; font-size:13px;">👁️ 查看 (View)</a>
+            <a href="?del_log=<?php echo urlencode($relPath); ?>" class="btn btn-danger" style="text-decoration:none; padding:4px 8px; font-size:13px;" onclick="return confirm('确定永久删除该诊断日志吗？')">🗑️ 删除</a>
         </td>
     </tr>
     <?php endforeach; ?>

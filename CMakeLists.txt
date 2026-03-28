@@ -205,3 +205,13 @@ target_compile_definitions(ipc_pop_detect PRIVATE _CRT_SECURE_NO_WARNINGS)
 add_executable(ds_sine_test tools/ds_sine_test.cpp)
 target_compile_definitions(ds_sine_test PRIVATE _CRT_SECURE_NO_WARNINGS)
 target_link_libraries(ds_sine_test dsound dxguid ole32)
+
+# === UMC Ultra Control Panel ===
+add_executable(UMCControlPanel WIN32 src/gui/UMCControlPanel.cpp src/license/LicenseManager.h src/gui/app.rc)
+target_link_libraries(UMCControlPanel PRIVATE shlwapi shell32 user32 gdi32 comctl32 wininet winhttp)
+
+# === UMC Optimizer Standalone Tool ===
+add_executable(UMCOptimizer WIN32 src/gui/UMCOptimizer.cpp src/gui/OptimizerManager.cpp src/gui/app.rc)
+target_compile_definitions(UMCOptimizer PRIVATE UNICODE _UNICODE)
+target_link_libraries(UMCOptimizer PRIVATE shlwapi shell32 user32 gdi32 comctl32 dwmapi uxtheme)
+set_target_properties(UMCOptimizer PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level='requireAdministrator' uiAccess='false'\"")

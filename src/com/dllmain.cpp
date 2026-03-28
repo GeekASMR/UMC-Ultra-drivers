@@ -10,6 +10,7 @@
 #include "ClassFactory.h"
 #include "../driver/BehringerASIO.h"
 #include "../utils/Logger.h"
+#include "../utils/CrashHandler.h"
 
 #define LOG_MODULE "DllMain"
 
@@ -33,9 +34,11 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) {
         case DLL_PROCESS_ATTACH:
             g_hModule = hinstDLL;
             DisableThreadLibraryCalls(hinstDLL);
+            CrashHandler::init();
             break;
 
         case DLL_PROCESS_DETACH:
+            CrashHandler::uninit();
             break;
     }
     return TRUE;
