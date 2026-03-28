@@ -4,6 +4,7 @@
 
 #include "AudioBuffer.h"
 #include "../utils/Logger.h"
+#include <intrin.h>
 
 #define LOG_MODULE "AudioBuffer"
 
@@ -186,7 +187,20 @@ void AudioBuffer::convertInt24ToFloat32(const unsigned char* src, float* dst, lo
 
 void AudioBuffer::convertInt32ToFloat32(const int* src, float* dst, long numSamples) {
     const float scale = 1.0f / 2147483648.0f;
-    for (long i = 0; i < numSamples; i++) {
+    long i = 0;
+    
+    // SSE2 SIMD Fast Path (4 samples per cycle)
+    __m128 vScale = _mm_set1_ps(scale);
+    long limit = numSamples - 3;
+    for (; i < limit; i += 4) {
+        __m128i vInt = _mm_loadu_si128((const __m128i*)&src[i]);
+        __m128 vFloat = _mm_cvtepi32_ps(vInt);
+        __m128 vResult = _mm_mul_ps(vFloat, vScale);
+        _mm_storeu_ps(&dst[i], vResult);
+    }
+    
+    // Tail samples
+    for (; i < numSamples; i++) {
         dst[i] = src[i] * scale;
     }
 }
@@ -213,7 +227,31 @@ void AudioBuffer::convertFloat32ToInt24(const float* src, unsigned char* dst, lo
 }
 
 void AudioBuffer::convertFloat32ToInt32(const float* src, int* dst, long numSamples) {
-    for (long i = 0; i < numSamples; i++) {
+    long i = 0;
+    
+    // SSE2 SIMD Fast Path (4 samples per cycle)
+    __m128 vScale = _mm_set1_ps(2147483647.0f);
+    __m128 vMin = _mm_set1_ps(-1.0f);
+    __m128 vMax = _mm_set1_ps(1.0f);
+    long limit = numSamples - 3;
+    
+    for (; i < limit; i += 4) {
+        __m128 vFloat = _mm_loadu_ps(&src[i]);
+        
+        // Clamp bounds
+        vFloat = _mm_max_ps(vFloat, vMin);
+        vFloat = _mm_min_ps(vFloat, vMax);
+        
+        // Scale to 32-bit peak
+        vFloat = _mm_mul_ps(vFloat, vScale);
+        
+        // Cast directly packing to signed 32-bit int
+        __m128i vInt = _mm_cvtps_epi32(vFloat);
+        _mm_storeu_si128((__m128i*)&dst[i], vInt);
+    }
+    
+    // Tail samples
+    for (; i < numSamples; i++) {
         float val = src[i];
         if (val > 1.0f) val = 1.0f;
         if (val < -1.0f) val = -1.0f;

@@ -9,6 +9,8 @@ define('ADMIN_PASS', 'Asmrtop2025.'); // 修改为你想要的后台登录密码
 if (isset($_POST['login_pass'])) {
     if ($_POST['login_pass'] === ADMIN_PASS) {
         $_SESSION['admin_logged_in'] = true;
+        header("Location: admin.php");
+        exit;
     } else {
         $error = "密码错误！";
     }
@@ -79,6 +81,8 @@ if (isset($_POST['action']) && $_POST['action'] === 'generate_key') {
     $ins = $pdo->prepare("INSERT INTO licenses (license_key, max_machines, machines_bound, order_no) VALUES (?, ?, '[]', 'Manual-Gen')");
     $ins->execute([$licenseKey, LICENSE_MAX_MACHINES]);
     $msg = "成功生成卡密： $licenseKey";
+    header("Location: admin.php?msg=" . urlencode($msg));
+    exit;
 }
 
 // ---- 清空重置某个卡密的绑机状态 ----

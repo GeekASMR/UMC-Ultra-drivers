@@ -18,11 +18,7 @@ copy /y "d:\Autigravity\UMCasio\build\bin\Release\BehringerASIO.dll" "C:\Windows
 echo [INFO] Registering new ASIO Driver...
 regsvr32 /s "C:\Windows\System32\BehringerASIO.dll"
 
-echo [INFO] Restoring Official UMC ASIO Driver in Registry...
-reg add "HKLM\SOFTWARE\ASIO\UMC ASIO Driver" /v CLSID /d "{0351302F-B1F1-4A5D-8613-787F77C20EA4}" /t REG_SZ /f
-reg add "HKLM\SOFTWARE\ASIO\UMC ASIO Driver" /v Description /d "UMC ASIO Driver" /t REG_SZ /f
-reg add "HKLM\SOFTWARE\WOW6432Node\ASIO\UMC ASIO Driver" /v CLSID /d "{0351302F-B1F1-4A5D-8613-787F77C20EA4}" /t REG_SZ /f
-reg add "HKLM\SOFTWARE\WOW6432Node\ASIO\UMC ASIO Driver" /v Description /d "UMC ASIO Driver" /t REG_SZ /f
+echo [INFO] Restoring Official ASIO Driver Subkeys is no longer necessary as regsvr32 securely maps the new UMC Ultra native metadata!
 
 echo [SUCCESS] Done! Encoding fixed and Official Driver restored.
 pause

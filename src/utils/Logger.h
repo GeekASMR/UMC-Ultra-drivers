@@ -36,7 +36,7 @@ public:
             m_logFile.open(defaultPath, std::ios::out | std::ios::app);
         }
         m_initialized = true;
-        log(LOG_INFO, "BehringerASIO", "===== Logger Started (v6.2.3) =====");
+        log(LOG_INFO, "BehringerASIO", "===== Logger Started (v6.2.4) =====");
         
         // --- 获取 CPU 型号 ---
         char cpuName[256] = "Unknown CPU";

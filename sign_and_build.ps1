@@ -10,8 +10,7 @@ $installerDir = Resolve-Path "E:\Antigravity\*\UMC\UMC_Universal_Installer_V6.1_
 # Files to Sign natively
 $filesToSign = @(
     "d:\Autigravity\UMCasio\build\bin\Release\BehringerASIO.dll",
-    "d:\Autigravity\UMCasio\build\bin\Release\UMCControlPanel.exe",
-    "d:\Autigravity\UMCasio\build\bin\Release\UMCOptimizer.exe"
+    "d:\Autigravity\UMCasio\build\bin\Release\UMCControlPanel.exe"
 )
 
 # Step 1: Sign Binaries
@@ -49,5 +48,6 @@ $installerOut = Join-Path $installerDir "out\UMCUltra_V$($appVer)_Setup.exe"
 & $signtool sign /f $pfx /p $pwd /fd SHA256 /tr "http://timestamp.digicert.com" /td sha256 $installerOut
 
 # Step 6: Push strictly to GitHub
-Set-Location "d:\Autigravity\UMCasio"
-gh release upload v$appVer $installerOut --clobber
+# Set-Location "d:\Autigravity\UMCasio"
+# gh release upload v$appVer $installerOut --clobber
+

@@ -11,7 +11,7 @@ cmd /c "cd /d d:\Autigravity\UMCasio && C:\Windows\Microsoft.NET\Framework64\v4.
 
 2. C++ 动态链接库及分离式环境提权优化器重编极速体（Release）
 ```powershell
-cmd /c "cd /d d:\Autigravity\UMCasio && cmake --build build --config Release --target UMCControlPanel && cmake --build build --config Release --target UMCOptimizer && cmake --build build --config Release --target BehringerASIO"
+cmd /c "cd /d d:\Autigravity\UMCasio && cmake --build build --config Release --target UMCControlPanel && cmake --build build --config Release --target BehringerASIO"
 ```
 
 3. 调用全局封装防毒脚本（含生成数字黑卡、注入合法 Root 注册机制、规避 SmartScreen，Inno Setup 秒装以及直接拉起 Github 端静默发新）。

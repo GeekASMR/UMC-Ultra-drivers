@@ -144,11 +144,18 @@ public:
         uint32_t wp = m_buf->writePos.load(std::memory_order_relaxed);
 
         if (left && right) {
-            // AVX Fast Path
-            for (int i = 0; i < numFrames; i++) {
-                uint32_t wIdx = (wp + i) & IPC_RING_MASK;
-                m_buf->ringL[wIdx] = left[i];
-                m_buf->ringR[wIdx] = right[i];
+            // AVX Fast Path via standard library memcpy (auto-vectorized)
+            uint32_t wpIdx = wp & IPC_RING_MASK;
+            if (wpIdx + numFrames <= IPC_RING_SIZE) {
+                memcpy(&m_buf->ringL[wpIdx], left, numFrames * sizeof(float));
+                memcpy(&m_buf->ringR[wpIdx], right, numFrames * sizeof(float));
+            } else {
+                uint32_t break1 = IPC_RING_SIZE - wpIdx;
+                uint32_t break2 = numFrames - break1;
+                memcpy(&m_buf->ringL[wpIdx], left, break1 * sizeof(float));
+                memcpy(&m_buf->ringR[wpIdx], right, break1 * sizeof(float));
+                memcpy(&m_buf->ringL[0], left + break1, break2 * sizeof(float));
+                memcpy(&m_buf->ringR[0], right + break1, break2 * sizeof(float));
             }
         } else {
             for (int i = 0; i < numFrames; i++) {
@@ -218,11 +225,18 @@ public:
 
         // Create a fast path for perfect sync (99% of calls)
         if (samplesToConsume == numFrames && available >= numFrames && left && right) {
-            // Seamless AVX auto-vectorization block
-            for (int i = 0; i < numFrames; i++) {
-                uint32_t idx = (r + i) & IPC_RING_MASK;
-                left[i]  = m_buf->ringL[idx];
-                right[i] = m_buf->ringR[idx];
+            // Seamless AVX auto-vectorization block via memcpy
+            uint32_t rIdx = r & IPC_RING_MASK;
+            if (rIdx + numFrames <= IPC_RING_SIZE) {
+                memcpy(left, &m_buf->ringL[rIdx], numFrames * sizeof(float));
+                memcpy(right, &m_buf->ringR[rIdx], numFrames * sizeof(float));
+            } else {
+                uint32_t break1 = IPC_RING_SIZE - rIdx;
+                uint32_t break2 = numFrames - break1;
+                memcpy(left, &m_buf->ringL[rIdx], break1 * sizeof(float));
+                memcpy(right, &m_buf->ringR[rIdx], break1 * sizeof(float));
+                memcpy(left + break1, &m_buf->ringL[0], break2 * sizeof(float));
+                memcpy(right + break1, &m_buf->ringR[0], break2 * sizeof(float));
             }
             m_lastReadL = left[numFrames - 1];
             m_lastReadR = right[numFrames - 1];

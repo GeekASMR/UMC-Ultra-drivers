@@ -394,7 +394,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             g_nid.hIcon = ExtractOfficialIcon();
             wcscpy_s(g_nid.szTip, L"UMC Ultra Control Panel");
             wcscpy_s(g_nid.szInfo, L"UMC 引擎已启动");
-            wcscpy_s(g_nid.szInfoTitle, L"UMC Ultra v6.2.3");
+            wcscpy_s(g_nid.szInfoTitle, L"UMC Ultra v6.2.4");
             g_nid.dwInfoFlags = NIIF_INFO;
             Shell_NotifyIconW(NIM_ADD, &g_nid);
             break;
