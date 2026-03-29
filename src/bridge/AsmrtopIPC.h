@@ -38,9 +38,8 @@ public:
     AsmrtopIpcChannel() : m_hMap(NULL), m_buf(nullptr),
         m_readPos(0), m_readPosFrac(0.0), m_lastReadL(0.0f), m_lastReadR(0.0f),
         m_writePosFrac(0.0), m_lastWriteL(0.0f), m_lastWriteR(0.0f),
-        m_channelId(-1), m_callCount(0), m_playing(false),
-        m_driftRatio(1.0), m_driftFrac(0.0),
-        m_lastSeenWritePos(0), m_staleCounter(0) {
+        m_channelId(-1), m_callCount(0), m_firstCall(true),
+        m_lastSeenWritePos(0), m_driftCounter(0), m_lastOpenTry(0) {
         m_direction[0] = '\0';
     }
 
@@ -55,6 +54,15 @@ public:
 
     bool tryOpen() {
         if (m_buf) return true;
+        
+        // 核心负优化修复：若底层虚拟声卡通道未激活，绝对不能让 6000Hz 回调狂刷 OpenFileMappingA 系统内核指令！
+        // 加入 GetTickCount 回退锁，空闲状态最快只允许每 1 秒申请 1 次内核句柄，彻底释放微核高频阻塞。
+        DWORD now = GetTickCount();
+        if (m_lastOpenTry != 0 && (now - m_lastOpenTry < 1000)) {
+            return false;
+        }
+        m_lastOpenTry = now == 0 ? 1 : now;
+
         const char* brands[] = { "VirtualAudioWDM" };
 
         // Only scan Global namespace - kernel driver creates shared memory here.
@@ -81,7 +89,12 @@ public:
     void close() {
         if (m_buf) { UnmapViewOfFile(m_buf); m_buf = nullptr; }
         if (m_hMap) { CloseHandle(m_hMap); m_hMap = NULL; }
-        // Reset all reader/writer state for clean reconnection
+        resetState();
+    }
+
+    // Soft reset: preserve shared memory mapping, only reset read/write state.
+    // Use when DAW switches buffer size — WDM shared memory stays alive.
+    void resetState() {
         m_readPos = 0;
         m_readPosFrac = 0.0;
         m_lastReadL = 0.0f;
@@ -90,36 +103,25 @@ public:
         m_lastWriteL = 0.0f;
         m_lastWriteR = 0.0f;
         m_lastSeenWritePos = 0;
-        m_staleCounter = 0;
         m_callCount = 0;
+        m_firstCall = true;
+        m_driftCounter = 0;
     }
 
     bool isOpen() const { return m_buf != nullptr; }
 
     // Periodic health check: verify mapped memory is still valid.
     // If the WDM driver restarts, the shared memory handle becomes stale.
-    // We detect this cheaply via VirtualQuery every ~100 calls.
+    // Thresholds scaled for 8-sample buffers (~6000 callbacks/sec).
     void validateOrReconnect() {
         if (!m_buf) return;
 
-        // Stale detection: if writePos hasn't changed for ~150 callbacks (~0.8s @ 48k/256),
-        // the kernel driver likely destroyed and recreated the shared memory section.
-        // Our old mapping handle keeps dead pages alive, so VirtualQuery can't detect it.
-        // Force close + reopen to pick up the new section.
+        // Ensure we track writePos for reference, but don't close purely over idleness
         uint32_t currentWp = m_buf->writePos.load(std::memory_order_relaxed);
-        if (currentWp == m_lastSeenWritePos) {
-            if (++m_staleCounter > 150) {
-                close();
-                tryOpen();
-                return;
-            }
-        } else {
-            m_lastSeenWritePos = currentWp;
-            m_staleCounter = 0;
-        }
+        m_lastSeenWritePos = currentWp;
 
-        // Periodic memory validity check (backup: catches driver unload etc.)
-        if (++m_callCount < 100) return;
+        // Periodic memory validity check (backup: catches actual driver unload!)
+        if (++m_callCount < 5000) return;
         m_callCount = 0;
 
         MEMORY_BASIC_INFORMATION mbi;
@@ -189,33 +191,43 @@ public:
         uint32_t r = m_readPos;
         int32_t available = (int32_t)(w - r);
 
-        const int32_t TARGET  = 4096;   // Target buffer level
         const int32_t LOW_TH  = 1024;   // Below this: stuff (slow down read)
         const int32_t HIGH_TH = 8192;   // Above this: drop (speed up read)
 
-        // Gross overflow/underflow: snap to target with crossfade
-        if (available < 0 || available > IPC_RING_SIZE / 2) {
-            // Snap to target
-            uint32_t newR = w - TARGET;
-            // Crossfade: read first sample at new position for smooth transition
-            float newL = m_buf->ringL[newR & IPC_RING_MASK];
-            float newR_ = m_buf->ringR[newR & IPC_RING_MASK];
-            // Blend with last known sample to avoid hard click
-            m_lastReadL = m_lastReadL * 0.5f + newL * 0.5f;
-            m_lastReadR = m_lastReadR * 0.5f + newR_ * 0.5f;
-            r = newR;
-            available = TARGET;
+        // Gross overflow/underflow or first call after reset: start exactly at write head.
+        // We do NOT rewind to w - 4096 here because grabbing old memory causes repetitive trash bursting on idle channels.
+        // The leaky integrator will naturally and smoothly build up the safety cushion over time.
+        if (m_firstCall || available < 0 || available > 16384) {
+            r = w;
+            available = 0;
+            m_firstCall = false;
+            m_lastReadL = 0.0f;
+            m_lastReadR = 0.0f;
         }
 
         // Determine how many ring samples to consume for this callback.
         // Normally consume exactly numFrames. Adjust ±1 for drift compensation.
         int samplesToConsume = numFrames;
         if (available < LOW_TH && available > numFrames) {
-            // Buffer running low - stuff: consume one fewer sample
-            samplesToConsume = numFrames - 1;
+            // Buffer running low - stuff: drift into positive compensation (~0.05% shift)
+            m_driftCounter += numFrames;
+            if (m_driftCounter >= 2000) {
+                int drops = m_driftCounter / 2000;
+                samplesToConsume -= drops;
+                m_driftCounter %= 2000;
+            }
         } else if (available > HIGH_TH) {
-            // Buffer growing - drop: consume one extra sample
-            samplesToConsume = numFrames + 1;
+            // Buffer growing - drop: drift into negative compensation
+            m_driftCounter -= numFrames;
+            if (m_driftCounter <= -2000) {
+                int adds = (-m_driftCounter) / 2000;
+                samplesToConsume += adds;
+                m_driftCounter = -((-m_driftCounter) % 2000);
+            }
+        } else {
+            // Leaky Integrator: Gently decay back to 0 when healthy, preventing sudden jitters from erasing our drift record
+            if (m_driftCounter > 0) m_driftCounter--;
+            else if (m_driftCounter < 0) m_driftCounter++;
         }
 
         // Make sure we don't consume more than available
@@ -246,9 +258,10 @@ public:
                 double srcIdx = (samplesToConsume == numFrames) ? (double)i : (double)i * samplesToConsume / numFrames;
 
                 int s = (int)srcIdx;
-                if (s >= samplesToConsume) s = samplesToConsume - 1;
+                if (samplesToConsume <= 0) s = -1; 
+                else if (s >= samplesToConsume) s = samplesToConsume - 1;
 
-                if (s < available) {
+                if (s >= 0 && s < available) {
                     float sL, sR;
                     if (s + 1 < available && s + 1 < samplesToConsume) {
                         float frac = (float)(srcIdx - s);
@@ -306,10 +319,15 @@ public:
         uint32_t r = m_readPos;
         int32_t available = (int32_t)(w - r);
 
-        if (available < 0 || available > IPC_RING_SIZE) {
+        // Gross anomaly or first call after reset: snap strictly to write head
+        if (m_firstCall || available < 0 || available > 16384) {
             r = w;
             available = 0;
+            m_lastReadL = 0.0f;
+            m_lastReadR = 0.0f;
+            m_readPos = r;
             m_readPosFrac = 0.0;
+            m_firstCall = false;
         }
 
         if (available < srcNeeded) {
@@ -374,56 +392,58 @@ public:
 
         if (!m_buf && !tryOpen()) return;
 
-        double ratio = dstRate / srcRate; // output samples per input sample
-        int numOut = (int)(numFrames * ratio + 0.5);
+        double step = srcRate / dstRate;
+        
+        // Dynamically calculate the exact required number of output frames
+        // to consume precisely `numFrames` of input data based on current fractional phase
+        int numOut = 0;
+        while ((m_writePosFrac + numOut * step) < numFrames) {
+            numOut++;
+        }
+        
         if (numOut <= 0) return;
 
         uint32_t wp = m_buf->writePos.load(std::memory_order_relaxed);
-        double step = srcRate / dstRate;
 
-        if (left && right) {
+        if (left || right) {
+            auto getSampleL = [&](int i) -> float {
+                if (!left) return 0.0f;
+                if (i < 0) return m_lastWriteL;
+                if (i >= numFrames) return left[numFrames - 1];
+                return left[i];
+            };
+            auto getSampleR = [&](int i) -> float {
+                if (!right) return 0.0f;
+                if (i < 0) return m_lastWriteR;
+                if (i >= numFrames) return right[numFrames - 1];
+                return right[i];
+            };
+
             for (int i = 0; i < numOut; i++) {
                 double srcPos = m_writePosFrac + i * step;
-                int idx = (int)srcPos;
-                float frac = (float)(srcPos - idx);
-
-                float sL0, sR0, sL1, sR1;
-                if (idx < numFrames) {
-                    sL0 = left[idx]; sR0 = right[idx];
-                    sL1 = (idx + 1 < numFrames) ? left[idx + 1] : sL0;
-                    sR1 = (idx + 1 < numFrames) ? right[idx + 1] : sR0;
-                } else {
-                    sL0 = sL1 = m_lastWriteL;
-                    sR0 = sR1 = m_lastWriteR;
-                }
+                int idx = (int)srcPos; // integer phase [0 to numFrames]
+                float frac = (float)(srcPos - idx); // fractional phase [0.0 to 1.0)
+                
+                float sL0 = getSampleL(idx - 1);
+                float sL1 = getSampleL(idx);
+                float sR0 = getSampleR(idx - 1);
+                float sR1 = getSampleR(idx);
 
                 uint32_t wIdx = (wp + i) & IPC_RING_MASK;
                 m_buf->ringL[wIdx] = sL0 + (sL1 - sL0) * frac;
                 m_buf->ringR[wIdx] = sR0 + (sR1 - sR0) * frac;
             }
+            if (left  && numFrames > 0) m_lastWriteL = left[numFrames - 1];
+            if (right && numFrames > 0) m_lastWriteR = right[numFrames - 1];
         } else {
             for (int i = 0; i < numOut; i++) {
-                double srcPos = m_writePosFrac + i * step;
-                int idx = (int)srcPos;
-                float frac = (float)(srcPos - idx);
-
-                float sL0 = (idx >= 0 && idx < numFrames && left)  ? left[idx]  : m_lastWriteL;
-                float sR0 = (idx >= 0 && idx < numFrames && right) ? right[idx] : m_lastWriteR;
-                float sL1 = (idx + 1 >= 0 && idx + 1 < numFrames && left)  ? left[idx + 1]  : sL0;
-                float sR1 = (idx + 1 >= 0 && idx + 1 < numFrames && right) ? right[idx + 1] : sR0;
-
                 uint32_t wIdx = (wp + i) & IPC_RING_MASK;
-                m_buf->ringL[wIdx] = sL0 + (sL1 - sL0) * frac;
-                m_buf->ringR[wIdx] = sR0 + (sR1 - sR0) * frac;
+                m_buf->ringL[wIdx] = 0.0f;
+                m_buf->ringR[wIdx] = 0.0f;
             }
         }
 
-        m_lastWriteL = left  ? left[numFrames - 1]  : 0.0f;
-        m_lastWriteR = right ? right[numFrames - 1] : 0.0f;
-
-        double c = m_writePosFrac + numOut * (srcRate / dstRate);
-        m_writePosFrac = c - numFrames;
-        if (m_writePosFrac < 0.0) m_writePosFrac = 0.0;
+        m_writePosFrac = (m_writePosFrac + numOut * step) - numFrames;
 
         m_buf->writePos.store(wp + numOut, std::memory_order_release);
     }
@@ -446,13 +466,10 @@ private:
     int m_channelId;
     char m_direction[16];
     int m_callCount;         // Counter for periodic health check
-    bool m_playing;          // State: buffering vs playing
-
-    // Clock drift compensation
-    double m_driftRatio;     // Current read speed ratio (1.0 = normal)
-    double m_driftFrac;      // Fractional read position accumulator
+    bool m_firstCall;        // Force snap on first read after reset
 
     // Stale shared memory detection (hot-switch fix)
     uint32_t m_lastSeenWritePos;  // Last observed writePos value
-    int m_staleCounter;           // Consecutive callbacks with unchanged writePos
+    int m_driftCounter;           // Rate limits the slip buffer drift adjustments
+    DWORD m_lastOpenTry;          // Throttle OpenFileMappingA calls
 };

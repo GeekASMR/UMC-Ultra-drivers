@@ -1,4 +1,4 @@
-﻿#include <windows.h>
+#include <windows.h>
 #include <shellapi.h>
 #include <string>
 #include <thread>
@@ -6,6 +6,7 @@
 #include <dwmapi.h>
 #pragma comment(lib, "dwmapi.lib")
 #include "../license/LicenseManager.h"
+#include "OptimizerManager.h"
 
 #define WM_TRAYICON (WM_USER + 1)
 #define ID_TRAY_APP_ICON 1001
@@ -22,27 +23,7 @@ void ShowContextMenu(HWND hwnd);
 HICON ExtractOfficialIcon();
 
 void UpdateASIORegistryDescription() {
-    int rem = g_license.getTrialMinutesRemaining();
-    bool activated = g_license.checkCachedActivation(true);
-    
-    std::wstring desc;
-    if (activated) {
-        desc = L"UMC Ultra";
-    } else if (rem > 0) {
-        desc = L"UMC Ultra By ASMRTOP(trial)";
-    } else {
-        desc = L"UMC Ultra By ASMRTOP(Expired)";
-    }
-    
-    HKEY hKey;
-    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\ASIO\\UMC Ultra By ASMRTOP", 0, KEY_SET_VALUE, &hKey) == ERROR_SUCCESS) {
-        RegSetValueExW(hKey, L"Description", 0, REG_SZ, (const BYTE*)desc.c_str(), (DWORD)((desc.length() + 1) * sizeof(wchar_t)));
-        RegCloseKey(hKey);
-    }
-    if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"SOFTWARE\\WOW6432Node\\ASIO\\UMC Ultra By ASMRTOP", 0, KEY_SET_VALUE, &hKey) == ERROR_SUCCESS) {
-        RegSetValueExW(hKey, L"Description", 0, REG_SZ, (const BYTE*)desc.c_str(), (DWORD)((desc.length() + 1) * sizeof(wchar_t)));
-        RegCloseKey(hKey);
-    }
+    // Obsolete: Registration is now dynamically cleaned inside LicenseManager.h purifyReg callback!
 }
 
 void ShowContextMenu(HWND hwnd) {
@@ -50,7 +31,7 @@ void ShowContextMenu(HWND hwnd) {
     GetCursorPos(&pt);
     HMENU hMenu = CreatePopupMenu();
     
-    AppendMenuW(hMenu, MF_STRING, ID_TRAY_ACTIVATE, L"UMC Ultra Panel");
+    AppendMenuW(hMenu, MF_STRING, ID_TRAY_ACTIVATE, L"ASIO Ultra Panel");
     AppendMenuW(hMenu, MF_STRING, ID_TRAY_HW_PANEL, L"硬件底层设置");
     AppendMenuW(hMenu, MF_SEPARATOR, 0, NULL);
     AppendMenuW(hMenu, MF_STRING, ID_TRAY_EXIT, L"完全退出 Ultra Panel");
@@ -86,7 +67,7 @@ LRESULT CALLBACK CustomUIPanelProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
             g_hFontBody = CreateFontW(-14, 0, 0, 0, FW_NORMAL, 0, 0, 0, GB2312_CHARSET, OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, DEFAULT_PITCH, L"Microsoft YaHei");
 
             CreateWindowW(L"BUTTON", L"更新授权", WS_CHILD | WS_VISIBLE | BS_OWNERDRAW, 30, 180, 170, 38, hwnd, (HMENU)202, g_hInstance, NULL);
-            CreateWindowW(L"BUTTON", L"硬件设置", WS_CHILD | WS_VISIBLE | BS_OWNERDRAW, 215, 180, 170, 38, hwnd, (HMENU)203, g_hInstance, NULL);
+            CreateWindowW(L"BUTTON", L"全局中枢状态", WS_CHILD | WS_VISIBLE | BS_OWNERDRAW, 215, 180, 170, 38, hwnd, (HMENU)203, g_hInstance, NULL);
             CreateWindowW(L"BUTTON", L"系统通道深度隔离工具", WS_CHILD | WS_VISIBLE | BS_OWNERDRAW, 30, 230, 355, 38, hwnd, (HMENU)204, g_hInstance, NULL);
 
             RefreshUIPanelText(hwnd);
@@ -124,7 +105,7 @@ LRESULT CALLBACK CustomUIPanelProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 
             SelectObject(hdc, g_hFontTitle);
             SetTextColor(hdc, RGB(255, 255, 255));
-            TextOutW(hdc, 30, 24, L"UMC Ultra", 9);
+            TextOutW(hdc, 30, 24, L"ASIO Ultra", 10);
             
             SelectObject(hdc, g_hFontBody);
             if (activated) {
@@ -219,27 +200,10 @@ LRESULT CALLBACK CustomUIPanelProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
                 // 刷新界面内显文本
                 RefreshUIPanelText(hwnd);
             } else if (LOWORD(wParam) == 203) { 
-                const wchar_t* paths[] = {
-                    L"C:\\Program Files\\Behringer\\UMC_Audio_Driver\\UMCAudioCplApp.exe",
-                    L"C:\\Program Files\\BEHRINGER\\UMC_Audio_Driver\\x64\\UMCAudioCplApp.exe"
-                };
-                bool found = false;
-                for (int i = 0; i < 2; i++) {
-                    if (GetFileAttributesW(paths[i]) != INVALID_FILE_ATTRIBUTES) {
-                        ShellExecuteW(NULL, L"open", paths[i], NULL, NULL, SW_SHOW);
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) {
-                    MessageBoxW(hwnd, L"未检测到官方原厂核心组件 (UMCAudioCplApp.exe)。\n请确认您是否安装了原厂 USB 驱动包。", L"安全阻断", MB_ICONINFORMATION | MB_OK);
-                }
+                MessageBoxW(hwnd, L"硬件设置已由 ASMRTOP 全局智能代理全权接管。\n您的底层硬件已处于安全的脱机流控模式，无需也无法通过此入口直接操作物理层设备。", L"ASMRTOP 代理守卫网络", MB_ICONINFORMATION | MB_OK);
             } else if (LOWORD(wParam) == 204) {
-                wchar_t optPath[MAX_PATH] = {0};
-                GetModuleFileNameW(NULL, optPath, MAX_PATH);
-                std::wstring ePath = optPath;
-                ePath = ePath.substr(0, ePath.find_last_of(L"\\/")) + L"\\UMCOptimizer.exe";
-                ShellExecuteW(hwnd, L"runas", ePath.c_str(), NULL, NULL, SW_SHOWNORMAL);
+                // 原生回归：不再以独立外部分支执行优化器，而是直接内嵌弹窗渲染优化器架构
+                OptimizerManager::ShowDialog(hwnd);
             }
             break;
         }
@@ -262,7 +226,7 @@ void ShowCustomDarkPanel(HWND parent) {
     const wchar_t* PANEL_CLASS = L"UMC_UltraDarkPanel";
     
     // 如果已经点出来了，绝对不允许多开，而是强制把它拉到最顶层
-    HWND hExisting = FindWindowW(PANEL_CLASS, L"UMC Ultra Control Panel");
+    HWND hExisting = FindWindowW(PANEL_CLASS, L"ASIO Ultra Control Panel");
     if (hExisting) {
         ShowWindow(hExisting, SW_RESTORE);
         SetForegroundWindow(hExisting);
@@ -287,7 +251,7 @@ void ShowCustomDarkPanel(HWND parent) {
     int y = (screenH - winH) / 2;
 
     HWND hPanel = CreateWindowExW(
-        WS_EX_TOPMOST, PANEL_CLASS, L"UMC Ultra Control Panel",
+        WS_EX_TOPMOST, PANEL_CLASS, L"ASIO Ultra Control Panel",
         WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_CLIPCHILDREN,
         x, y, winW, winH, NULL, NULL, g_hInstance, NULL
     );
@@ -368,19 +332,12 @@ HICON RecolorIconToBlackGold(HICON hInstIcon) {
 }
 
 HICON ExtractOfficialIcon() {
-    const wchar_t* paths[] = {
-        L"C:\\Program Files\\Behringer\\UMC_Audio_Driver\\UMCAudioCplApp.exe",
-        L"C:\\Program Files\\BEHRINGER\\UMC_Audio_Driver\\x64\\UMCAudioCplApp.exe"
-    };
-    for (int i = 0; i < 2; i++) {
-        if (GetFileAttributesW(paths[i]) != INVALID_FILE_ATTRIBUTES) {
-            HICON hIcon = ExtractIconW(g_hInstance, paths[i], 0);
-            if (hIcon && (uintptr_t)hIcon > 1) {
-                return RecolorIconToBlackGold(hIcon);
-            }
-        }
-    }
-    return LoadIconW(NULL, (LPCWSTR)IDI_APPLICATION);
+    // 全局通用化：不再通过硬编码路径窃取百灵达官方的 U 盾图标
+    // 原生接入通用底座或资源文件 101 的极夜黑卡矢量图
+    HMODULE hMod = GetModuleHandleW(NULL);
+    HICON hIcon = LoadIconW(hMod, MAKEINTRESOURCEW(101)); 
+    if (!hIcon) hIcon = LoadIconW(NULL, (LPCWSTR)IDI_SHIELD);
+    return hIcon;
 }
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
@@ -392,9 +349,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             g_nid.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP | NIF_INFO;
             g_nid.uCallbackMessage = WM_TRAYICON;
             g_nid.hIcon = ExtractOfficialIcon();
-            wcscpy_s(g_nid.szTip, L"UMC Ultra Control Panel");
+            wcscpy_s(g_nid.szTip, L"ASIO Ultra Control Panel");
             wcscpy_s(g_nid.szInfo, L"UMC 引擎已启动");
-            wcscpy_s(g_nid.szInfoTitle, L"UMC Ultra v6.2.4");
+            wcscpy_s(g_nid.szInfoTitle, L"ASIO Ultra v7.0.0");
             g_nid.dwInfoFlags = NIIF_INFO;
             Shell_NotifyIconW(NIM_ADD, &g_nid);
             break;
@@ -420,7 +377,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 bool found = false;
                 for (int i = 0; i < 2; i++) {
                     if (GetFileAttributesW(paths[i]) != INVALID_FILE_ATTRIBUTES) {
-                        ShellExecuteW(NULL, L"open", paths[i], NULL, NULL, SW_SHOW);
+                        std::wstring execPath = paths[i];
+                        std::wstring workingDir = execPath.substr(0, execPath.find_last_of(L"\\/"));
+                        ShellExecuteW(NULL, L"open", paths[i], NULL, workingDir.c_str(), SW_SHOW);
                         found = true;
                         break;
                     }
@@ -441,15 +400,15 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow) {
     // 【终极并发锁：防刺穿原子锁机制】
-    HANDLE hMutex = CreateMutexW(NULL, TRUE, L"UMCUltraControlPanel_Atomic_Mutex");
+    HANDLE hMutex = CreateMutexW(NULL, TRUE, L"ASIOUltraControlPanel_Atomic_Mutex");
     DWORD err = GetLastError();
     if (err == ERROR_ALREADY_EXISTS || err == ERROR_ACCESS_DENIED) {
         // 如果互斥量已完全占用，或者是由于不同用户权限引发的拒绝访问，立刻执行越权托盘唤醒通信！
-        HWND hExistingDaemon = FindWindowW(L"UMCUltraCPLClass", L"UMC Ultra CPL Hidden"); 
+        HWND hExistingDaemon = FindWindowW(L"ASIOUltraCPLClass", L"ASIO Ultra CPL Hidden"); 
         if (hExistingDaemon) {
             PostMessageW(hExistingDaemon, WM_COMMAND, ID_TRAY_ACTIVATE, 0);
         }
-        HWND hPanel = FindWindowW(L"UMC_UltraDarkPanel", L"UMC Ultra Control Panel");
+        HWND hPanel = FindWindowW(L"UMC_UltraDarkPanel", L"ASIO Ultra Control Panel");
         if (hPanel) {
             ShowWindow(hPanel, SW_RESTORE);
             SetForegroundWindow(hPanel);
@@ -459,7 +418,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     }
     
     g_hInstance = hInstance;
-    const wchar_t CLASS_NAME[] = L"UMCUltraCPLClass";
+    const wchar_t CLASS_NAME[] = L"ASIOUltraCPLClass";
     WNDCLASSW wc = {};
     wc.lpfnWndProc = WindowProc;
     wc.hInstance = hInstance;
@@ -468,7 +427,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     RegisterClassW(&wc);
 
     g_hwnd = CreateWindowExW(
-        0, CLASS_NAME, L"UMC Ultra CPL Hidden",
+        0, CLASS_NAME, L"ASIO Ultra CPL Hidden",
         WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
         NULL, NULL, hInstance, NULL);
 

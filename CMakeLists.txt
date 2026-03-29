@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(BehringerASIO VERSION 6.2.1 LANGUAGES CXX)
+project(BehringerASIO VERSION 7.0.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -22,8 +22,8 @@ set(DRIVER_SOURCES
     src/driver/BehringerASIO.h
     src/driver/AudioBuffer.cpp
     src/driver/AudioBuffer.h
-    src/driver/TusbAudioDirect.cpp
-    src/driver/TusbAudioDirect.h
+    src/driver/AsioProxy.cpp
+    src/driver/AsioProxy.h
 )
 
 set(COM_SOURCES
@@ -42,102 +42,77 @@ set(ASIO_HEADERS
     src/asio/iasiodrv.h
 )
 
-# Build as shared library (DLL)
-add_library(BehringerASIO SHARED
-    ${DRIVER_SOURCES}
-    ${COM_SOURCES}
-    ${UTILS_SOURCES}
-    ${ASIO_HEADERS}
-    BehringerASIO.def
-    BehringerASIO.rc
+set(ASMR_TARGET_BRANDS
+    BEHRINGER
+    AUDIENT
+    SSL
+    MACKIE
+    TASCAM
+    YAMAHA
+    MOTU
+    PRESONUS
+    FOCUSRITE
+    ZOOM
+    ART
 )
 
-# Include directories
-target_include_directories(BehringerASIO PRIVATE
-    ${CMAKE_SOURCE_DIR}/src
-    ${CMAKE_SOURCE_DIR}/src/asio
-    ${CMAKE_SOURCE_DIR}/libusb/VS2022/MS64/dll
-    ${CMAKE_SOURCE_DIR}/libusb/include
-)
+foreach(BRAND IN LISTS ASMR_TARGET_BRANDS)
+    set(TARGET_NAME "ASMRTOP_${BRAND}")
 
-# Link Windows libraries
-target_link_libraries(BehringerASIO PRIVATE
-    ole32
-    oleaut32
-    uuid
-    setupapi
-    avrt
-    winmm
-    winhttp
-    ${CMAKE_SOURCE_DIR}/libusb/VS2022/MS64/dll/libusb-1.0.lib
-)
-
-# Compiler definitions
-target_compile_definitions(BehringerASIO PRIVATE
-    UNICODE
-    _UNICODE
-    WIN32_LEAN_AND_MEAN
-    NOMINMAX
-    _CRT_SECURE_NO_WARNINGS
-)
-
-# MSVC-specific settings
-if(MSVC)
-    target_compile_options(BehringerASIO PRIVATE
-        /W3          # Warning level 3
-        /O2          # Optimize for speed
-        /GS-         # Disable security checks in hot paths
-        /fp:fast     # Fast floating point
-        /utf-8       # Source and execution charset UTF-8
+    add_library(${TARGET_NAME} SHARED
+        ${DRIVER_SOURCES}
+        ${COM_SOURCES}
+        ${UTILS_SOURCES}
+        ${ASIO_HEADERS}
+        BehringerASIO.def
+        BehringerASIO.rc
     )
-    
-    # Set subsystem and static CRT
-    set_target_properties(BehringerASIO PROPERTIES
-        LINK_FLAGS "/SUBSYSTEM:WINDOWS"
-        MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>"
+
+    target_include_directories(${TARGET_NAME} PRIVATE
+        ${CMAKE_SOURCE_DIR}/src
+        ${CMAKE_SOURCE_DIR}/src/asio
+        ${CMAKE_SOURCE_DIR}/libusb/VS2022/MS64/dll
+        ${CMAKE_SOURCE_DIR}/libusb/include
     )
-endif()
 
-# MinGW-specific settings
-if(MINGW)
-    target_compile_options(BehringerASIO PRIVATE
-        -O2
-        -Wall
-        -ffast-math
+    target_link_libraries(${TARGET_NAME} PRIVATE
+        ole32 oleaut32 uuid setupapi avrt winmm winhttp
+        ${CMAKE_SOURCE_DIR}/libusb/VS2022/MS64/dll/libusb-1.0.lib
     )
-endif()
 
-# Output settings
-set_target_properties(BehringerASIO PROPERTIES
-    OUTPUT_NAME "BehringerASIO"
-    SUFFIX ".dll"
-    PREFIX ""
-)
+    target_compile_definitions(${TARGET_NAME} PRIVATE
+        UNICODE _UNICODE WIN32_LEAN_AND_MEAN NOMINMAX _CRT_SECURE_NO_WARNINGS
+        ASMRTOP_TARGET_${BRAND}
+    )
 
-# Install target
-install(TARGETS BehringerASIO
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION lib
-)
+    if(MSVC)
+        target_compile_options(${TARGET_NAME} PRIVATE
+            /W3 /O2 /GS- /fp:fast /utf-8
+        )
+        set_target_properties(${TARGET_NAME} PROPERTIES
+            LINK_FLAGS "/SUBSYSTEM:WINDOWS"
+            MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>"
+        )
+    endif()
 
-# Print build info
+    if(MINGW)
+        target_compile_options(${TARGET_NAME} PRIVATE -O2 -Wall -ffast-math)
+    endif()
+
+    set_target_properties(${TARGET_NAME} PROPERTIES
+        OUTPUT_NAME "${TARGET_NAME}"
+        SUFFIX ".dll"
+        PREFIX ""
+    )
+
+    install(TARGETS ${TARGET_NAME} RUNTIME DESTINATION bin LIBRARY DESTINATION lib)
+endforeach()
+
 message(STATUS "===========================================")
-message(STATUS "  Behringer UMC ASIO Driver")
+message(STATUS "  ASMRTOP Universal Defense Fleet Configured")
+message(STATUS "  Total Active Target DLLs: 11")
 message(STATUS "  Version: ${PROJECT_VERSION}")
-message(STATUS "  Build Type: ${CMAKE_BUILD_TYPE}")
 message(STATUS "===========================================")
-
-# Registration helper target
-add_custom_target(register
-    COMMAND regsvr32 /s "$<TARGET_FILE:BehringerASIO>"
-    DEPENDS BehringerASIO
-    COMMENT "Registering ASIO driver..."
-)
-
-add_custom_target(unregister
-    COMMAND regsvr32 /u /s "$<TARGET_FILE:BehringerASIO>"
-    COMMENT "Unregistering ASIO driver..."
-)
 
 # === CLI Proxy for JS Web Frontend ===
 add_executable(UMCControlProxy
@@ -206,12 +181,18 @@ add_executable(ds_sine_test tools/ds_sine_test.cpp)
 target_compile_definitions(ds_sine_test PRIVATE _CRT_SECURE_NO_WARNINGS)
 target_link_libraries(ds_sine_test dsound dxguid ole32)
 
-# === UMC Ultra Control Panel ===
-add_executable(UMCControlPanel WIN32 src/gui/UMCControlPanel.cpp src/license/LicenseManager.h src/gui/app.rc)
-target_link_libraries(UMCControlPanel PRIVATE shlwapi shell32 user32 gdi32 comctl32 wininet winhttp)
+# === ASIO Ultra Control Panel ===
+add_executable(ASIOUltraControlPanel WIN32 src/gui/UMCControlPanel.cpp src/gui/OptimizerManager.cpp src/license/LicenseManager.h src/gui/app.rc)
+target_link_libraries(ASIOUltraControlPanel PRIVATE shlwapi shell32 user32 gdi32 comctl32 wininet winhttp)
+set_target_properties(ASIOUltraControlPanel PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level='requireAdministrator' uiAccess='false'\"")
 
 # === UMC Optimizer Standalone Tool ===
 add_executable(UMCOptimizer WIN32 src/gui/UMCOptimizer.cpp src/gui/OptimizerManager.cpp src/gui/app.rc)
 target_compile_definitions(UMCOptimizer PRIVATE UNICODE _UNICODE)
 target_link_libraries(UMCOptimizer PRIVATE shlwapi shell32 user32 gdi32 comctl32 dwmapi uxtheme)
 set_target_properties(UMCOptimizer PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level='requireAdministrator' uiAccess='false'\"")
+
+# === ASIO Buffer Switch Stress Test ===
+add_executable(asio_switch_test tools/asio_switch_test.cpp)
+target_compile_definitions(asio_switch_test PRIVATE _CRT_SECURE_NO_WARNINGS)
+target_link_libraries(asio_switch_test ole32)

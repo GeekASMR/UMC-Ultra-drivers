@@ -1,5 +1,5 @@
 /*
- * LicenseManager.h - UMC Ultra 在线激活 + 离线缓存授权系统
+ * LicenseManager.h - ASIO Ultra 在线激活 + 离线缓存授权系统
  *
  * 流程:
  *   1. 首次安装: 自动开始 7 天试用期
@@ -17,6 +17,10 @@
 #include <thread>
 #include <winhttp.h>
 #include <wincrypt.h>
+#include <fstream>
+#include <mutex>
+#include <cstdarg>
+#include <vector>
 #include <string>
 #include <cstdio>
 #include <dwmapi.h>
@@ -61,7 +65,7 @@ struct XorW<std::index_sequence<I...>> {
     return r; \
 }())
 
-#define LIC_REG_KEY    XCRYPT("SOFTWARE\\ASMRTOP\\UMCUltra").c_str()
+#define LIC_REG_KEY    XCRYPT("SOFTWARE\\ASMRTOP\\ASIOUltra").c_str()
 #define LIC_SERVER_HOST WXCRYPT(L"geek.asmrtop.cn").c_str()
 #define LIC_SERVER_PATH WXCRYPT(L"/asio/activate.php").c_str()
 #define LIC_VERIFY_SALT XCRYPT("UMC_ULTRA_2026_ASMRTOP_SEC").c_str()
@@ -202,14 +206,14 @@ public:
             }
             wchar_t wMsg[1024];
             swprintf(wMsg, sizeof(wMsg)/sizeof(wchar_t),
-                L"UMC Ultra  v%s\n\n"
+                L"ASIO Ultra  v%s\n\n"
                 L"许可状态: 已激活 ✓\n"
                 L"许可密钥: %S\n"
                 L"有效期至: %S\n"
                 L"机器码: %S",
                 UMC_VERSION_WSTR, key, expiry, machineId.c_str());
             wchar_t wTitle[256];
-            swprintf(wTitle, sizeof(wTitle)/sizeof(wchar_t), L"UMC Ultra Professional v%s", UMC_VERSION_WSTR);
+            swprintf(wTitle, sizeof(wTitle)/sizeof(wchar_t), L"ASIO Ultra Professional v%s", UMC_VERSION_WSTR);
             MessageBoxW(parent, wMsg, wTitle, MB_ICONINFORMATION);
             return true;
         }
@@ -217,14 +221,14 @@ public:
         if (st == TRIAL) {
             wchar_t wMsg[1024];
             swprintf(wMsg, sizeof(wMsg)/sizeof(wchar_t),
-                L"UMC Ultra  v%s\n\n"
+                L"ASIO Ultra  v%s\n\n"
                 L"当前状态: 试用中 (剩余 %d 分钟)\n"
                 L"机器码: %S\n\n"
                 L"如需激活，请点击「是」输入许可密钥。\n"
                 L"点击「否」继续试用。",
                 UMC_VERSION_WSTR, trialLeft, machineId.c_str());
             wchar_t wTitle[256];
-            swprintf(wTitle, sizeof(wTitle)/sizeof(wchar_t), L"UMC Ultra Professional v%s", UMC_VERSION_WSTR);
+            swprintf(wTitle, sizeof(wTitle)/sizeof(wchar_t), L"ASIO Ultra Professional v%s", UMC_VERSION_WSTR);
             if (MessageBoxW(parent, wMsg, wTitle, MB_YESNO | MB_ICONQUESTION) != IDYES) {
                 // 用户选择继续试用，允许通过！
                 return true;
@@ -232,13 +236,13 @@ public:
         } else { // st == EXPIRED
             wchar_t wMsg[1024];
             swprintf(wMsg, sizeof(wMsg)/sizeof(wchar_t),
-                L"UMC Ultra  v%s\n\n"
+                L"ASIO Ultra  v%s\n\n"
                 L"试用期已到期!\n"
                 L"机器码: %S\n\n"
                 L"请输入许可密钥以继续使用。\n",
                 UMC_VERSION_WSTR, machineId.c_str());
             wchar_t wTitle[256];
-            swprintf(wTitle, sizeof(wTitle)/sizeof(wchar_t), L"UMC Ultra Professional v%s", UMC_VERSION_WSTR);
+            swprintf(wTitle, sizeof(wTitle)/sizeof(wchar_t), L"ASIO Ultra Professional v%s", UMC_VERSION_WSTR);
             MessageBoxW(parent, wMsg, wTitle, MB_ICONWARNING);
         }
 
@@ -283,7 +287,7 @@ private:
         }
 
         wchar_t wTitleInput[256];
-        swprintf(wTitleInput, sizeof(wTitleInput)/sizeof(wchar_t), L"UMC Ultra Professional v%s - 授权激活", UMC_VERSION_WSTR);
+        swprintf(wTitleInput, sizeof(wTitleInput)/sizeof(wchar_t), L"ASIO Ultra Professional v%s - 授权激活", UMC_VERSION_WSTR);
         HWND hWnd = CreateWindowExW(WS_EX_DLGMODALFRAME | WS_EX_TOPMOST,
             L"UMC_LIC_INPUT", wTitleInput,
             WS_POPUP | WS_CAPTION | WS_SYSMENU,
@@ -427,16 +431,12 @@ private:
 
                     if (s_instance && s_instance->activate(key)) {
                         s_activated = true;
-                        MessageBoxW(hWnd, L"激活成功! UMC全功能已终身解锁。\n\n为净化界面移除列表中的试用版后缀，\n系统将请求管理员权限自动更新驱动名称，请点允许！\n\n(重启宿主软件后生效)", L"UMC Ultra Professional", MB_ICONINFORMATION);
+                        MessageBoxW(hWnd, L"激活成功! ASIO Ultra 终身解锁。\n\n为净化界面移除列表中的研发后缀，系统将请求系统权限以自动更新您宿主内的驱动名称为原厂级，请点允许！\n\n(重启宿主软件后全面生效)", L"ASIO Ultra Professional", MB_ICONINFORMATION);
                         
-                        SHELLEXECUTEINFOW sei = { sizeof(sei) };
-                        sei.fMask = 0;
-                        sei.lpVerb = L"runas";
-                        sei.lpFile = L"cmd.exe";
-                        sei.lpParameters = L"/c reg add \"HKLM\\SOFTWARE\\ASIO\\UMC Ultra\" /v CLSID /d \"{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}\" /t REG_SZ /f & reg add \"HKLM\\SOFTWARE\\ASIO\\UMC Ultra\" /v Description /d \"UMC Ultra\" /t REG_SZ /f & reg delete \"HKLM\\SOFTWARE\\ASIO\\UMC Ultra By ASMRTOP\" /f & reg add \"HKLM\\SOFTWARE\\WOW6432Node\\ASIO\\UMC Ultra\" /v CLSID /d \"{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}\" /t REG_SZ /f & reg add \"HKLM\\SOFTWARE\\WOW6432Node\\ASIO\\UMC Ultra\" /v Description /d \"UMC Ultra\" /t REG_SZ /f & reg delete \"HKLM\\SOFTWARE\\WOW6432Node\\ASIO\\UMC Ultra By ASMRTOP\" /f";
-                        sei.nShow = SW_HIDE;
-                        ShellExecuteExW(&sei);
-
+                        if (s_instance) {
+                            s_instance->syncRegistryNamesNative();
+                        }
+                        
                         DestroyWindow(hWnd);
                     } else {
                         SetDlgItemTextW(hWnd, 102, L"激活失败! 请检查密钥或网络连接。");
@@ -488,7 +488,6 @@ public:
 
         if (strlen(key) == 0 || strlen(token) == 0) {
             RegCloseKey(hKey);
-            revertRegistryName();
             return false;
         }
 
@@ -496,7 +495,6 @@ public:
         std::string expected = computeToken(key, machine, expiry);
         if (expected != std::string(token)) {
             RegCloseKey(hKey);
-            revertRegistryName();
             return false;
         }
 
@@ -504,7 +502,6 @@ public:
         int y = 0, m = 0, d = 0;
         if (sscanf(expiry, "%d-%d-%d", &y, &m, &d) != 3) {
             RegCloseKey(hKey);
-            revertRegistryName();
             return false;
         }
 
@@ -514,7 +511,6 @@ public:
            (st.wYear == (WORD)y && st.wMonth > (WORD)m) || 
            (st.wYear == (WORD)y && st.wMonth == (WORD)m && st.wDay > (WORD)d)) {
             RegCloseKey(hKey);
-            revertRegistryName();
             return false;
         }
 
@@ -526,29 +522,78 @@ public:
         return true;
     }
 
-    // 强制注册表名称退回免费版 (仅在发现盗版或掉线/封号时单次执行)
-    void revertRegistryName() {
-        // 【核心拦截】：如果在 DAW (宿主) 中，绝对不允许弹窗或弹 UAC 权限！只允许外部大盘程序接管这一操作！
-        if (!GetModuleHandleW(L"UMCControlPanel.exe")) return;
+    void syncRegistryNamesNative() {
+        bool activated = checkCachedActivation(true);
+        int rem = getTrialMinutesRemaining();
 
-        static bool hasReverted = false;
-        if (hasReverted) return; // 防止 1 赫兹心跳导致的弹窗风暴
+        auto syncReg = [&](HKEY rootKey, const char* basePath) {
+            HKEY hBaseKey;
+            if (RegOpenKeyExA(rootKey, basePath, 0, KEY_ALL_ACCESS, &hBaseKey) == ERROR_SUCCESS) {
+                char subKeyName[256];
+                DWORD index = 0;
+                DWORD nameLen = sizeof(subKeyName);
+                std::vector<std::string> keysToProcess;
+                
+                while (RegEnumKeyExA(hBaseKey, index, subKeyName, &nameLen, nullptr, nullptr, nullptr, nullptr) == ERROR_SUCCESS) {
+                    std::string nameStr(subKeyName);
+                    // Match our universal CLSID prefix
+                    HKEY hSubKey;
+                    char clsid[100] = {0};
+                    DWORD clsidLen = sizeof(clsid);
+                    if (RegOpenKeyExA(hBaseKey, nameStr.c_str(), 0, KEY_READ, &hSubKey) == ERROR_SUCCESS) {
+                        if (RegQueryValueExA(hSubKey, "CLSID", nullptr, nullptr, (LPBYTE)clsid, &clsidLen) == ERROR_SUCCESS) {
+                            std::string clsidStr(clsid);
+                            if (clsidStr.find("{A1B2C3D4-E5F6-7890-ABCD-") != std::string::npos) {
+                                keysToProcess.push_back(nameStr);
+                            }
+                        }
+                        RegCloseKey(hSubKey);
+                    }
+                    index++;
+                    nameLen = sizeof(subKeyName);
+                }
+                
+                for (size_t i = 0; i < keysToProcess.size(); i++) {
+                    std::string oldName = keysToProcess[i];
+                    std::string pureName = oldName;
+                    size_t pos = oldName.find(" By ASMRTOP");
+                    if (pos != std::string::npos) {
+                        pureName = oldName.substr(0, pos);
+                    }
+                    
+                    std::string targetName = pureName;
+                    if (!activated) {
+                        if (rem > 0) {
+                            targetName += " By ASMRTOP (Trial)";
+                        } else {
+                            targetName += " By ASMRTOP (Expired)";
+                        }
+                    }
 
-        HKEY hKeyTest;
-        if (RegOpenKeyExA(HKEY_LOCAL_MACHINE, "SOFTWARE\\ASIO\\UMC Ultra", 0, KEY_READ, &hKeyTest) == ERROR_SUCCESS) {
-            RegCloseKey(hKeyTest);
-            hasReverted = true; // 锁定状态墙，进程周期内不再弹窗
-            
-            MessageBoxW(NULL, L"系统检测到您的机器授权失效（服务端解绑或重置了本机）。\n\n为恢复试用版模式列表，系统即将发出一项权限请求（CMD提权）\n请务必点击[是/允许]，否则可能会导致音频驱动在下次重启宿主设备时失联！\n\n(注意：名称变更将在重新启动宿主软件后生效)", L"UMC Ultra", MB_ICONWARNING | MB_SYSTEMMODAL);
-            
-            SHELLEXECUTEINFOW sei = { sizeof(sei) };
-            sei.fMask = 0;
-            sei.lpVerb = L"runas";
-            sei.lpFile = L"cmd.exe";
-            sei.lpParameters = L"/c reg add \"HKLM\\SOFTWARE\\ASIO\\UMC Ultra By ASMRTOP\" /v CLSID /d \"{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}\" /t REG_SZ /f & reg add \"HKLM\\SOFTWARE\\ASIO\\UMC Ultra By ASMRTOP\" /v Description /d \"UMC Ultra By ASMRTOP\" /t REG_SZ /f & reg delete \"HKLM\\SOFTWARE\\ASIO\\UMC Ultra\" /f & reg add \"HKLM\\SOFTWARE\\WOW6432Node\\ASIO\\UMC Ultra By ASMRTOP\" /v CLSID /d \"{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}\" /t REG_SZ /f & reg add \"HKLM\\SOFTWARE\\WOW6432Node\\ASIO\\UMC Ultra By ASMRTOP\" /v Description /d \"UMC Ultra By ASMRTOP\" /t REG_SZ /f & reg delete \"HKLM\\SOFTWARE\\WOW6432Node\\ASIO\\UMC Ultra\" /f";
-            sei.nShow = SW_HIDE;
-            ShellExecuteExW(&sei);
-        }
+                    if (oldName != targetName) {
+                        HKEY hSubKey;
+                        char clsid[100] = {0};
+                        DWORD clsidLen = sizeof(clsid);
+                        if (RegOpenKeyExA(hBaseKey, oldName.c_str(), 0, KEY_READ, &hSubKey) == ERROR_SUCCESS) {
+                            RegQueryValueExA(hSubKey, "CLSID", nullptr, nullptr, (LPBYTE)clsid, &clsidLen);
+                            RegCloseKey(hSubKey);
+                            
+                            HKEY hNewKey;
+                            if (RegCreateKeyExA(hBaseKey, targetName.c_str(), 0, nullptr, REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr, &hNewKey, nullptr) == ERROR_SUCCESS) {
+                                RegSetValueExA(hNewKey, "CLSID", 0, REG_SZ, (const BYTE*)clsid, clsidLen);
+                                RegSetValueExA(hNewKey, "Description", 0, REG_SZ, (const BYTE*)targetName.c_str(), (DWORD)(targetName.length() + 1));
+                                RegCloseKey(hNewKey);
+                                RegDeleteKeyA(hBaseKey, oldName.c_str());
+                            }
+                        }
+                    }
+                }
+                RegCloseKey(hBaseKey);
+            }
+        };
+
+        syncReg(HKEY_LOCAL_MACHINE, "SOFTWARE\\ASIO");
+        syncReg(HKEY_LOCAL_MACHINE, "SOFTWARE\\WOW6432Node\\ASIO");
     }
 
     // =========================================================================
@@ -668,11 +713,13 @@ public:
                                 RegDeleteValueA(hKey, "Token");
                                 RegDeleteValueA(hKey, "Expiry");
                                 RegCloseKey(hKey);
-                                revertRegistryName();
+                                syncRegistryNamesNative();
 
-                                // 通知外部执行声卡强制停载
-                                if (s_authKillCallback) {
-                                    s_authKillCallback();
+                                if (!s_activated) {
+                                    if (GetModuleHandleW(L"ASIOUltraControlPanel.exe")) {
+                                        syncRegistryNamesNative();
+                                    }
+                                    if (s_authKillCallback) s_authKillCallback();
                                 }
                                 return; 
                             }
@@ -682,7 +729,7 @@ public:
                 RegCloseKey(hKey);
             }
             // --- 静默收集并上传日志 ---
-            std::string logPath = "C:\\Users\\Public\\Documents\\UMCUltra_Debug.log";
+            std::string logPath = "C:\\Users\\Public\\Documents\\ASIOUltra_Debug.log";
             std::string mId = getMachineId();
             
             // 尝试读取注册邮箱/机器码作为 user_id 以便后台分类
