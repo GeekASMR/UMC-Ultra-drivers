@@ -2,10 +2,10 @@
 $signtool = "C:\Program Files (x86)\Windows Kits\10\bin\10.0.19041.0\x64\signtool.exe"
 $pfx = "d:\Autigravity\UMCasio\ASMRTOP_Studio.pfx"
 $cer = "d:\Autigravity\UMCasio\ASMRTOP_Studio.cer"
-$pwd = "asmrtop123"
+$pfxPass = "asmrtop123"
 
 # Wildcard Path for Chinese folders
-$installerDir = Resolve-Path "E:\Antigravity\*\UMC\UMC_Universal_Installer_V6.1_Build" | Select-Object -ExpandProperty Path
+$installerDir = Resolve-Path "E:\Antigravity\*\UMC\UMC_Universal_Installer_Build" | Select-Object -ExpandProperty Path
 
 # Files to Sign natively
 $filesToSign = @(
@@ -15,7 +15,7 @@ $filesToSign = @(
 
 # Step 1: Sign Binaries
 foreach ($file in $filesToSign) {
-    & $signtool sign /f $pfx /p $pwd /fd SHA256 /tr "http://timestamp.digicert.com" /td sha256 $file
+    & $signtool sign /f $pfx /p $pfxPass /fd SHA256 $file
 }
 
 # Step 2: Extract & Patch Setup.iss
@@ -45,9 +45,9 @@ $appVer = $appVer.Trim()
 
 # Step 5: Sign the Output Installer!
 $installerOut = Join-Path $installerDir "out\UMCUltra_V$($appVer)_Setup.exe"
-& $signtool sign /f $pfx /p $pwd /fd SHA256 /tr "http://timestamp.digicert.com" /td sha256 $installerOut
+& $signtool sign /f $pfx /p $pfxPass /fd SHA256 $installerOut
 
 # Step 6: Push strictly to GitHub
-# Set-Location "d:\Autigravity\UMCasio"
-# gh release upload v$appVer $installerOut --clobber
+Set-Location "d:\Autigravity\UMCasio"
+gh release upload v$appVer $installerOut --clobber
 

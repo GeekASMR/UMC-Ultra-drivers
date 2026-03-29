@@ -9,7 +9,7 @@ define('ADMIN_PASS', 'Asmrtop2025.'); // 修改为你想要的后台登录密码
 if (isset($_POST['login_pass'])) {
     if ($_POST['login_pass'] === ADMIN_PASS) {
         $_SESSION['admin_logged_in'] = true;
-        header("Location: admin.php");
+        header("Location: asmrtap.php");
         exit;
     } else {
         $error = "密码错误！";
@@ -19,7 +19,7 @@ if (isset($_POST['login_pass'])) {
 // 退出登录
 if (isset($_GET['logout'])) {
     session_destroy();
-    header("Location: admin.php");
+    header("Location: asmrtap.php");
     exit;
 }
 
@@ -62,7 +62,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'update_price') {
     if ($newPrice > 0) {
         $upd = $pdo->prepare("INSERT INTO settings (setting_key, setting_value) VALUES ('price', ?) ON DUPLICATE KEY UPDATE setting_value = ?");
         $upd->execute([$newPrice, $newPrice]);
-        header("Location: admin.php?msg=" . urlencode("售卖价格已成功更新为： ¥ $newPrice"));
+        header("Location: asmrtap.php?msg=" . urlencode("售卖价格已成功更新为： ¥ $newPrice"));
         exit;
     }
 }
@@ -81,7 +81,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'generate_key') {
     $ins = $pdo->prepare("INSERT INTO licenses (license_key, max_machines, machines_bound, order_no) VALUES (?, ?, '[]', 'Manual-Gen')");
     $ins->execute([$licenseKey, LICENSE_MAX_MACHINES]);
     $msg = "成功生成卡密： $licenseKey";
-    header("Location: admin.php?msg=" . urlencode($msg));
+    header("Location: asmrtap.php?msg=" . urlencode($msg));
     exit;
 }
 
@@ -89,7 +89,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'generate_key') {
 if (isset($_GET['reset_id'])) {
     $upd = $pdo->prepare("UPDATE licenses SET machines_bound = '[]' WHERE id = ?");
     $upd->execute([(int)$_GET['reset_id']]);
-    header("Location: admin.php");
+    header("Location: asmrtap.php");
     exit;
 }
 
@@ -109,7 +109,7 @@ if (isset($_GET['reset_machine'])) {
     $mId = $_GET['reset_machine'];
     $upd = $pdo->prepare("UPDATE machines SET reset_flag = 1 WHERE machine_id = ?");
     $upd->execute([$mId]);
-    header("Location: admin.php?msg=" . urlencode("重置试用时长指令已下发！在线终端将自动恢复为 60 分钟试用。"));
+    header("Location: asmrtap.php?msg=" . urlencode("重置试用时长指令已下发！在线终端将自动恢复为 60 分钟试用。"));
     exit;
 }
 
@@ -120,7 +120,7 @@ if (isset($_GET['del_log'])) {
         $logPath = realpath(__DIR__ . '/logs/' . $rel);
         if ($logPath && strpos($logPath, realpath(__DIR__ . '/logs/')) === 0) {
             unlink($logPath);
-            header("Location: admin.php?msg=" . urlencode("日志文件已成功删除！"));
+            header("Location: asmrtap.php?msg=" . urlencode("日志文件已成功删除！"));
             exit;
         }
     }
@@ -241,7 +241,7 @@ if (!empty($logFiles)) {
         <div style="display:flex; gap:10px;">
             <input type="text" name="q" placeholder="输入搜索关键词..." value="<?php echo htmlspecialchars($searchQ); ?>" style="margin:0; flex:1; padding:10px; border:1px solid #475569; background:#0f172a; color:white; border-radius:4px;">
             <button type="submit" class="btn" style="background: #eab308; color: #000; font-weight: bold;">查询</button>
-            <?php if($searchQ): ?><a href="admin.php" class="btn" style="background: #4b5563;">清除</a><?php endif; ?>
+            <?php if($searchQ): ?><a href="asmrtap.php" class="btn" style="background: #4b5563;">清除</a><?php endif; ?>
         </div>
     </form>
 
@@ -251,7 +251,7 @@ if (!empty($logFiles)) {
     </form>
     
     <div style="margin:0; display:flex; align-items:flex-end;">
-        <a href="admin.php?action=download_reset" class="btn" style="padding: 11px 20px; background: #ea580c; text-decoration:none;">📥 下载重置工具</a>
+        <a href="asmrtap.php?action=download_reset" class="btn" style="padding: 11px 20px; background: #ea580c; text-decoration:none;">📥 下载重置工具</a>
     </div>
 </div>
 
