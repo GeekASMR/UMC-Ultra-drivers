@@ -233,8 +233,16 @@ void OptimizerManager::ApplyChanges() {
         std::wstring sc = s_asioItems[i].clsid;
         std::wstring sd = s_asioItems[i].desc;
         
-        if (wantsHidden) {
-            clsidsToHide.push_back(std::string(sc.begin(), sc.end()));
+        // Cleanse CLSID string of any trailing nulls or garbage from registry buffer
+        std::wstring pureSc = sc;
+        size_t ppos = pureSc.find(L'{');
+        size_t pend = pureSc.find(L'}');
+        if (ppos != std::wstring::npos && pend != std::wstring::npos && pend > ppos) {
+            pureSc = pureSc.substr(ppos, pend - ppos + 1);
+        }
+        
+        if (wantsHidden && !pureSc.empty()) {
+            clsidsToHide.push_back(std::string(pureSc.begin(), pureSc.end()));
         }
 
         // Always rigidly enforce physical registry is fully visible in global WOW64 layers
@@ -251,8 +259,8 @@ void OptimizerManager::ApplyChanges() {
         for(int v=0; v<2; v++) {
             HKEY hDest;
             if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, dests[v].c_str(), 0, NULL, 0, KEY_WRITE | views[v], NULL, &hDest, NULL) == ERROR_SUCCESS) {
-                RegSetValueExW(hDest, L"CLSID", 0, REG_SZ, (BYTE*)sc.c_str(), (sc.length()+1)*2);
-                RegSetValueExW(hDest, L"Description", 0, REG_SZ, (BYTE*)sd.c_str(), (sd.length()+1)*2);
+                if (!pureSc.empty()) RegSetValueExW(hDest, L"CLSID", 0, REG_SZ, (BYTE*)pureSc.c_str(), (pureSc.length()+1)*2);
+                if (!sd.empty()) RegSetValueExW(hDest, L"Description", 0, REG_SZ, (BYTE*)sd.c_str(), (sd.length()+1)*2);
                 RegCloseKey(hDest);
             }
             SHDeleteKeyW(HKEY_LOCAL_MACHINE, srcs[v].c_str());
@@ -292,16 +300,19 @@ void OptimizerManager::ApplyChanges() {
             for (const auto& ef : existingFailed) {
                 bool managed = false;
                 for (auto& item : s_asioItems) {
-                    std::string narrowSc(item.clsid.begin(), item.clsid.end());
+                    std::wstring p1 = item.clsid;
+                    size_t cp = p1.find(L'{'); size_t ce = p1.find(L'}');
+                    if (cp != std::wstring::npos && ce != std::wstring::npos) p1 = p1.substr(cp, ce - cp + 1);
+                    std::string narrowSc(p1.begin(), p1.end());
                     if (_stricmp(ef.c_str(), narrowSc.c_str()) == 0) {
                         managed = true; break;
                     }
                 }
-                if (!managed) newFailed.push_back(ef);
+                if (!managed && ef.length() == 38) newFailed.push_back(ef);
             }
             // Add clsids our UI designates as hidden
             for (const auto& hd : clsidsToHide) {
-                newFailed.push_back(hd);
+                if (hd.length() == 38) newFailed.push_back(hd);
             }
 
             std::string failStr = "";
