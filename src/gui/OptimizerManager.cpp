@@ -14,81 +14,8 @@ HWND OptimizerManager::s_hAsioList = NULL;
 HWND OptimizerManager::s_hS1List = NULL;
 
 #include <string>
-#include <regex>
-#include <fstream>
-#include <shlobj.h>
 
-// Helper: Get all installed Studio One AudioEngine settings files
-static std::vector<std::wstring> GetStudioOneSettingsFiles() {
-    std::vector<std::wstring> files;
-    wchar_t appdata[MAX_PATH];
-    if (SUCCEEDED(SHGetFolderPathW(NULL, CSIDL_APPDATA, NULL, 0, appdata))) {
-        std::wstring preSonusPath = std::wstring(appdata) + L"\\PreSonus";
-        WIN32_FIND_DATAW fdw;
-        HANDLE hFind = FindFirstFileW((preSonusPath + L"\\Studio One *").c_str(), &fdw);
-        if (hFind != INVALID_HANDLE_VALUE) {
-            do {
-                if (fdw.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-                    std::wstring dirName = fdw.cFileName;
-                    std::wstring fullPath = preSonusPath + L"\\" + dirName + L"\\x64\\AudioEngine.settings";
-                    if (GetFileAttributesW(fullPath.c_str()) != INVALID_FILE_ATTRIBUTES) {
-                        files.push_back(fullPath);
-                    }
-                }
-            } while (FindNextFileW(hFind, &fdw));
-            FindClose(hFind);
-        }
-    }
-    return files;
-}
-
-static std::string ReadFileUtf8(const std::wstring& path) {
-    std::ifstream in(path, std::ios::in | std::ios::binary);
-    if (in) {
-        std::string contents;
-        in.seekg(0, std::ios::end);
-        contents.resize(in.tellg());
-        in.seekg(0, std::ios::beg);
-        in.read(&contents[0], contents.size());
-        in.close();
-        return contents;
-    }
-    return "";
-}
-
-static void WriteFileUtf8(const std::wstring& path, const std::string& contents) {
-    std::ofstream out(path, std::ios::out | std::ios::binary | std::ios::trunc);
-    if (out) {
-        out.write(contents.data(), contents.size());
-        out.close();
-    }
-}
-
-static std::vector<std::wstring> GetS1HiddenClsids() {
-    std::vector<std::wstring> hidden_clsids;
-    auto files = GetStudioOneSettingsFiles();
-    std::regex failedRgx("failedDevices=\"([^\"]+)\"");
-    for (const auto& f : files) {
-        std::string utf8 = ReadFileUtf8(f);
-        std::smatch match;
-        if (std::regex_search(utf8, match, failedRgx)) {
-            std::string found = match[1].str();
-            size_t pos = 0;
-            while ((pos = found.find("{")) != std::string::npos) {
-                size_t end = found.find("}", pos);
-                if (end != std::string::npos) {
-                    std::string clsidStr = found.substr(pos, end - pos + 1);
-                    std::wstring wClsid(clsidStr.begin(), clsidStr.end());
-                    hidden_clsids.push_back(wClsid);
-                    found.erase(0, end + 1);
-                } else break;
-            }
-        }
-    }
-    return hidden_clsids;
-}
-
-static void readAsioRoot(HKEY hRoot, bool isLegacyHiddenPath, std::vector<AsioItem>& items, DWORD viewFlag, const std::vector<std::wstring>& s1HiddenClsids) {
+static void readAsioRoot(HKEY hRoot, bool isLegacyHiddenPath, std::vector<AsioItem>& items, DWORD viewFlag) {
     std::wstring basePath = isLegacyHiddenPath ? L"SOFTWARE\\ASIO_HIDDEN" : L"SOFTWARE\\ASIO";
     HKEY hKey;
     if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, basePath.c_str(), 0, KEY_READ | viewFlag, &hKey) == ERROR_SUCCESS) {
@@ -113,16 +40,7 @@ static void readAsioRoot(HKEY hRoot, bool isLegacyHiddenPath, std::vector<AsioIt
                 }
                 
                 if (!dup && sn != L"UMC Ultra" && sn != L"UMC Ultra By ASMRTOP") {
-                    bool isEffectivelyHidden = isLegacyHiddenPath;
-                    if (!isLegacyHiddenPath) {
-                        for (const auto& hc : s1HiddenClsids) {
-                            if (_wcsicmp(hc.c_str(), clsid) == 0) {
-                                isEffectivelyHidden = true;
-                                break;
-                            }
-                        }
-                    }
-                    items.push_back({sn, clsid, desc, isEffectivelyHidden});
+                    items.push_back({sn, clsid, desc, isLegacyHiddenPath});
                 }
                 RegCloseKey(hSub);
             }
@@ -135,12 +53,9 @@ void OptimizerManager::ScanSystem() {
     s_asioItems.clear();
     s_s1Items.clear();
 
-    // 1. Scan ASIO (both architectures defensively)
-    auto s1Hidden = GetS1HiddenClsids();
-    readAsioRoot(HKEY_LOCAL_MACHINE, false, s_asioItems, KEY_WOW64_64KEY, s1Hidden);
-    readAsioRoot(HKEY_LOCAL_MACHINE, false, s_asioItems, KEY_WOW64_32KEY, s1Hidden);
-    readAsioRoot(HKEY_LOCAL_MACHINE, true, s_asioItems, KEY_WOW64_64KEY, s1Hidden);
-    readAsioRoot(HKEY_LOCAL_MACHINE, true, s_asioItems, KEY_WOW64_32KEY, s1Hidden);
+    // 1. Scan ASIO (64-bit determines GUI visibility)
+    readAsioRoot(HKEY_LOCAL_MACHINE, false, s_asioItems, KEY_WOW64_64KEY);
+    readAsioRoot(HKEY_LOCAL_MACHINE, true, s_asioItems, KEY_WOW64_64KEY);
 
     // 2. Scan Studio One / Studio Pro 8 locations (Simulated recursive PS sweep)
     const wchar_t* drives[] = { L"C:\\", L"D:\\", L"E:\\", L"F:\\" };
@@ -223,118 +138,54 @@ void OptimizerManager::ScanSystem() {
 void OptimizerManager::ApplyChanges() {
     // Note: Applying requires UAC. If the UI runs as Admin (like DAW context), it succeeds directly.
     // If not, it will silently fail or we need to restart as Admin.
-    // Handle ASIO hiding using Studio One's XML failedDevices blacklist mechanism,
-    // leaving physical registry completely intact for ASIO Link Pro.
-    std::vector<std::string> clsidsToHide;
+    // Handle ASIO hiding by physically moving 64-bit registry keys to ASIO_HIDDEN.
+    // We STRICTLY preserve 32-bit registry keys so ASIO Link Pro backing continues to function seamlessly.
     
     for (int i=0; i<ListView_GetItemCount(s_hAsioList); i++) {
         bool wantsHidden = ListView_GetCheckState(s_hAsioList, i);
-        std::wstring sn = s_asioItems[i].name;
-        std::wstring sc = s_asioItems[i].clsid;
-        std::wstring sd = s_asioItems[i].desc;
-        
-        // Cleanse CLSID string of any trailing nulls or garbage from registry buffer
-        std::wstring pureSc = sc;
-        size_t ppos = pureSc.find(L'{');
-        size_t pend = pureSc.find(L'}');
-        if (ppos != std::wstring::npos && pend != std::wstring::npos && pend > ppos) {
-            pureSc = pureSc.substr(ppos, pend - ppos + 1);
-        }
-        
-        if (wantsHidden && !pureSc.empty()) {
-            clsidsToHide.push_back(std::string(pureSc.begin(), pureSc.end()));
-        }
-
-        // Always rigidly enforce physical registry is fully visible in global WOW64 layers
-        // Copy to standard ASIO from ASIO_HIDDEN if necessary, and delete legacy ASIO_HIDDEN keys
-        std::wstring src64 = L"SOFTWARE\\ASIO_HIDDEN\\" + sn;
-        std::wstring src32 = L"SOFTWARE\\WOW6432Node\\ASIO_HIDDEN\\" + sn;
-        std::wstring dest64 = L"SOFTWARE\\ASIO\\" + sn;
-        std::wstring dest32 = L"SOFTWARE\\WOW6432Node\\ASIO\\" + sn;
-        
-        DWORD views[] = { KEY_WOW64_64KEY, KEY_WOW64_32KEY };
-        std::wstring dests[] = { dest64, dest32 };
-        std::wstring srcs[] = { src64, src32 };
-        
-        for(int v=0; v<2; v++) {
-            HKEY hDest;
-            if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, dests[v].c_str(), 0, NULL, 0, KEY_WRITE | views[v], NULL, &hDest, NULL) == ERROR_SUCCESS) {
-                if (!pureSc.empty()) RegSetValueExW(hDest, L"CLSID", 0, REG_SZ, (BYTE*)pureSc.c_str(), (pureSc.length()+1)*2);
-                if (!sd.empty()) RegSetValueExW(hDest, L"Description", 0, REG_SZ, (BYTE*)sd.c_str(), (sd.length()+1)*2);
-                RegCloseKey(hDest);
-            }
-            SHDeleteKeyW(HKEY_LOCAL_MACHINE, srcs[v].c_str());
-        }
-        s_asioItems[i].hidden = wantsHidden;
-    }
-
-    // Securely overwrite Studio One XML settings
-    auto files = GetStudioOneSettingsFiles();
-    std::regex attRgx("<Attributes([^>]+)>");
-    std::regex failedRgx("failedDevices=\"([^\"]+)\"");
-
-    for (const auto& f : files) {
-        std::string utf8 = ReadFileUtf8(f);
-        if (utf8.empty()) continue;
-
-        std::smatch matchAtt;
-        if (std::regex_search(utf8, matchAtt, attRgx)) {
-            std::string attStr = matchAtt[1].str();
+        if (s_asioItems[i].hidden != wantsHidden) {
+            std::wstring sn = s_asioItems[i].name;
+            std::wstring sc = s_asioItems[i].clsid;
+            std::wstring sd = s_asioItems[i].desc;
             
-            std::vector<std::string> existingFailed;
-            std::smatch matchFail;
-            if (std::regex_search(attStr, matchFail, failedRgx)) {
-                std::string found = matchFail[1].str();
-                size_t pos = 0;
-                while ((pos = found.find("{")) != std::string::npos) {
-                    size_t end = found.find("}", pos);
-                    if (end != std::string::npos) {
-                        existingFailed.push_back(found.substr(pos, end - pos + 1));
-                        found.erase(0, end + 1);
-                    } else break;
-                }
+            // Extract pure CLSID
+            std::wstring pureSc = sc;
+            size_t ppos = pureSc.find(L'{');
+            size_t pend = pureSc.find(L'}');
+            if (ppos != std::wstring::npos && pend != std::wstring::npos && pend > ppos) {
+                pureSc = pureSc.substr(ppos, pend - ppos + 1);
             }
 
-            // Strip CLSIDs that are managed by our UI from the blacklists
-            std::vector<std::string> newFailed;
-            for (const auto& ef : existingFailed) {
-                bool managed = false;
-                for (auto& item : s_asioItems) {
-                    std::wstring p1 = item.clsid;
-                    size_t cp = p1.find(L'{'); size_t ce = p1.find(L'}');
-                    if (cp != std::wstring::npos && ce != std::wstring::npos) p1 = p1.substr(cp, ce - cp + 1);
-                    std::string narrowSc(p1.begin(), p1.end());
-                    if (_stricmp(ef.c_str(), narrowSc.c_str()) == 0) {
-                        managed = true; break;
-                    }
+            // 64-bit mapping (hides from DAW)
+            std::wstring dest64 = wantsHidden ? (L"SOFTWARE\\ASIO_HIDDEN\\" + sn) : (L"SOFTWARE\\ASIO\\" + sn);
+            // 32-bit mapping (NEVER hidden, always ASIO, protects ASIO Link Pro tool which is 32-bit)
+            std::wstring dest32 = L"SOFTWARE\\WOW6432Node\\ASIO\\" + sn;
+            
+            DWORD views[] = { KEY_WOW64_64KEY, KEY_WOW64_32KEY };
+            std::wstring dests[] = { dest64, dest32 };
+            
+            for(int v=0; v<2; v++) {
+                HKEY hDest;
+                if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, dests[v].c_str(), 0, NULL, 0, KEY_WRITE | views[v], NULL, &hDest, NULL) == ERROR_SUCCESS) {
+                    if (!pureSc.empty()) RegSetValueExW(hDest, L"CLSID", 0, REG_SZ, (BYTE*)pureSc.c_str(), (pureSc.length()+1)*2);
+                    if (!sd.empty()) RegSetValueExW(hDest, L"Description", 0, REG_SZ, (BYTE*)sd.c_str(), (sd.length()+1)*2);
+                    RegCloseKey(hDest);
                 }
-                if (!managed && ef.length() == 38) newFailed.push_back(ef);
             }
-            // Add clsids our UI designates as hidden
-            for (const auto& hd : clsidsToHide) {
-                if (hd.length() == 38) newFailed.push_back(hd);
-            }
-
-            std::string failStr = "";
-            for (size_t i=0; i<newFailed.size(); ++i) {
-                failStr += newFailed[i];
-                if (i < newFailed.size() - 1) failStr += ",";
-            }
-
-            if (std::regex_search(attStr, matchFail, failedRgx)) {
-                if (failStr.empty()) {
-                    attStr = std::regex_replace(attStr, failedRgx, "");
-                } else {
-                    attStr = std::regex_replace(attStr, failedRgx, "failedDevices=\"" + failStr + "\"");
-                }
+            
+            // Delete old keys specifically to enforce visibility changes
+            if (wantsHidden) {
+                // If it is now hidden, we must physically delete the visible 64-bit key branch
+                SHDeleteKeyW(HKEY_LOCAL_MACHINE, (L"SOFTWARE\\ASIO\\" + sn).c_str());
             } else {
-                if (!failStr.empty()) {
-                    attStr += " failedDevices=\"" + failStr + "\"";
-                }
+                // If it is now visible, we must physically delete the hidden 64-bit key branch
+                SHDeleteKeyW(HKEY_LOCAL_MACHINE, (L"SOFTWARE\\ASIO_HIDDEN\\" + sn).c_str());
             }
+
+            // ALWAYS purge legacy 32-bit hidden keys just in case they were dumped here in older versions
+            SHDeleteKeyW(HKEY_LOCAL_MACHINE, (L"SOFTWARE\\WOW6432Node\\ASIO_HIDDEN\\" + sn).c_str());
             
-            utf8 = std::regex_replace(utf8, attRgx, "<Attributes" + attStr + ">");
-            WriteFileUtf8(f, utf8);
+            s_asioItems[i].hidden = wantsHidden;
         }
     }
 
