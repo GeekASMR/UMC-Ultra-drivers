@@ -11,6 +11,7 @@
 // Virtual Channels Settings
 #define NUM_VIRTUAL_PAIRS   4    // 4 stereo pairs = 8 virtual channels
 #define NUM_VIRTUAL_CH      (NUM_VIRTUAL_PAIRS * 2)
+#define ARRAY_SIZE_VIRT     ((NUM_VIRTUAL_PAIRS == 0) ? 1 : NUM_VIRTUAL_PAIRS)
 
 // Inline conversions for ASIO float<->int formats
 inline void convertFloatToAsio(float f, uint8_t* rawOut, int idx, ASIOSampleType type) {
@@ -114,8 +115,8 @@ private:
     ASIOSampleType m_vrtType; // Dynamically cloned from native hardware
 
     // Virtual Channels IPC (ASMRTOP WDM IPC)
-    AsmrtopIpcChannel m_playIpc[NUM_VIRTUAL_PAIRS];  // WDM -> DAW
-    AsmrtopIpcChannel m_capIpc[NUM_VIRTUAL_PAIRS];   // DAW -> WDM
+    AsmrtopIpcChannel m_playIpc[ARRAY_SIZE_VIRT];  // WDM -> DAW
+    AsmrtopIpcChannel m_capIpc[ARRAY_SIZE_VIRT];   // DAW -> WDM
     
     // Original buffer copies for proxying
     struct ProxyBuffer {
@@ -125,8 +126,8 @@ private:
         int virtualIndex;
     };
     
-    ProxyBuffer* m_vrtInProxies[NUM_VIRTUAL_PAIRS * 2];
-    ProxyBuffer* m_vrtOutProxies[NUM_VIRTUAL_PAIRS * 2];
+    ProxyBuffer* m_vrtInProxies[ARRAY_SIZE_VIRT * 2];
+    ProxyBuffer* m_vrtOutProxies[ARRAY_SIZE_VIRT * 2];
     
     std::vector<ProxyBuffer> m_bufferMap;
     std::vector<float*> m_rawVrtBufs;

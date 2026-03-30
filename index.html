@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Antigravity &mdash; Project Showcase</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#06080f;--c:#121826;--b:#1e2a3a;--a:#6366f1;--a2:#8b5cf6;--t:#e2e8f0;--t2:#94a3b8;--r:16px}
+body{font-family:'Inter','Segoe UI','Microsoft YaHei',system-ui,sans-serif;background:var(--bg);color:var(--t);min-height:100vh}
+.hero{text-align:center;padding:80px 24px 60px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-30%;left:20%;width:60%;height:120%;background:radial-gradient(ellipse,rgba(99,102,241,.08),transparent 70%);pointer-events:none}
+.hero *{position:relative}
+.logo{font-size:14px;font-weight:700;letter-spacing:6px;text-transform:uppercase;color:var(--a);margin-bottom:20px}
+.hero h1{font-size:3.2em;font-weight:900;letter-spacing:-2px;margin-bottom:12px}
+.hero h1 span{background:linear-gradient(135deg,#6366f1,#a855f7,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{color:var(--t2);font-size:1.1em;max-width:600px;margin:0 auto}
+.accent-line{height:2px;background:linear-gradient(90deg,transparent,var(--a),var(--a2),transparent);margin:0 auto;max-width:600px}
+.container{max-width:1100px;margin:0 auto;padding:40px 24px}
+.section-title{font-size:1.5em;font-weight:800;margin:48px 0 24px;display:flex;align-items:center;gap:12px}
+.section-title .dot{width:4px;height:28px;border-radius:2px;background:var(--a)}
+.projects{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px}
+.pcard{background:var(--c);border:1px solid var(--b);border-radius:var(--r);padding:28px;transition:all .3s;position:relative;overflow:hidden;cursor:pointer;text-decoration:none;color:var(--t);display:block}
+.pcard::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;transition:height .3s}
+.pcard:hover{border-color:rgba(99,102,241,.5);transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,.4)}
+.pcard:hover::before{height:4px}
+.pcard:nth-child(1)::before{background:linear-gradient(90deg,#e91e63,#ff5281)}
+.pcard:nth-child(2)::before{background:linear-gradient(90deg,#6366f1,#a855f7)}
+.pcard:nth-child(3)::before{background:linear-gradient(90deg,#10b981,#34d399)}
+.pcard:nth-child(4)::before{background:linear-gradient(90deg,#f59e0b,#fbbf24)}
+.pcard:nth-child(5)::before{background:linear-gradient(90deg,#06b6d4,#22d3ee)}
+.pcard:nth-child(6)::before{background:linear-gradient(90deg,#8b5cf6,#a78bfa)}
+.pcard:nth-child(7)::before{background:linear-gradient(90deg,#ec4899,#f472b6)}
+.pcard:nth-child(8)::before{background:linear-gradient(90deg,#f97316,#fb923c)}
+.pcard:nth-child(9)::before{background:linear-gradient(90deg,#14b8a6,#2dd4bf)}
+.pcard .icon{font-size:2em;margin-bottom:12px;display:block}
+.pcard h3{font-size:1.15em;font-weight:700;margin-bottom:6px}
+.pcard .desc{color:var(--t2);font-size:.85em;line-height:1.6;margin-bottom:16px}
+.pcard .tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{padding:3px 10px;border-radius:20px;font-size:.72em;font-weight:600;border:1px solid}
+.tag-pink{background:rgba(233,30,99,.1);color:#f472b6;border-color:rgba(233,30,99,.25)}
+.tag-blue{background:rgba(99,102,241,.1);color:#818cf8;border-color:rgba(99,102,241,.25)}
+.tag-green{background:rgba(16,185,129,.1);color:#34d399;border-color:rgba(16,185,129,.25)}
+.tag-yellow{background:rgba(245,158,11,.1);color:#fbbf24;border-color:rgba(245,158,11,.25)}
+.tag-cyan{background:rgba(6,182,212,.1);color:#22d3ee;border-color:rgba(6,182,212,.25)}
+.tag-purple{background:rgba(139,92,246,.1);color:#a78bfa;border-color:rgba(139,92,246,.25)}
+.tag-orange{background:rgba(249,115,22,.1);color:#fb923c;border-color:rgba(249,115,22,.25)}
+.sts{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.7em;font-weight:700;margin-left:8px;background:rgba(16,185,129,.15);color:#34d399}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin:32px 0}
+.stat{background:var(--c);border:1px solid var(--b);border-radius:12px;padding:20px;text-align:center}
+.stat .val{font-size:2em;font-weight:800;background:linear-gradient(135deg,var(--a),var(--a2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat .lbl{color:var(--t2);font-size:.8em;margin-top:4px}
+.footer{text-align:center;padding:40px 24px;color:#333;font-size:.85em;border-top:1px solid #151a28;margin-top:40px}
+/* Language Toggle */
+.lang-toggle{position:fixed;top:16px;right:16px;z-index:100;display:flex;background:var(--c);border:1px solid var(--b);border-radius:10px;overflow:hidden}
+.lang-btn{padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--t2);transition:all .2s}
+.lang-btn.active{background:var(--a);color:#fff}
+.lang-btn:hover:not(.active){background:rgba(99,102,241,.15)}
+@media(max-width:700px){.hero h1{font-size:2em}.projects{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<!-- Language Toggle -->
+<div class="lang-toggle">
+<button class="lang-btn active" onclick="setLang('zh')" id="btn-zh">&#x4E2D;&#x6587;</button>
+<button class="lang-btn" onclick="setLang('en')" id="btn-en">EN</button>
+</div>
+
+<div class="hero">
+<div class="logo">ANTIGRAVITY</div>
+<h1><span>Project Showcase</span></h1>
+<p><span data-zh="&#x97F3;&#x9891;&#x6280;&#x672F;&#x5F00;&#x53D1; &middot; &#x9A71;&#x52A8;&#x903B;&#x5411; &middot; &#x5DE5;&#x5177;&#x5F00;&#x53D1;" data-en="Audio Tech &middot; Driver Dev &middot; Tools">&#x97F3;&#x9891;&#x6280;&#x672F;&#x5F00;&#x53D1; &middot; &#x9A71;&#x52A8;&#x903B;&#x5411; &middot; &#x5DE5;&#x5177;&#x5F00;&#x53D1;</span></p>
+</div>
+<div class="accent-line"></div>
+<div class="container">
+
+<div class="stats">
+<div class="stat"><div class="val">10</div><div class="lbl" data-zh="项目总数" data-en="Projects">项目总数</div></div>
+<div class="stat"><div class="val">6</div><div class="lbl" data-zh="音频相关" data-en="Audio">音频相关</div></div>
+<div class="stat"><div class="val">4</div><div class="lbl" data-zh="逆向工程" data-en="Reverse Eng">逆向工程</div></div>
+<div class="stat"><div class="val">1</div><div class="lbl" data-zh="小工具" data-en="Tools">小工具</div></div>
+<div class="stat"><div class="val">2026</div><div class="lbl" data-zh="&#x5E74;&#x5EA6;" data-en="Year">&#x5E74;&#x5EA6;</div></div>
+</div>
+
+<div class="section-title"><div class="dot"></div><span data-zh="&#x97F3;&#x9891; &amp; &#x9A71;&#x52A8;" data-en="Audio &amp; Drivers">&#x97F3;&#x9891; &amp; &#x9A71;&#x52A8;</span></div>
+<div class="projects">
+<a class="pcard" href="ASIO-Ultra.html">
+<span class="icon">👑</span>
+<h3 data-zh="ASIO Ultra 架构逆向白皮书" data-en="ASIO Ultra Architecture Whitepaper">ASIO Ultra 架构逆向白皮书 <span class="sts" style="background:rgba(239,68,68,.15);color:#ef4444">V7.0.0</span></h3>
+<div class="desc" data-zh="最宏图霸业的底层系统工程。统御 Focusrite、Yamaha、PreSonus、SSL、MOTU 等 11 大厂牌的 ASIO 驱动总代理架构验证矩阵。全面披露零迟听静音指令、防 SRC 切音与宿主劫持细节。" data-en="The most ambitious low-level system project. Universal ASIO proxy architecture validation matrix for 11 brands including Focusrite, Yamaha, MOTU, SSL. Detailed disclosure of zero-latency muting, anti-SRC popping, and host hijacking.">最宏图霸业的底层系统工程。统御 Focusrite、Yamaha、PreSonus、SSL、MOTU 等 11 大厂牌的 ASIO 驱动总代理架构验证矩阵。全面披露零迟听静音指令、防 SRC 切音与宿主劫持细节。</div>
+<div class="tags"><span class="tag tag-pink">白皮书</span><span class="tag tag-cyan">逆向工程</span><span class="tag tag-blue" data-zh="全平台" data-en="Universal">全平台</span></div>
+</a>
+<a class="pcard" href="uad.html">
+<span class="icon">✨</span>
+<h3 data-zh="UAD 插件管理器" data-en="UAD Plugin Manager">UAD 插件管理器 <span class="sts" style="background:rgba(34,211,238,.15);color:#22d3ee">NEW</span></h3>
+<div class="desc" data-zh="底层系统级 UAD 插件隔离控制终端。支持一键隐藏冗余过期的授权模块、本地硬件签名加密引入，原生高性能 DWM 极夜视网膜交互界面。" data-en="System-level UAD plugin isolation terminal. Intelligent authorization hiding, signature decryption, native high-perf DWM deep UI.">底层系统级 UAD 插件隔离控制终端。支持一键隐藏冗余过期的授权模块、本地硬件签名加密引入，原生高性能 DWM 极夜视网膜交互界面。</div>
+<div class="tags"><span class="tag tag-cyan">UAD</span><span class="tag tag-blue" data-zh="隔离" data-en="Isolate">隔离</span><span class="tag tag-purple">Neutralino</span></div>
+</a>
+<a class="pcard" href="wdm2vst.html">
+<span class="icon">&#x1F39B;</span>
+<h3><span data-zh="WDM2VST 虚拟跳线" data-en="WDM2VST Audio Router">WDM2VST 虚拟跳线</span> <span class="sts">Done</span></h3>
+<div class="desc" data-zh="&#x865A;&#x62DF;&#x97F3;&#x9891;&#x8DEF;&#x7531; VST3 &#x63D2;&#x4EF6;&#x5957;&#x4EF6;&#x3002;4 &#x4E2A;&#x63D2;&#x4EF6;&#x5B9E;&#x73B0;&#x7CFB;&#x7EDF;&#x97F3;&#x9891;&#x5230; DAW &#x7684;&#x96F6;&#x5EF6;&#x8FDF;&#x6865;&#x63A5;&#xFF0C;Bit-Perfect &#x65E0;&#x635F;&#x4F20;&#x8F93;&#xFF0C;SNR 128dB&#x3002;" data-en="Virtual audio routing VST3 plugin suite. 4 plugins for zero-latency system audio to DAW bridging. Bit-Perfect, SNR 128dB.">&#x865A;&#x62DF;&#x97F3;&#x9891;&#x8DEF;&#x7531; VST3 &#x63D2;&#x4EF6;&#x5957;&#x4EF6;&#x3002;4 &#x4E2A;&#x63D2;&#x4EF6;&#x5B9E;&#x73B0;&#x7CFB;&#x7EDF;&#x97F3;&#x9891;&#x5230; DAW &#x7684;&#x96F6;&#x5EF6;&#x8FDF;&#x6865;&#x63A5;&#xFF0C;Bit-Perfect &#x65E0;&#x635F;&#x4F20;&#x8F93;&#xFF0C;SNR 128dB&#x3002;</div>
+<div class="tags"><span class="tag tag-pink">VST3</span><span class="tag tag-blue">IPC</span><span class="tag tag-green">Bit-Perfect</span></div>
+</a>
+<a class="pcard" href="behringer_asio.html">
+<span class="icon">&#x1F3A7;</span>
+<h3><span data-zh="百灵达UMC1820 虚拟通道驱动" data-en="Behringer UMC1820 Virtual Proxy">百灵达UMC1820 虚拟通道驱动</span> <span class="sts">Done</span></h3>
+<div class="desc" data-zh="基于创新型「ASIO 智能代理网关」打造的 UMC1820 初版(PID_0503) & 新版(PID_0514)满血支持方案。无缝代理官方 DLL 实现 18进20出 物理级映射，并完美外侧挂接高速 IPC 内存共享环形阵列用于系统流捕获。" data-en="Built on 'ASIO Intelligent Proxy Gateway' for UMC1820 (PID_0503/0514). Seamless proxy of official DLL mapped to 18x20 channels with external IPC memory sharing for system audio capture.">基于创新型「ASIO 智能代理网关」打造的 UMC1820 初版(PID_0503) & 新版(PID_0514)满血支持方案。无缝代理官方 DLL 实现 18进20出 物理级映射，并完美外侧挂接高速 IPC 内存虚拟通道捕获阵列。</div>
+<div class="tags"><span class="tag tag-blue">ASIO</span><span class="tag tag-purple" data-zh="&#x903B;&#x5411;" data-en="Reverse">&#x903B;&#x5411;</span><span class="tag tag-green">IOCTL</span></div>
+</a>
+<a class="pcard" href="umc_ultra.html">
+<span class="icon">⚡</span>
+<h3><span data-zh="百灵达UMC系列虚拟通道驱动" data-en="Behringer UMC Series Universal Router">百灵达UMC系列虚拟通道驱动</span> <span class="sts" style="background:rgba(34,211,238,.15);color:#22d3ee">NEW</span></h3>
+<div class="desc" data-zh="百灵达 UMC 高清全阵列(202HD/204HD/404HD)物理兼容方案。彻底摒弃脆弱的底层内核 IOCTL 黑客拦截，取而代之地使用了宿主级原厂 ASIO 切入网桥代理，赋予官方驱动同源音频性能与极速虚拟跨路由能力。" data-en="Behringer UMC HD-series (202HD/204HD/404HD) physical compatibility solution. Discards fragile low-level IOCTL hacking replacing it with host-level ASIO proxy bridging allowing original official latency + custom virtual routing.">百灵达 UMC 高清全阵列(202HD/204HD/404HD)物理兼容方案。彻底摒弃脆弱的底层内核 IOCTL 黑客拦截，取而代之地使用了宿主级原厂 ASIO 切入网桥代理，同时具备官方原生延迟与极速虚拟通道能力。</div>
+<div class="tags"><span class="tag tag-cyan">V6.1</span><span class="tag tag-blue">ASIO</span><span class="tag tag-green" data-zh="&#x5168;&#x7CFB;&#x5217;" data-en="Full Series">&#x5168;&#x7CFB;&#x5217;</span><span class="tag tag-yellow" data-zh="&#x5546;&#x4E1A;&#x7248;" data-en="Pro">&#x5546;&#x4E1A;&#x7248;</span></div>
+</a>
+
+<a class="pcard" href="ab_player.html">
+<span class="icon">&#x1F3B5;</span>
+<h3><span data-zh="AB播放器" data-en="A/B Player">AB播放器</span> <span class="sts">Done</span></h3>
+<div class="desc" data-zh="&#x4E13;&#x4E1A;&#x591A;&#x901A;&#x9053;&#x97F3;&#x9891; A/B &#x5BF9;&#x6BD4;&#x64AD;&#x653E;&#x5668;&#x3002;&#x540C;&#x65F6;&#x5411;&#x591A;&#x4E2A;&#x8F93;&#x51FA;&#x8BBE;&#x5907;&#x64AD;&#x653E;&#xFF0C;&#x72EC;&#x7ACB;&#x97F3;&#x91CF;&#x63A7;&#x5236;&#xFF0C;&#x652F;&#x6301; WASAPI &#x548C; WDM-KS&#x3002;" data-en="Multi-channel A/B comparison audio player. Simultaneous playback to multiple outputs with independent volume control.">&#x4E13;&#x4E1A;&#x591A;&#x901A;&#x9053;&#x97F3;&#x9891; A/B &#x5BF9;&#x6BD4;&#x64AD;&#x653E;&#x5668;&#x3002;&#x540C;&#x65F6;&#x5411;&#x591A;&#x4E2A;&#x8F93;&#x51FA;&#x8BBE;&#x5907;&#x64AD;&#x653E;&#xFF0C;&#x72EC;&#x7ACB;&#x97F3;&#x91CF;&#x63A7;&#x5236;&#xFF0C;&#x652F;&#x6301; WASAPI &#x548C; WDM-KS&#x3002;</div>
+<div class="tags"><span class="tag tag-pink">PortAudio</span><span class="tag tag-blue" data-zh="&#x591A;&#x901A;&#x9053;" data-en="Multi-ch">&#x591A;&#x901A;&#x9053;</span><span class="tag tag-green">A/B</span></div>
+</a>
+
+</div>
+
+<div class="section-title"><div class="dot" style="background:#8b5cf6"></div><span data-zh="&#x5DE5;&#x5177; &amp; &#x903B;&#x5411;" data-en="Tools &amp; Reverse Engineering">&#x5DE5;&#x5177; &amp; &#x903B;&#x5411;</span></div>
+<div class="projects">
+<a class="pcard" href="dayu.html">
+<span class="icon">&#x1F41F;</span>
+<h3 data-zh="&#x5927;&#x9C7C;&#x76F4;&#x64AD;&#x52A9;&#x624B;" data-en="DaYu Live Assistant">&#x5927;&#x9C7C;&#x76F4;&#x64AD;&#x52A9;&#x624B; <span class="sts">Done</span></h3>
+<div class="desc" data-zh="&#x732B;&#x8033;&#x5E73;&#x53F0;&#x4E13;&#x7528;&#x7248;&#x672C;&#xFF0C;&#x514D;&#x767B;&#x5F55;&#x8865;&#x4E01;&#x3002;&#x901A;&#x8FC7;&#x4FEE;&#x6539; Electron &#x5E94;&#x7528;&#x7684; asar &#x8D44;&#x6E90;&#x5305;&#x7ED5;&#x8FC7;&#x767B;&#x5F55;&#x9A8C;&#x8BC1;&#x3002;" data-en="MaoEr platform edition with login bypass patch. Electron app asar resource modification.">&#x732B;&#x8033;&#x5E73;&#x53F0;&#x4E13;&#x7528;&#x7248;&#x672C;&#xFF0C;&#x514D;&#x767B;&#x5F55;&#x8865;&#x4E01;&#x3002;&#x901A;&#x8FC7;&#x4FEE;&#x6539; Electron &#x5E94;&#x7528;&#x7684; asar &#x8D44;&#x6E90;&#x5305;&#x7ED5;&#x8FC7;&#x767B;&#x5F55;&#x9A8C;&#x8BC1;&#x3002;</div>
+<div class="tags"><span class="tag tag-purple">Electron</span><span class="tag tag-yellow" data-zh="&#x903B;&#x5411;" data-en="Reverse">&#x903B;&#x5411;</span><span class="tag tag-cyan" data-zh="&#x732B;&#x8033;" data-en="MaoEr">&#x732B;&#x8033;</span></div>
+</a>
+<a class="pcard" href="woniu.html">
+<span class="icon">&#x1F40C;</span>
+<h3 data-zh="&#x8717;&#x725B;&#x97F3;&#x6548;" data-en="WoNiu Audio FX">&#x8717;&#x725B;&#x97F3;&#x6548; <span class="sts">Done</span></h3>
+<div class="desc" data-zh="&#x8717;&#x725B;&#x97F3;&#x6548;&#x684C;&#x9762;&#x7248;&#x7834;&#x89E3;&#x3002;Electron &#x5E94;&#x7528;&#x903B;&#x5411;&#xFF0C;&#x79FB;&#x9664;&#x6388;&#x6743;&#x9A8C;&#x8BC1;&#x3002;" data-en="WoNiu Audio Effects desktop crack. Electron app reverse engineering, authorization bypass.">&#x8717;&#x725B;&#x97F3;&#x6548;&#x684C;&#x9762;&#x7248;&#x7834;&#x89E3;&#x3002;Electron &#x5E94;&#x7528;&#x903B;&#x5411;&#xFF0C;&#x79FB;&#x9664;&#x6388;&#x6743;&#x9A8C;&#x8BC1;&#x3002;</div>
+<div class="tags"><span class="tag tag-purple">Electron</span><span class="tag tag-yellow" data-zh="&#x903B;&#x5411;" data-en="Reverse">&#x903B;&#x5411;</span></div>
+</a>
+<a class="pcard" href="inno_cracker.html">
+<span class="icon">&#x1F513;</span>
+<h3>InnoSetup Cracker <span class="sts">Done</span></h3>
+<div class="desc" data-zh="Inno Setup &#x5B89;&#x88C5;&#x5305;&#x89E3;&#x5BC6;&#x5DE5;&#x5177;&#x3002;&#x652F;&#x6301;&#x63D0;&#x53D6;&#x52A0;&#x5BC6;&#x5B89;&#x88C5;&#x5305;&#x4E2D;&#x7684;&#x6587;&#x4EF6;&#x3002;" data-en="Inno Setup installer decryption tool. Extract files from encrypted setup packages.">Inno Setup &#x5B89;&#x88C5;&#x5305;&#x89E3;&#x5BC6;&#x5DE5;&#x5177;&#x3002;&#x652F;&#x6301;&#x63D0;&#x53D6;&#x52A0;&#x5BC6;&#x5B89;&#x88C5;&#x5305;&#x4E2D;&#x7684;&#x6587;&#x4EF6;&#x3002;</div>
+<div class="tags"><span class="tag tag-yellow" data-zh="&#x5DE5;&#x5177;" data-en="Tool">&#x5DE5;&#x5177;</span><span class="tag tag-purple" data-zh="&#x903B;&#x5411;" data-en="Reverse">&#x903B;&#x5411;</span></div>
+</a>
+<a class="pcard" href="window_drawer.html">
+<span class="icon">&#x1F4C2;</span>
+<h3 data-zh="&#x7A97;&#x53E3;&#x5C0F;&#x62BD;&#x5C49;" data-en="Window Drawer">&#x7A97;&#x53E3;&#x5C0F;&#x62BD;&#x5C49; <span class="sts">Done</span></h3>
+<div class="desc" data-zh="&#x8F7B;&#x91CF;&#x7EA7;&#x684C;&#x9762;&#x7A97;&#x53E3;&#x7BA1;&#x7406;&#x5DE5;&#x5177;&#x3002;&#x9690;&#x85CF;&#x7A97;&#x53E3;&#x3001;&#x4E09;&#x6863;&#x7B5B;&#x9009;&#x3001;&#x9690;&#x85CF;&#x4EFB;&#x52A1;&#x680F;&#x3001;&#x5F00;&#x673A;&#x81EA;&#x542F;&#x3002;Python + Win32 API&#x3002;" data-en="Lightweight desktop window manager. Hide windows, 3 filter modes, hide taskbar, auto-start. Python + Win32 API.">&#x8F7B;&#x91CF;&#x7EA7;&#x684C;&#x9762;&#x7A97;&#x53E3;&#x7BA1;&#x7406;&#x5DE5;&#x5177;&#x3002;&#x9690;&#x85CF;&#x7A97;&#x53E3;&#x3001;&#x4E09;&#x6863;&#x7B5B;&#x9009;&#x3001;&#x9690;&#x85CF;&#x4EFB;&#x52A1;&#x680F;&#x3001;&#x5F00;&#x673A;&#x81EA;&#x542F;&#x3002;Python + Win32 API&#x3002;</div>
+<div class="tags"><span class="tag tag-orange">Python</span><span class="tag tag-blue">Win32</span><span class="tag tag-green">tkinter</span></div>
+</a>
+</div>
+
+<div class="section-title"><div class="dot" style="background:#a855f7"></div><span data-zh="&#x6280;&#x672F;&#x6808;" data-en="Tech Stack">&#x6280;&#x672F;&#x6808;</span></div>
+<div class="stats">
+<div class="stat"><div class="val" style="font-size:1.2em">C/C++</div><div class="lbl" data-zh="&#x9A71;&#x52A8; &amp; &#x63D2;&#x4EF6;" data-en="Drivers &amp; Plugins">&#x9A71;&#x52A8; &amp; &#x63D2;&#x4EF6;</div></div>
+<div class="stat"><div class="val" style="font-size:1.2em">VST3</div><div class="lbl" data-zh="&#x97F3;&#x9891;&#x63D2;&#x4EF6;" data-en="Audio Plugins">&#x97F3;&#x9891;&#x63D2;&#x4EF6;</div></div>
+<div class="stat"><div class="val" style="font-size:1.2em">Win API</div><div class="lbl" data-zh="&#x7CFB;&#x7EDF;&#x7F16;&#x7A0B;" data-en="System Dev">&#x7CFB;&#x7EDF;&#x7F16;&#x7A0B;</div></div>
+<div class="stat"><div class="val" style="font-size:1.2em">Electron</div><div class="lbl" data-zh="&#x5E94;&#x7528;&#x903B;&#x5411;" data-en="App Reverse">&#x5E94;&#x7528;&#x903B;&#x5411;</div></div>
+</div>
+</div>
+<div class="footer"><p>Antigravity &middot; 2026</p><p style="margin-top:6px"><span data-zh="&#x97F3;&#x9891;&#x6280;&#x672F; &middot; &#x9A71;&#x52A8;&#x5F00;&#x53D1; &middot; &#x903B;&#x5411;&#x5DE5;&#x7A0B;" data-en="Audio Tech &middot; Driver Dev &middot; Reverse Engineering">&#x97F3;&#x9891;&#x6280;&#x672F; &middot; &#x9A71;&#x52A8;&#x5F00;&#x53D1; &middot; &#x903B;&#x5411;&#x5DE5;&#x7A0B;</span></p></div>
+
+<script>
+function setLang(lang){
+ document.querySelectorAll('[data-zh]').forEach(function(el){
+  el.innerHTML=el.getAttribute('data-'+lang);
+ });
+ document.getElementById('btn-zh').className='lang-btn'+(lang==='zh'?' active':'');
+ document.getElementById('btn-en').className='lang-btn'+(lang==='en'?' active':'');
+ localStorage.setItem('lang',lang);
+}
+(function(){var l=localStorage.getItem('lang');if(l)setLang(l);})();
+</script>
+</body>
+</html>

@@ -61,10 +61,25 @@ static const AsioBrandTarget g_CurrentTarget = {
     "ZOOM UAC-232 ASIO", "ZOOM Ultra By ASMRTOP", "{A1B2C3D4-E5F6-7890-ABCD-EF1234560012}",
     { 0xA1B2C3D4, 0xE5F6, 0x7890, { 0xAB, 0xCD, 0xEF, 0x12, 0x34, 0x56, 0x00, 0x12 } }
 };
+#elif defined(ASMRTOP_TARGET_ROLAND)
+static const AsioBrandTarget g_CurrentTarget = {
+    "OCTA-CAPTURE", "Roland Ultra By ASMRTOP", "{A1B2C3D4-E5F6-7890-ABCD-EF1234560111}",
+    { 0xA1B2C3D4, 0xE5F6, 0x7890, { 0xAB, 0xCD, 0xEF, 0x12, 0x34, 0x56, 0x01, 0x11 } }
+};
 #elif defined(ASMRTOP_TARGET_ART)
 static const AsioBrandTarget g_CurrentTarget = {
     "ART USB Audio ASIO", "ART Ultra By ASMRTOP", "{A1B2C3D4-E5F6-7890-ABCD-EF1234560110}",
     { 0xA1B2C3D4, 0xE5F6, 0x7890, { 0xAB, 0xCD, 0xEF, 0x12, 0x34, 0x56, 0x01, 0x10 } }
+};
+#elif defined(ASMRTOP_TARGET_MAUDIO)
+static const AsioBrandTarget g_CurrentTarget = {
+    "M-Audio", "M-Audio Ultra By ASMRTOP", "{A1B2C3D4-E5F6-7890-ABCD-EF1234560112}",
+    { 0xA1B2C3D4, 0xE5F6, 0x7890, { 0xAB, 0xCD, 0xEF, 0x12, 0x34, 0x56, 0x01, 0x12 } }
+};
+#elif defined(ASMRTOP_TARGET_UAD_VOLT)
+static const AsioBrandTarget g_CurrentTarget = {
+    "Volt", "UA Volt Ultra By ASMRTOP", "{A1B2C3D4-E5F6-7890-ABCD-EF1234560113}",
+    { 0xA1B2C3D4, 0xE5F6, 0x7890, { 0xAB, 0xCD, 0xEF, 0x12, 0x34, 0x56, 0x01, 0x13 } }
 };
 #else
 // Default Generic Fallback for Testing

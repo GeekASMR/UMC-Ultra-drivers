@@ -198,6 +198,10 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <Project>{9ABBE807-DA10-3E2D-A1E3-4396EAA3780A}</Project>
       <Name>ASMRTOP_MACKIE</Name>
     </ProjectReference>
+    <ProjectReference Include="D:\Autigravity\UMCasio\build\ASMRTOP_MAUDIO.vcxproj">
+      <Project>{18F9413D-A396-3D26-860D-F211E37420A3}</Project>
+      <Name>ASMRTOP_MAUDIO</Name>
+    </ProjectReference>
     <ProjectReference Include="D:\Autigravity\UMCasio\build\ASMRTOP_MOTU.vcxproj">
       <Project>{24E794D2-6D60-3253-A576-AAAA76B676D8}</Project>
       <Name>ASMRTOP_MOTU</Name>
@@ -206,6 +210,10 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <Project>{84B28432-4820-3147-8999-F9B151237384}</Project>
       <Name>ASMRTOP_PRESONUS</Name>
     </ProjectReference>
+    <ProjectReference Include="D:\Autigravity\UMCasio\build\ASMRTOP_ROLAND.vcxproj">
+      <Project>{C8616087-CB96-30D0-8899-992AA338B7AE}</Project>
+      <Name>ASMRTOP_ROLAND</Name>
+    </ProjectReference>
     <ProjectReference Include="D:\Autigravity\UMCasio\build\ASMRTOP_SSL.vcxproj">
       <Project>{C33648FB-5D19-3B90-8455-D3D394D68C34}</Project>
       <Name>ASMRTOP_SSL</Name>
@@ -213,6 +221,10 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ProjectReference Include="D:\Autigravity\UMCasio\build\ASMRTOP_TASCAM.vcxproj">
       <Project>{E7E1F222-D115-3F59-8923-8ADC72AE654B}</Project>
       <Name>ASMRTOP_TASCAM</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Autigravity\UMCasio\build\ASMRTOP_UAD_VOLT.vcxproj">
+      <Project>{7DFEFBA4-F089-35D3-8B9F-DD49ACB62CE3}</Project>
+      <Name>ASMRTOP_UAD_VOLT</Name>
     </ProjectReference>
     <ProjectReference Include="D:\Autigravity\UMCasio\build\ASMRTOP_YAMAHA.vcxproj">
       <Project>{B1751791-1B3E-35C8-92A3-623B8488947B}</Project>

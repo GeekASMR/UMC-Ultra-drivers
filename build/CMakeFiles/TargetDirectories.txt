@@ -9,6 +9,9 @@ D:/Autigravity/UMCasio/build/CMakeFiles/ASMRTOP_PRESONUS.dir
 D:/Autigravity/UMCasio/build/CMakeFiles/ASMRTOP_FOCUSRITE.dir
 D:/Autigravity/UMCasio/build/CMakeFiles/ASMRTOP_ZOOM.dir
 D:/Autigravity/UMCasio/build/CMakeFiles/ASMRTOP_ART.dir
+D:/Autigravity/UMCasio/build/CMakeFiles/ASMRTOP_ROLAND.dir
+D:/Autigravity/UMCasio/build/CMakeFiles/ASMRTOP_MAUDIO.dir
+D:/Autigravity/UMCasio/build/CMakeFiles/ASMRTOP_UAD_VOLT.dir
 D:/Autigravity/UMCasio/build/CMakeFiles/UMCControlProxy.dir
 D:/Autigravity/UMCasio/build/CMakeFiles/ipc_monitor.dir
 D:/Autigravity/UMCasio/build/CMakeFiles/ipc_quality_test.dir

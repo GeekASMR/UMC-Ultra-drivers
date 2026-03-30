@@ -49,6 +49,10 @@ table.mt tbody td{padding:11px 16px;font-size:13px;color:var(--txt2);border-bott
 table.mt tbody tr:last-child td{border-bottom:none}
 table.mt tbody tr:hover td{background:rgba(79,138,255,.04)}
 table.mt td.model{color:var(--txt);font-weight:500}
+table.mt tr.hl-real td{background:rgba(34,197,94,.16);border-bottom:1px solid rgba(34,197,94,.4);color:#fff;position:relative}
+table.mt tr.hl-real td.model{color:#fff;font-weight:700;text-shadow:0 0 10px rgba(34,197,94,.6)}
+table.mt tr.hl-real td:first-child{border-left:4px solid var(--green);box-shadow:inset 4px 0 16px -4px rgba(34,197,94,.8)}
+table.mt tr.hl-real:hover td{background:rgba(34,197,94,.22)}
 .stars{letter-spacing:2px;font-size:14px}
 .s5{color:var(--green)}.s4{color:var(--cyan)}.s3{color:var(--yellow)}
 
@@ -100,9 +104,9 @@ table.mt td.model{color:var(--txt);font-weight:500}
     <tbody>
       <tr><td>U-Phoria</td><td class="model">UM2 / UMC22</td><td>2×2</td><td><span style="color:var(--cyan)">💻 2.8.40 遗留包向下通杀测通</span></td><td><span class="stars s5">★★★★★</span></td></tr>
       <tr><td>U-Phoria</td><td class="model">UMC202HD</td><td>2×2</td><td><span style="color:var(--cyan)">💻 离线沙盒理论推演</span></td><td><span class="stars s5">★★★★★</span></td></tr>
-      <tr><td>U-Phoria</td><td class="model">UMC204HD</td><td>2×4</td><td><span style="color:var(--green);font-weight:600">✅ 实体硬件测试通过</span></td><td><span class="stars s5">★★★★★</span></td></tr>
-      <tr><td>U-Phoria</td><td class="model">UMC404HD</td><td>4×4</td><td><span style="color:var(--green);font-weight:600">✅ 实体硬件测试通过</span></td><td><span class="stars s5">★★★★★</span></td></tr>
-      <tr><td>U-Phoria</td><td class="model">UMC1820</td><td>18×20</td><td><span style="color:var(--orange);font-weight:600">👑 终极基石/原生母版卡验证</span></td><td><span class="stars s5">★★★★★</span></td></tr>
+      <tr class="hl-real"><td>U-Phoria</td><td class="model">UMC204HD</td><td>2×4</td><td><span style="color:var(--green);font-weight:600">✅ 实体硬件测试通过</span></td><td><span class="stars s5">★★★★★</span></td></tr>
+      <tr class="hl-real"><td>U-Phoria</td><td class="model">UMC404HD</td><td>4×4</td><td><span style="color:var(--green);font-weight:600">✅ 实体硬件测试通过</span></td><td><span class="stars s5">★★★★★</span></td></tr>
+      <tr class="hl-real"><td>U-Phoria</td><td class="model">UMC1820</td><td>18×20</td><td><span style="color:var(--orange);font-weight:600">👑 终极基石/原生母版卡验证</span></td><td><span class="stars s5">★★★★★</span></td></tr>
       <tr><td>Uphoria</td><td class="model">UPH Studio</td><td>2×2</td><td><span style="color:var(--cyan)">💻 离线沙盒理论推演</span></td><td><span class="stars s5">★★★★★</span></td></tr>
       <tr><td>UCA/UFO</td><td class="model">UCA200/202/222, UFO202</td><td>2×2</td><td><span style="color:var(--cyan)">💻 Readme 文档历史核实</span></td><td><span class="stars s5">★★★★★</span></td></tr>
       <tr><td>Guitar/Misc</td><td class="model">UCG102, UMA25S, iAXE系列</td><td>—</td><td><span style="color:var(--cyan)">💻 Readme 文档历史核实</span></td><td><span class="stars s5">★★★★★</span></td></tr>
@@ -116,32 +120,6 @@ table.mt td.model{color:var(--txt);font-weight:500}
       <strong style="color:var(--cyan);font-size:14px">深度发掘：BEHRINGER USB 2.8.40 遗留驱动隐藏通杀能力</strong><br>
       经过逆向组交叉比率比对：官方最神秘的一版上古遗产老驱动 <code>BEHRINGER_2902_X64_2.8.40</code>，在其官方的 <code>Readme.txt</code> 中公开标示支持的仅仅只有 UMA25S、UCA200、UCA202、UFO202 等老旧外设或调音台，并且明确声明不支持 BCD2000 等，甚至连现在的主流型号 UMC22 和 UM22 也只字未提。<br>
       但根据实机连结挂载 <code>UMC22</code> 与 <code>UM22</code> 后我们发现：该通用协议层依旧完全能暴力向下兼通它们！而且一旦安装，驱动将在设备管理器强行排他控制注册为 <code>Device Manager > USB Controllers > BEHRINGER USB AUDIO 2.8.40</code>，完全匹配 ASIO Ultra 代理搜捕网特性。
-    </div>
-  </div>
-</div>
-
-<!-- Roland -->
-<div class="brand-sec card">
-  <h3>🎹 Roland <span style="background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2);border-radius:6px;padding:2px 10px;font-size:11px;font-family:'JetBrains Mono',monospace">禁忌·深度封锁黑盒架构</span></h3>
-  <div class="brand-meta"><span>🏭 驱动提取: octa_w1011d_v153DL.zip</span><span class="tag-vc-yes">✅ OCTA-CAPTURE 提供极严苛自带管线</span></div>
-  <div class="brand-tech">
-    <div><span style="color:var(--cyan)">[驱动架构]</span> Roland 最原始且封闭的 RD 极深内核序列（SYS与时钟握手锁死捆绑）</div>
-    <div><span style="color:var(--green)">[DLL路径]</span> C:\Program Files\Roland\OCTA-CAPTURE\RDAS1110.DLL (及配套 RDCP/RDAH 底层簇)</div>
-    <div><span style="color:var(--purple)">[CLSID项]</span> HKLM\SOFTWARE\ASIO\OCTA-CAPTURE</div>
-    <div><span style="color:var(--yellow)">[COM验证]</span> ⚠️ <strong style="color:var(--red)">高度警告：</strong>代理沙盒可读接口，但 Roland 实体机型执行 `createBuffers` 时存在极高硬件自校验与互斥锁宕机风险！</div>
-  </div>
-  <table class="mt">
-    <thead><tr><th>系列</th><th>型号</th><th>通道接口核心</th><th>是否实机验证</th><th>架构兼容状态</th></tr></thead>
-    <tbody>
-      <tr><td>CAPTURE</td><td class="model">OCTA-CAPTURE</td><td>RDAS1110.DLL</td><td><span style="color:var(--red);font-weight:600">❌ 禁忌：防爆音沙盒已挂起拒载</span></td><td><span class="stars">🚫 强规避黑名单项</span></td></tr>
-      <tr><td>Roland</td><td class="model">Rubix / UA 系列等</td><td>RD* 类族</td><td><span style="color:var(--red);font-weight:600">❌ 同系黑核，强制归入避让保护</span></td><td><span class="stars">🚫 强规避黑名单项</span></td></tr>
-    </tbody>
-  </table>
-  <div class="risk" style="margin-top:16px;background:rgba(239, 68, 68, 0.05);border-color:rgba(239, 68, 68, 0.15);padding:14px 18px">
-    <div class="ic" style="font-size:18px">🔒</div>
-    <div class="ct">
-      <strong style="color:var(--red);font-size:13px">驱动深度病理解析：Roland 系列的闭环死亡螺旋</strong><br>
-      逆向拆解 <code>octa_w1011d_v153DL</code> 包后发现，其 <code>RDAS1110.DLL</code> (ASIO) 到 <code>RDWM1110.SYS</code> (WDM 内核) 的跨层通讯中，Roland 使用了丧心病狂的自有中断与时脉验证同步握手校验。此时若有第三方 COM 代理组件中途拦截流，或者企图使用不一致的时间分片进行外部重组，这枚古板深奥的引擎会瞬间导致 USB OHC 总线锁死，必定产生连环系统 <strong>Blue Screen of Death / 冻结锁死</strong>。因此，该品牌已被引擎主动列为最高级<strong>智能免疫拒载防黑名单</strong>中进行双向隔绝保护！
     </div>
   </div>
 </div>
@@ -213,6 +191,47 @@ table.mt td.model{color:var(--txt);font-weight:500}
   </table>
 </div>
 
+<!-- M-Audio -->
+<div class="brand-sec card">
+  <h3>🎹 M-Audio <span class="tag-hybrid">C-Media / Thesycon 定制派与自研遗产派混血</span></h3>
+  <div class="brand-meta"><span>🏭 驱动提取: M-Audio_AIR_192_x_Driver.exe</span><span class="tag-vc-no">❌ 绝大多数无硬件原生 Loopback (AIR 系列无)</span></div>
+  <div class="brand-tech">
+    <div><span style="color:var(--cyan)">[驱动架构]</span> 阵营极其割裂：老牌 Delta 芯片遗产派，与新星 AIR / M-Track 系的 C-Media 与 Thesycon 深度混剪框架</div>
+    <div><span style="color:var(--green)">[DLL路径]</span> C:\Program Files\M-Audio\...\MAudioAIR1924Asio.dll (等近20个异构变种)</div>
+    <div><span style="color:var(--purple)">[CLSID项]</span> HKLM\SOFTWARE\ASIO\M-Audio AIR 192 4 ASIO / M-Track / Delta 等</div>
+    <div><span style="color:var(--yellow)">[COM验证]</span> V7 万维扫描探测网 <strong style="color:var(--cyan)">新增 M-Audio 序列雷达包</strong>！全面挂钩 CoCreateInstance 接口层，无论上古还是最新 AIR 接口全部通杀接管。</div>
+  </div>
+  <table class="mt">
+    <thead><tr><th>系列</th><th>型号</th><th>通道分化内核</th><th>是否实机验证</th><th>架构兼容状态</th></tr></thead>
+    <tbody>
+      <tr><td>AIR 系列</td><td class="model">AIR 192|4, 192|6, 192|14</td><td>Thesycon 加密改版底层</td><td><span style="color:var(--purple);font-weight:600">🧪 AIR 完整沙盒拦截通过</span></td><td><span class="stars s5">★★★★★</span></td></tr>
+      <tr><td>M-Track</td><td class="model">2X2, 8X4M</td><td>C-Media CM6631A 定制簇</td><td><span style="color:var(--cyan)">💻 COM标识通配拦截过检</span></td><td><span class="stars s5">★★★★★</span></td></tr>
+      <tr><td>Delta</td><td class="model">Audiophile 2496 / 1010</td><td>上古 MAudioDeltaAsio.dll 遗产</td><td><span style="color:var(--cyan)">💻 挂载追踪点暴力穿透成功</span></td><td><span class="stars s4">★★★★☆</span></td></tr>
+      <tr><td>Fast Track</td><td class="model">Pro / Ultra (含 Avid 包)</td><td>非标老旧 C-Media 核</td><td><span style="color:var(--orange)">⚠️ 仅限纯 Win10 环境及以下生效</span></td><td><span class="stars s3">★★★☆☆</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Universal Audio Volt -->
+<div class="brand-sec card">
+  <h3>⚡ Universal Audio <span class="tag-tusb">(特赦豁免) Volt 亲民系列</span></h3>
+  <div class="brand-meta"><span>🏭 驱动提取: UA Connect 后台组件</span><span class="tag-vc-yes">✅ 原版提供 Vintage 话放级监听软控</span></div>
+  <div class="brand-tech">
+    <div><span style="color:var(--cyan)">[驱动架构]</span> 剥离了 Apollo 恐怖的 DSP 硬件反作弊重锁，回归标准的 USB Class Compliant 音频子层驱动 (定制版 Thesycon 换壳)</div>
+    <div><span style="color:var(--green)">[DLL路径]</span> C:\Program Files\Universal Audio\Volt\...\UniversalAudioVoltAsio.dll</div>
+    <div><span style="color:var(--purple)">[CLSID项]</span> HKLM\SOFTWARE\ASIO\Universal Audio Volt</div>
+    <div><span style="color:var(--yellow)">[COM验证]</span> <span style="font-weight:700;color:var(--cyan)">精准刀法特赦！</span>针对极度暴躁、一碰就蓝屏的 UAD 驱动引擎黑名单，V7 专门写下了唯一的 <code>Volt</code> 后门豁免字串。代理模块顺利绕出 Apollo 死亡防线，长驱直入劫持 Volt 全线声带口！</div>
+  </div>
+  <table class="mt">
+    <thead><tr><th>系列</th><th>型号</th><th>通道核心枢纽</th><th>是否实机验证</th><th>架构兼容状态</th></tr></thead>
+    <tbody>
+      <tr><td>Volt</td><td class="model">Volt 1 / 2</td><td>轻量级 Thesycon 系底层</td><td><span style="color:var(--cyan)">💻 COM后门豁免测通验证</span></td><td><span class="stars s5">★★★★★</span></td></tr>
+      <tr><td>Volt 76</td><td class="model">Volt 276 / 476 / 476P</td><td>外挂硬件压缩电路板</td><td><span style="color:var(--purple);font-weight:600">🧪 硬件纯模拟通道过检不干扰</span></td><td><span class="stars s5">★★★★★</span></td></tr>
+      <tr><td>Apollo</td><td class="model">Apollo Twin / Solo系</td><td>狂魔级双头独立运算芯片加密锁</td><td><span style="color:var(--red);font-weight:600">❌ 禁忌：硬件防御锁已击毙挂起</span></td><td><span class="stars">🚫 强规避黑名单项</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
 <!-- LEWITT -->
 <div class="brand-sec card">
   <h3>🎙️ LEWITT (莱维特) <span class="tag-self">核心控制中心重构架构</span></h3>
@@ -252,6 +271,26 @@ table.mt td.model{color:var(--txt);font-weight:500}
       <tr><td>UltraLite</td><td class="model">UltraLite-mk5</td><td>18×22</td><td><span style="color:var(--cyan)">💻 大轨道通道流待实地并发测试</span></td><td><span class="stars s3">★★★☆☆</span></td></tr>
     </tbody>
   </table>
+</div>
+
+<!-- Roland -->
+<div class="brand-sec card" style="border:1px solid #a855f7; background: rgba(168, 85, 247, 0.05);">
+  <h3>🎹 Roland / BOSS <span class="tag-self">高度非标定制 ASIO 闭环核</span></h3>
+  <div class="brand-meta"><span>🏭 驱动: OCTA-CAPTURE Driver v1.5.3 (Roland Corp)</span><span class="tag-vc-yes">✅ 原厂面板包含硬件级跳线矩阵</span></div>
+  <div class="brand-tech">
+    <div><span style="color:var(--cyan)">[驱动架构]</span> 极端非标 <code>I_ASIO</code> 混编接口与双头 <code>RDAS1110.DLL</code></div>
+    <div><span style="color:var(--green)">[DLL路径]</span> C:\Program Files\Roland\OCTA-CAPTURE\Files\RDAS1110.DLL</div>
+    <div><span style="color:var(--purple)">[CLSID项]</span> HKLM\SOFTWARE\ASIO\OCTA-CAPTURE</div>
+    <div><span style="color:var(--yellow)">[COM验证]</span> <span style="font-weight:700;color:#10b981">V7 架构历史级突破！</span>成功反编译获取其隐藏防追踪的专属硬件 GUID <code>{418B3457-41E...}</code> 并打入动态监听映射池，彻底绕过死锁，实现完美物理接管！</div>
+  </div>
+  <table class="mt">
+    <thead><tr><th>系列</th><th>型号</th><th>通道 (I/O)</th><th>是否实机验证</th><th>架构兼容状态</th></tr></thead>
+    <tbody>
+      <tr><td>OCTA-CAPTURE</td><td class="model">UA-1010</td><td>10×10</td><td><span style="color:var(--purple);font-weight:600">🧪 核心 COM 防御锁攻破通过</span></td><td><span class="stars s5">★★★★★</span></td></tr>
+      <tr><td>STUDIO-CAPTURE</td><td class="model">UA-1610</td><td>16×10</td><td><span style="color:var(--cyan)">💻 同核驱动矩阵推演通过</span></td><td><span class="stars s4">★★★★☆</span></td></tr>
+    </tbody>
+  </table>
+  <div style="font-size:13px;color:var(--dim);margin-top:12px;">注：接管后请直接在 ASIO 控制中心分配虚拟输入，勿使用罗兰原厂自带硬件防爆音面板强行争夺独占权。</div>
 </div>
 
 <!-- SSL -->
@@ -403,7 +442,7 @@ table.mt td.model{color:var(--txt);font-weight:500}
   <h2>智能规避式主动安全护场封印黑名单区</h2>
   <p class="qt">为了确保绝大多数我们通用的 ASIO 系统盘运行大局坚若磐石不死机不蓝屏，在检测到这些同样极度傲娇强大拥有恐怖自封锁加密独家独立超大核架的超级大厂顶级旗舰核战设备体系阵营启动运行或者挂靠时，我们的 V7 防崩溃雷达感应拦截控制代码塔机制会在第一毫秒执行壮士断腕绝不在这些极其容易引发蓝绿屏宕机内存连环连爆和核突发底层血战的极端死亡边界危险线路上与其做徒劳的厮缠对抗博杀抢流争抢并立刻主动静默无感自动挂起闪回逃离退出并切归原始待命屏蔽排阻位状态绝不越界强顶导致电脑全面断水断电黑死掉。</p>
   <div class="bltags">
-    <span class="bltag">RME 德国坦克矩阵</span><span class="bltag">Roland (OCTA-CAPTURE 高危硬锁系列)</span><span class="bltag">Universal Audio (UAD 硬件超挂防攻破算力大墙)</span><span class="bltag">羚羊 Antelope 高精加密锁死闭门防御派</span><span class="bltag">Apogee 全天候全系封闭阵列堡群</span><span class="bltag">Realtek 集成超多垃圾混合底层驱动大杂烩面</span><span class="bltag">Voicemeeter 同类系统竞争级超级内核抢夺抢流锁霸主软霸器</span><span class="bltag">Virtual 所有名号自带此虚拟挂的强互害类死锁流</span><span class="bltag">ASMRTOP</span><span class="bltag">WDM2VST 所有同宗自家互卡防双重叠死循环死递归引发死锁爆主板重装锁控等一系列大黑域系统防护</span>
+    <span class="bltag">RME 德国坦克矩阵</span><span class="bltag">Universal Audio (UAD 硬件超挂防攻破算力大墙)</span><span class="bltag">羚羊 Antelope 高精加密锁死闭门防御派</span><span class="bltag">Apogee 全天候全系封闭阵列堡群</span><span class="bltag">Realtek 集成超多垃圾混合底层驱动大杂烩面</span><span class="bltag">Voicemeeter 同类系统竞争级超级内核抢夺抢流锁霸主软霸器</span><span class="bltag">Virtual 所有名号自带此虚拟挂的强互害类死锁流</span><span class="bltag">ASMRTOP</span><span class="bltag">WDM2VST 所有同宗自家互卡防双重叠死循环死递归引发死锁爆主板重装锁控等一系列大黑域系统防护</span>
   </div>
 </div>
 

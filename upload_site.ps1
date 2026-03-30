@@ -1,7 +1,7 @@
 $user = "geek_asmrtop_cn"
 $pass = "5yifcKJkbKefm4JR"
 
-$localFile = (Get-ChildItem -Path "E:\Antigravity\*\UMC\UMC_Ultra_V6.1_By_ASMRTOP.html" | Select-Object -First 1).FullName
+$localFile = "d:\Autigravity\UMCasio\ASMRTOP_V7_ASIO_兼容性验证矩阵.html"
 Write-Host "Target: $localFile"
 
 # Upload safely
@@ -27,7 +27,7 @@ $fs2.CopyTo($rs2)
 $rs2.Close()
 $fs2.Close()
 
-$ftp3 = "ftp://103.80.27.48/UMC_Ultra_V6.1_By_ASMRTOP.html"
+$ftp3 = "ftp://103.80.27.48/ASMRTOP_V7_ASIO_兼容性验证矩阵.html"
 $req3 = [System.Net.FtpWebRequest]::Create($ftp3)
 $req3.Credentials = New-Object System.Net.NetworkCredential($user, $pass)
 $req3.Proxy = $null

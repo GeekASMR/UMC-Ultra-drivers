@@ -72,6 +72,11 @@ BehringerASIO::BehringerASIO(LPUNKNOWN pUnk, HRESULT* phr)
             for (int b = 0; b < 12; b++) {
                 if (strstr(subKeyName, blacklist[b])) { isBlacklisted = true; break; }
             }
+            
+            // 🌟 UAD VOLT SERIES EXCEPTION: Unlock Universal Audio's accessible Volt series from the Apollo DRM blacklist death spiral
+            if (isBlacklisted && strstr(subKeyName, "Volt")) {
+                isBlacklisted = false; // Pardon the Volt! It's a normal class-compliant USB device!
+            }
 
             if (!isBlacklisted) {
                 // Whitelist target Thesycon/USB families
@@ -81,8 +86,8 @@ BehringerASIO::BehringerASIO(LPUNKNOWN pUnk, HRESULT* phr)
                         isTarget = true;
                     }
                 } else {
-                    const char* targets[] = {"UMC", "Audient", "Solid State Logic", "TUSBAUDIO", "USB Audio", "Onyx", "TASCAM", "FiiO", "Topping", "iFi", "Yamaha", "Steinberg", "MOTU", "Presonus", "Focusrite", "Ploytec", "ART", "Audiolink", "LEWITT"};
-                    for (int i = 0; i < 19; i++) {
+                    const char* targets[] = {"UMC", "Audient", "Solid State Logic", "TUSBAUDIO", "USB Audio", "Onyx", "TASCAM", "FiiO", "Topping", "iFi", "Yamaha", "Steinberg", "MOTU", "Presonus", "Focusrite", "Ploytec", "ART", "Audiolink", "LEWITT", "OCTA", "M-Audio", "M-Track", "Delta", "Volt"};
+                    for (int i = 0; i < 24; i++) {
                         if (strstr(subKeyName, targets[i])) { isTarget = true; break; }
                     }
                 }
@@ -167,7 +172,7 @@ HRESULT BehringerASIO::CreateInstance(LPUNKNOWN pUnk, REFIID riid, void** ppv) {
 
 STDMETHODIMP BehringerASIO::QueryInterface(REFIID riid, void** ppv) {
     if (!ppv) return E_POINTER;
-    if (riid == IID_IUnknown || riid == g_CurrentTarget.clsid) {
+    if (riid == IID_IUnknown || riid == g_CurrentTarget.clsid || riid == g_RequestedCLSID || riid == CLSID_UmcAudioAsio) {
         *ppv = static_cast<IASIO*>(this);
         AddRef();
         return S_OK;
@@ -367,9 +372,9 @@ ASIOError BehringerASIO::getChannelInfo(ASIOChannelInfo* info) {
     info->type = ASIOSTFloat32LSB; // Virtual natively supports flawless 32-bit floats!
 
     if (info->isInput) {
-        snprintf(info->name, 32, "Virtual %d", vIdx + 1);
+        snprintf(info->name, 32, "%s Virtual %d", g_CurrentTarget.searchKeyword, vIdx + 1);
     } else {
-        snprintf(info->name, 32, "Mic %d", vIdx + 1);
+        snprintf(info->name, 32, "%s Mic %d", g_CurrentTarget.searchKeyword, vIdx + 1);
     }
     return ASE_OK;
 }
@@ -456,6 +461,34 @@ ASIOError BehringerASIO::createBuffers(ASIOBufferInfo* bufferInfos, long numChan
             m_rawVrtBufs.push_back((float*)pb.original.buffers[0]);
             m_rawVrtBufs.push_back((float*)pb.original.buffers[1]);
             m_bufferMap.push_back(pb);
+        }
+    }
+
+    // 🌟 ROLAND CRASH FIX (The hardware self-validation & mutex lock downtime fix) 🌟
+    // Strict drivers (like Roland's OCTA-CAPTURE) suffer from critical out-of-bound access violations
+    // if the DAW attempts to create buffers with a partial subset of channels. We safely pad
+    // ONLY the unrequested channels up to the full physical limit to pacify their driver kernel.
+    const char* exactName = "";
+    if (g_CurrentTarget.searchKeyword) exactName = g_CurrentTarget.searchKeyword;
+    
+    if (strstr(exactName, "Roland") || strstr(exactName, "OCTA-CAPTURE") || strstr(exactName, "QUAD-CAPTURE")) {
+        bool hasIn[256] = {false};
+        bool hasOut[256] = {false};
+        for (size_t i = 0; i < baseBufferInfos.size(); i++) {
+            if (baseBufferInfos[i].isInput && baseBufferInfos[i].channelNum >= 0 && baseBufferInfos[i].channelNum < 256)
+                hasIn[baseBufferInfos[i].channelNum] = true;
+            else if (!baseBufferInfos[i].isInput && baseBufferInfos[i].channelNum >= 0 && baseBufferInfos[i].channelNum < 256)
+                hasOut[baseBufferInfos[i].channelNum] = true;
+        }
+        for (long i = 0; i < m_hwNumInputs; i++) {
+            if (!hasIn[i]) {
+                ASIOBufferInfo dummy = {0}; dummy.isInput = ASIOTrue; dummy.channelNum = i; baseBufferInfos.push_back(dummy);
+            }
+        }
+        for (long i = 0; i < m_hwNumOutputs; i++) {
+            if (!hasOut[i]) {
+                ASIOBufferInfo dummy = {0}; dummy.isInput = ASIOFalse; dummy.channelNum = i; baseBufferInfos.push_back(dummy);
+            }
         }
     }
 

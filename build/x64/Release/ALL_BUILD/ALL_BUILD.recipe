@@ -23,16 +23,25 @@
       <FullPath>D:\Autigravity\UMCasio\build\bin\Release\ASMRTOP_MACKIE.dll</FullPath>
     </ProjectOutput>
     <ProjectOutput>
+      <FullPath>D:\Autigravity\UMCasio\build\bin\Release\ASMRTOP_MAUDIO.dll</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
       <FullPath>D:\Autigravity\UMCasio\build\bin\Release\ASMRTOP_MOTU.dll</FullPath>
     </ProjectOutput>
     <ProjectOutput>
       <FullPath>D:\Autigravity\UMCasio\build\bin\Release\ASMRTOP_PRESONUS.dll</FullPath>
     </ProjectOutput>
     <ProjectOutput>
+      <FullPath>D:\Autigravity\UMCasio\build\bin\Release\ASMRTOP_ROLAND.dll</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
       <FullPath>D:\Autigravity\UMCasio\build\bin\Release\ASMRTOP_SSL.dll</FullPath>
     </ProjectOutput>
     <ProjectOutput>
       <FullPath>D:\Autigravity\UMCasio\build\bin\Release\ASMRTOP_TASCAM.dll</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>D:\Autigravity\UMCasio\build\bin\Release\ASMRTOP_UAD_VOLT.dll</FullPath>
     </ProjectOutput>
     <ProjectOutput>
       <FullPath>D:\Autigravity\UMCasio\build\bin\Release\ASMRTOP_YAMAHA.dll</FullPath>

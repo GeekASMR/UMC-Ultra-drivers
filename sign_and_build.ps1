@@ -66,9 +66,14 @@ $appVer = $appVer.Trim()
 
 # Step 5: Sign the Output Installer!
 Write-Host "[5] Signing final Setup Installer..." -ForegroundColor Green
-$installerOut = Join-Path $installerDir "out\ASIOUltra_V$($appVer)_Setup_Signed.exe"
+$installerOut = Join-Path $installerDir "out\ASIOUltra_V$($appVer)_Setup_Test.exe"
+$installerSignedOut = Join-Path $installerDir "out\ASIOUltra_V$($appVer)_Setup_Signed.exe"
 if (Test-Path $installerOut) {
     & $signtool sign /f $pfx /p $pfxPass /fd SHA256 $installerOut
+    if ($LASTEXITCODE -eq 0) {
+        Rename-Item -Path $installerOut -NewName "ASIOUltra_V$($appVer)_Setup_Signed.exe" -Force
+        Write-Host "Successfully signed and renamed to _Signed.exe" -ForegroundColor Green
+    }
 } else {
     Write-Host "WARNING: Installer not found at $installerOut" -ForegroundColor Yellow
 }
