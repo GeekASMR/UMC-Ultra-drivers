@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"D:/Autigravity/UMCasio/tools/build/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

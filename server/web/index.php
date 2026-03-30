@@ -1,6 +1,6 @@
 <?php
 /**
- * UMC Ultra 高级授权 - 在线自助购买商店
+ * ASIO Ultra 控制中心 - 核心版授权自助购买商店
  */
 require_once 'config.php';
 
@@ -26,7 +26,7 @@ if ($orderNo) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>获得 UMC Ultra 终身高级版授权</title>
+    <title>获得 ASIO Ultra 终身高级版授权</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding: 0; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
         .card { background: #1e293b; padding: 40px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); max-width: 500px; width: 100%; border: 1px solid #334155; }
@@ -68,7 +68,7 @@ if ($orderNo) {
 <body>
 
 <div class="card">
-    <h1>UMC Ultra By ASMRTOP (永久授权)</h1>
+    <h1>ASIO Ultra (原 UMC) 核心授权</h1>
     
     <?php if ($keyToShow): ?>
         <!-- 支付成功状态 -->
@@ -111,11 +111,12 @@ if ($orderNo) {
             <div class="price">¥ <?php echo LICENSE_PRICE; ?></div>
             
             <ul class="features">
-                <li>完整解锁 UMC 接口所有虚拟双通道映射</li>
-                <li>解除 60 分钟试用限制，一次购买终身有效</li>
-                <li>支持更换电脑重新激活 (最高同时授权 2 台电脑)</li>
-                <li>自动同步官方核心架构更新和系统适配</li>
-                <li>激活后自动去除 ASIO 驱动列表后缀广告宣传语</li>
+                <li>完整解锁全品牌外置声卡的虚拟双通道路由总线</li>
+                <li>解除 60 分钟白盒试用中断限制，获得核心引擎终身通行证</li>
+                <li>支持自由换绑授权 (当前许可单码绑定上限: 2台物理工作站)</li>
+                <li>全自动追踪原厂底层架构同步云端校验更新</li>
+                <li>拔除底层 DLL 流广告宣传签名标记</li>
+                <li style="margin-top: 20px;"><a href="matrix.html" target="_blank" style="color: #38bdf8; font-weight: bold; text-decoration: none; border-bottom: 1px dashed #38bdf8; padding-bottom: 2px;">📁 参阅核心重器《ASIO Ultra 兼容性架构认证白皮书》</a></li>
             </ul>
 
             <div class="btn-group">

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UMC Ultra ASIO Driver 官方使用指南与免责声明</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --text-color: #f8fafc;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --primary-accent: #38bdf8;
+            --danger-accent: #ef4444;
+            --success-accent: #10b981;
+        }
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+        h1 {
+            font-weight: 800;
+            font-size: 2rem;
+            margin-top: 0;
+            background: linear-gradient(135deg, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+        }
+        h2 {
+            font-size: 1.5rem;
+            color: var(--primary-accent);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-top: 40px;
+        }
+        h3 {
+            font-size: 1.1rem;
+            color: #e2e8f0;
+            margin-top: 25px;
+        }
+        p {
+            color: #cbd5e1;
+        }
+        .highlight {
+            color: var(--primary-accent);
+            font-weight: 600;
+        }
+        .warning {
+            background-color: rgba(239, 68, 68, 0.1);
+            border-left: 4px solid var(--danger-accent);
+            padding: 15px;
+            border-radius: 4px;
+            color: #fca5a5;
+        }
+        .success {
+            background-color: rgba(16, 185, 129, 0.1);
+            border-left: 4px solid var(--success-accent);
+            padding: 15px;
+            border-radius: 4px;
+            color: #6ee7b7;
+        }
+        ul {
+            color: #cbd5e1;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            font-size: 0.9rem;
+            color: #94a3b8;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+        }
+        .footer span {
+            display: block;
+            margin-top: 5px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎛️ UMC Ultra ASIO Driver</h1>
+        <p style="text-align: center; color: #94a3b8;"><strong>官方安装使用指南与终极免责声明</strong></p>
+        
+        <p>感谢您选择 <span class="highlight">UMC Ultra ASIO 驱动</span>！本驱动专门针对 Behringer UMC 系列音频接口进行了史诗级的内核级重构与深度提速。最新版本引入了 <strong>SIMD 向量化强力引擎</strong>与 <strong>异步无锁心跳架构</strong>，为您带来 0 掉线、0 爆音、媲美一流专业声卡的毫秒级超低延迟体验。</p>
+        
+        <div class="warning">
+            <strong>为保障您的最佳使用体验并避免排错弯路，请在运行宿主（Cubase / Studio One / FL Studio 等）前务必仔细阅读本指南！</strong>
+        </div>
+
+        <h2>🚀 一、 运行跑车前必须踩牢的“两大地基”</h2>
+        <p>本驱动采用了硬核的 <code>IOCTL + DMA</code> 直连宿主通道架构。这意味着我们必须站在巨人的肩膀上：</p>
+        
+        <h3>1. ⚠️ 必须预先安装 Behringer 官方原版驱动底包！</h3>
+        <ul>
+            <li><strong>不装底包无法运行</strong>：必须先去 Behringer 官网下载并安装其对应的官方驱动程序（即安装后电脑里有 <code>UMC Audio Control Panel</code>）。</li>
+            <li><strong>原理解释</strong>：UMC Ultra 在底层会寻找特定的 <code>TUSBAUDIO</code> 专属高速通道。如果不接官方底座，Windows 会默认使用不具备专用提速指令的公版 USB 声卡驱动，导致本高速驱动探测不到专属入口。</li>
+        </ul>
+
+        <h3>2. 🔌 必须先插紧 USB 声卡，再开数字宿主！</h3>
+        <ul>
+            <li><strong>血泪教训</strong>：很多初级用户抱怨“在宿主里选你们的驱动没有任何反应或弹出报错”。</li>
+            <li><strong>原因</strong>：请确保您的声卡已经通过 USB 成功连接且通电！我们的驱动加载极速且带有高可用安全验证锁，当侦测不到配套硬件时会自动隐蔽销毁以防宿主死锁。<strong>请牢记：先开声卡，再开宿主！</strong></li>
+        </ul>
+
+        <h2>⚡ 二、 巅峰性能体验须知</h2>
+        
+        <h3>1. 释放 CPU 潜力（AVX/SSE 引擎启动）</h3>
+        <p>在最新底层的架构中，我们彻底抛弃了低效的标量转化，采用了多线程汇编级的 SIMD 超宽寄存器吞图代码。</p>
+        <ul>
+            <li>您现在可以<strong>大胆地将 Buffer Size 缓冲值拉低到 <code>128</code> 甚至 <code>64</code> Samples！</strong></li>
+            <li>处理转换延迟大幅被处理器硬件加速卸载，这省下来的海量运算力能让您放心开工程挂载巨量效果器。</li>
+        </ul>
+
+        <h3>2. 联网防篡改极速体验</h3>
+        <ul>
+            <li><strong>无感校验</strong>：最新加密握手机制通过完全解耦的隐形影子线程处理。即使在没有网络连接或网络糟糕的环境，打开工程也<strong>绝不会感到一丝卡顿</strong>，纵享 1ms 顺滑秒开！</li>
+        </ul>
+
+        <h2>🛡️ 三、 防背锅终极免责声明 & 崩溃诊断黑匣子</h2>
+        
+        <p>在数字音频圈子内，DAW 工程大量闪退 <strong>99% 是由于下载了破解版插件“某某 VST 破坏内存引发越界”。</strong>为了证明清白且协助死因勘验：</p>
+        
+        <div class="success">
+            <strong>我们在 UMC Ultra 的最深处布置了不可抗力异常捕获器（<code>VEH 全局拦截机制与 MiniDump 黑匣子</code>）：</strong>
+        </div>
+
+        <ol>
+            <li><strong>生成无篡改坠机报告</strong><br>倘若您的宿主因为致命异常死亡，驱动底层的黑匣子会瞬间切断控制，将错误内存地址全息拍下快照。</li>
+            <li><strong>如何提取证据？</strong><br>去这寻找死因线索吧：<br>👉 <strong><code>C:\Users\Public\Documents\</code></strong> (系统C盘 -> 用户 -> 公用 -> 公用文档)<br>在那可找到 <code>UMCUltra_Crash_日期_时间.dmp</code> 文件。</li>
+            <li><strong>✨ 官方免责铁律</strong>：<br>您可将 <code>.dmp</code> 上报官方鉴定。我们的工程师通过解析诊断若发现源头直指某个盗版 DLL，<br><strong style="color: #ef4444;">官方即认定非本驱动问题并拒绝对其产生的工程报废提供额外干预与赔偿。维护系统纯净也是专业编曲人的必备修养！</strong></li>
+        </ol>
+
+        <div class="footer">
+            UMC Ultra 开发团队 荣誉呈献
+            <span>“让每一位制作人，都能享受 0 延迟的指尖回馈。”</span>
+        </div>
+    </div>
+</body>
+</html>

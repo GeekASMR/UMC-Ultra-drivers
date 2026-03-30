@@ -5,10 +5,82 @@
       <FullPath>D:\Autigravity\UMCasio\build\x64\Release\ZERO_CHECK</FullPath>
     </ProjectOutput>
     <ProjectOutput>
-      <FullPath>D:\Autigravity\UMCasio\build\bin\Release\BehringerASIO.dll</FullPath>
+      <FullPath>D:\Autigravity\UMCasio\build\bin\Release\ASIOUltraControlPanel.exe</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>D:\Autigravity\UMCasio\build\bin\Release\ASMRTOP_ART.dll</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>D:\Autigravity\UMCasio\build\bin\Release\ASMRTOP_AUDIENT.dll</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>D:\Autigravity\UMCasio\build\bin\Release\ASMRTOP_BEHRINGER.dll</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>D:\Autigravity\UMCasio\build\bin\Release\ASMRTOP_FOCUSRITE.dll</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>D:\Autigravity\UMCasio\build\bin\Release\ASMRTOP_MACKIE.dll</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>D:\Autigravity\UMCasio\build\bin\Release\ASMRTOP_MOTU.dll</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>D:\Autigravity\UMCasio\build\bin\Release\ASMRTOP_PRESONUS.dll</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>D:\Autigravity\UMCasio\build\bin\Release\ASMRTOP_SSL.dll</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>D:\Autigravity\UMCasio\build\bin\Release\ASMRTOP_TASCAM.dll</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>D:\Autigravity\UMCasio\build\bin\Release\ASMRTOP_YAMAHA.dll</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>D:\Autigravity\UMCasio\build\bin\Release\ASMRTOP_ZOOM.dll</FullPath>
     </ProjectOutput>
     <ProjectOutput>
       <FullPath>D:\Autigravity\UMCasio\build\bin\Release\UMCControlProxy.exe</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>D:\Autigravity\UMCasio\build\bin\Release\UMCOptimizer.exe</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>D:\Autigravity\UMCasio\build\bin\Release\asio_switch_test.exe</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>D:\Autigravity\UMCasio\build\bin\Release\audio_diag.exe</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>D:\Autigravity\UMCasio\build\bin\Release\audio_diag2.exe</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>D:\Autigravity\UMCasio\build\bin\Release\ds_sine_test.exe</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>D:\Autigravity\UMCasio\build\bin\Release\gen_sine_wav.exe</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>D:\Autigravity\UMCasio\build\bin\Release\ipc_data_check.exe</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>D:\Autigravity\UMCasio\build\bin\Release\ipc_monitor.exe</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>D:\Autigravity\UMCasio\build\bin\Release\ipc_output_test.exe</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>D:\Autigravity\UMCasio\build\bin\Release\ipc_pop_detect.exe</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>D:\Autigravity\UMCasio\build\bin\Release\ipc_quality_test.exe</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>D:\Autigravity\UMCasio\build\bin\Release\src_diag.exe</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>D:\Autigravity\UMCasio\build\bin\Release\src_quality_test.exe</FullPath>
     </ProjectOutput>
     <ProjectOutput>
       <FullPath>D:\Autigravity\UMCasio\build\x64\Release\ALL_BUILD</FullPath>

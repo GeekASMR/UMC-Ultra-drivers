@@ -1,6 +1,14 @@
-D:/Autigravity/UMCasio/build/CMakeFiles/BehringerASIO.dir
-D:/Autigravity/UMCasio/build/CMakeFiles/register.dir
-D:/Autigravity/UMCasio/build/CMakeFiles/unregister.dir
+D:/Autigravity/UMCasio/build/CMakeFiles/ASMRTOP_BEHRINGER.dir
+D:/Autigravity/UMCasio/build/CMakeFiles/ASMRTOP_AUDIENT.dir
+D:/Autigravity/UMCasio/build/CMakeFiles/ASMRTOP_SSL.dir
+D:/Autigravity/UMCasio/build/CMakeFiles/ASMRTOP_MACKIE.dir
+D:/Autigravity/UMCasio/build/CMakeFiles/ASMRTOP_TASCAM.dir
+D:/Autigravity/UMCasio/build/CMakeFiles/ASMRTOP_YAMAHA.dir
+D:/Autigravity/UMCasio/build/CMakeFiles/ASMRTOP_MOTU.dir
+D:/Autigravity/UMCasio/build/CMakeFiles/ASMRTOP_PRESONUS.dir
+D:/Autigravity/UMCasio/build/CMakeFiles/ASMRTOP_FOCUSRITE.dir
+D:/Autigravity/UMCasio/build/CMakeFiles/ASMRTOP_ZOOM.dir
+D:/Autigravity/UMCasio/build/CMakeFiles/ASMRTOP_ART.dir
 D:/Autigravity/UMCasio/build/CMakeFiles/UMCControlProxy.dir
 D:/Autigravity/UMCasio/build/CMakeFiles/ipc_monitor.dir
 D:/Autigravity/UMCasio/build/CMakeFiles/ipc_quality_test.dir
@@ -13,6 +21,9 @@ D:/Autigravity/UMCasio/build/CMakeFiles/src_diag.dir
 D:/Autigravity/UMCasio/build/CMakeFiles/ipc_output_test.dir
 D:/Autigravity/UMCasio/build/CMakeFiles/ipc_pop_detect.dir
 D:/Autigravity/UMCasio/build/CMakeFiles/ds_sine_test.dir
+D:/Autigravity/UMCasio/build/CMakeFiles/ASIOUltraControlPanel.dir
+D:/Autigravity/UMCasio/build/CMakeFiles/UMCOptimizer.dir
+D:/Autigravity/UMCasio/build/CMakeFiles/asio_switch_test.dir
 D:/Autigravity/UMCasio/build/CMakeFiles/INSTALL.dir
 D:/Autigravity/UMCasio/build/CMakeFiles/ALL_BUILD.dir
 D:/Autigravity/UMCasio/build/CMakeFiles/ZERO_CHECK.dir

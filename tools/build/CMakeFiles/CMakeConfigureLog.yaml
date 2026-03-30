@@ -1,0 +1,797 @@
+
+---
+events:
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/Python311/Lib/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineSystem.cmake:212 (message)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      The system is: Windows - 10.0.19045 - AMD64
+  -
+    kind: "find-v1"
+    backtrace:
+      - "C:/Program Files/Python311/Lib/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:462 (find_file)"
+      - "C:/Program Files/Python311/Lib/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:500 (CMAKE_DETERMINE_COMPILER_ID_WRITE)"
+      - "C:/Program Files/Python311/Lib/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:8 (CMAKE_DETERMINE_COMPILER_ID_BUILD)"
+      - "C:/Program Files/Python311/Lib/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "C:/Program Files/Python311/Lib/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "file"
+    variable: "src_in"
+    description: "Path to a file."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "CMakeCXXCompilerId.cpp.in"
+    candidate_directories:
+      - "C:/Program Files/Python311/Lib/site-packages/cmake/data/share/cmake-4.2/Modules/"
+    found: "C:/Program Files/Python311/Lib/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeCXXCompilerId.cpp.in"
+    search_context:
+      ENV{PATH}:
+        - "C:\\Program Files\\Python311\\Scripts\\"
+        - "C:\\Program Files\\Python311\\"
+        - "D:\\Program Files (x86)\\VMware\\VMware Workstation\\bin\\"
+        - "C:\\Windows\\system32"
+        - "C:\\Windows"
+        - "C:\\Windows\\System32\\Wbem"
+        - "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\Windows\\System32\\OpenSSH\\"
+        - "d:\\Program Files\\Bandizip\\"
+        - "C:\\Program Files (x86)\\NVIDIA Corporation\\PhysX\\Common"
+        - "D:\\Program Files (x86)\\NetSarang\\Xshell 8\\"
+        - "C:\\Program Files\\ProxyBridge"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance Toolkit\\"
+        - "C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.26100.0\\x86"
+        - "C:\\Program Files\\GitHub CLI\\"
+        - "C:\\Program Files\\nodejs\\"
+        - "C:\\Users\\Administrator\\.local\\bin"
+        - "C:\\Users\\Administrator\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "C:\\Users\\Administrator\\AppData\\Local\\Programs\\Antigravity\\bin"
+        - "C:\\Users\\Administrator\\AppData\\Local\\Microsoft\\WinGet\\Links"
+        - "C:\\Users\\Administrator\\AppData\\Roaming\\npm"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/Python311/Lib/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "C:/Program Files/Python311/Lib/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "C:/Program Files/Python311/Lib/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:125 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+      Compiler:  
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      0
+      閫傜敤浜?.NET Framework MSBuild 鐗堟湰 17.14.40+3e7442088
+      鐢熸垚鍚姩鏃堕棿涓?2026/3/28 21:40:46銆?
+      
+      鑺傜偣 1 涓婄殑椤圭洰鈥淒:\\Autigravity\\UMCasio\\tools\\build\\CMakeFiles\\4.2.3\\CompilerIdCXX\\CompilerIdCXX.vcxproj鈥?榛樿鐩爣)銆?
+      PrepareForBuild:
+        姝ｅ湪鍒涘缓鐩綍鈥淒ebug\\鈥濄€?
+        宸插惎鐢ㄧ粨鏋勫寲杈撳嚭銆傜紪璇戝櫒璇婃柇鐨勬牸寮忚缃皢鍙嶆槧閿欒灞傛缁撴瀯銆傛湁鍏宠缁嗕俊鎭紝璇峰弬闃?https://aka.ms/cpp/structured-output銆?
+        姝ｅ湪鍒涘缓鐩綍鈥淒ebug\\CompilerIdCXX.tlog\\鈥濄€?
+      InitializeBuildStatus:
+        姝ｅ湪鍒涘缓鈥淒ebug\\CompilerIdCXX.tlog\\unsuccessfulbuild鈥濓紝鍥犱负宸叉寚瀹氣€淎lwaysCreate鈥濄€?
+        姝ｅ湪瀵光€淒ebug\\CompilerIdCXX.tlog\\unsuccessfulbuild鈥濇墽琛?Touch 浠诲姟銆?
+      ClCompile:
+        C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\CL.exe /c /nologo /W0 /WX- /diagnostics:column /Od /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\\\" /Fd"Debug\\vc143.pdb" /external:W0 /Gd /TP /FC /errorReport:queue CMakeCXXCompilerId.cpp
+        CMakeCXXCompilerId.cpp
+      Link:
+        C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:".\\CompilerIdCXX.exe" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:".\\CompilerIdCXX.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\\CompilerIdCXX.lib" /MACHINE:X64 Debug\\CMakeCXXCompilerId.obj
+        CompilerIdCXX.vcxproj -> D:\\Autigravity\\UMCasio\\tools\\build\\CMakeFiles\\4.2.3\\CompilerIdCXX\\CompilerIdCXX.exe
+      PostBuildEvent:
+        for %%i in (cl.exe) do @echo CMAKE_CXX_COMPILER=%%~$PATH:i
+        :VCEnd
+        CMAKE_CXX_COMPILER=C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe
+      FinalizeBuildStatus:
+        姝ｅ湪鍒犻櫎鏂囦欢鈥淒ebug\\CompilerIdCXX.tlog\\unsuccessfulbuild鈥濄€?
+        姝ｅ湪瀵光€淒ebug\\CompilerIdCXX.tlog\\CompilerIdCXX.lastbuildstate鈥濇墽琛?Touch 浠诲姟銆?
+      宸插畬鎴愮敓鎴愰」鐩€淒:\\Autigravity\\UMCasio\\tools\\build\\CMakeFiles\\4.2.3\\CompilerIdCXX\\CompilerIdCXX.vcxproj鈥?榛樿鐩爣)鐨勬搷浣溿€?
+      
+      宸叉垚鍔熺敓鎴愩€?
+          0 涓鍛?
+          0 涓敊璇?
+      
+      宸茬敤鏃堕棿 00:00:01.16
+      
+      
+      Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CompilerIdCXX.exe"
+      
+      Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CompilerIdCXX.vcxproj"
+      
+      The CXX compiler identification is MSVC, found in:
+        D:/Autigravity/UMCasio/tools/build/CMakeFiles/4.2.3/CompilerIdCXX/CompilerIdCXX.exe
+      
+  -
+    kind: "find-v1"
+    backtrace:
+      - "C:/Program Files/Python311/Lib/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:37 (find_program)"
+      - "C:/Program Files/Python311/Lib/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:65 (__resolve_tool_path)"
+      - "C:/Program Files/Python311/Lib/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:103 (__resolve_linker_path)"
+      - "C:/Program Files/Python311/Lib/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "_CMAKE_TOOL_WITH_PATH"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "link"
+    candidate_directories:
+      - "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/"
+      - "C:/Program Files/Python311/Scripts/"
+      - "C:/Program Files/Python311/"
+      - "D:/Program Files (x86)/VMware/VMware Workstation/bin/"
+      - "C:/Windows/System32/"
+      - "C:/Windows/"
+      - "C:/Windows/System32/wbem/"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/"
+      - "C:/Windows/System32/OpenSSH/"
+      - "D:/Program Files/Bandizip/"
+      - "C:/Program Files (x86)/NVIDIA Corporation/PhysX/Common/"
+      - "D:/Program Files (x86)/NetSarang/Xshell 8/"
+      - "C:/Program Files/ProxyBridge/"
+      - "C:/Program Files/Git/cmd/"
+      - "C:/Program Files (x86)/Windows Kits/10/Windows Performance Toolkit/"
+      - "C:/Program Files (x86)/Windows Kits/10/bin/10.0.26100.0/x86/"
+      - "C:/Program Files/GitHub CLI/"
+      - "C:/Program Files/nodejs/"
+      - "C:/Users/Administrator/.local/bin/"
+      - "C:/Users/Administrator/AppData/Local/Microsoft/WindowsApps/"
+      - "C:/Users/Administrator/AppData/Local/Programs/Antigravity/bin/"
+      - "C:/Users/Administrator/AppData/Local/Microsoft/WinGet/Links/"
+      - "C:/Users/Administrator/AppData/Roaming/npm/"
+    searched_directories:
+      - "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/link.com"
+    found: "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/link.exe"
+    search_context:
+      ENV{PATH}:
+        - "C:\\Program Files\\Python311\\Scripts\\"
+        - "C:\\Program Files\\Python311\\"
+        - "D:\\Program Files (x86)\\VMware\\VMware Workstation\\bin\\"
+        - "C:\\Windows\\system32"
+        - "C:\\Windows"
+        - "C:\\Windows\\System32\\Wbem"
+        - "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\Windows\\System32\\OpenSSH\\"
+        - "d:\\Program Files\\Bandizip\\"
+        - "C:\\Program Files (x86)\\NVIDIA Corporation\\PhysX\\Common"
+        - "D:\\Program Files (x86)\\NetSarang\\Xshell 8\\"
+        - "C:\\Program Files\\ProxyBridge"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance Toolkit\\"
+        - "C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.26100.0\\x86"
+        - "C:\\Program Files\\GitHub CLI\\"
+        - "C:\\Program Files\\nodejs\\"
+        - "C:\\Users\\Administrator\\.local\\bin"
+        - "C:\\Users\\Administrator\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "C:\\Users\\Administrator\\AppData\\Local\\Programs\\Antigravity\\bin"
+        - "C:\\Users\\Administrator\\AppData\\Local\\Microsoft\\WinGet\\Links"
+        - "C:\\Users\\Administrator\\AppData\\Roaming\\npm"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "C:/Program Files/Python311/Lib/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:37 (find_program)"
+      - "C:/Program Files/Python311/Lib/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:65 (__resolve_tool_path)"
+      - "C:/Program Files/Python311/Lib/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:104 (__resolve_linker_path)"
+      - "C:/Program Files/Python311/Lib/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "_CMAKE_TOOL_WITH_PATH"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "lld-link"
+    candidate_directories:
+      - "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/"
+      - "C:/Program Files/Python311/Scripts/"
+      - "C:/Program Files/Python311/"
+      - "D:/Program Files (x86)/VMware/VMware Workstation/bin/"
+      - "C:/Windows/System32/"
+      - "C:/Windows/"
+      - "C:/Windows/System32/wbem/"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/"
+      - "C:/Windows/System32/OpenSSH/"
+      - "D:/Program Files/Bandizip/"
+      - "C:/Program Files (x86)/NVIDIA Corporation/PhysX/Common/"
+      - "D:/Program Files (x86)/NetSarang/Xshell 8/"
+      - "C:/Program Files/ProxyBridge/"
+      - "C:/Program Files/Git/cmd/"
+      - "C:/Program Files (x86)/Windows Kits/10/Windows Performance Toolkit/"
+      - "C:/Program Files (x86)/Windows Kits/10/bin/10.0.26100.0/x86/"
+      - "C:/Program Files/GitHub CLI/"
+      - "C:/Program Files/nodejs/"
+      - "C:/Users/Administrator/.local/bin/"
+      - "C:/Users/Administrator/AppData/Local/Microsoft/WindowsApps/"
+      - "C:/Users/Administrator/AppData/Local/Programs/Antigravity/bin/"
+      - "C:/Users/Administrator/AppData/Local/Microsoft/WinGet/Links/"
+      - "C:/Users/Administrator/AppData/Roaming/npm/"
+    searched_directories:
+      - "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/lld-link.com"
+      - "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/lld-link.exe"
+      - "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/lld-link"
+      - "C:/Program Files/Python311/Scripts/lld-link.com"
+      - "C:/Program Files/Python311/Scripts/lld-link.exe"
+      - "C:/Program Files/Python311/Scripts/lld-link"
+      - "C:/Program Files/Python311/lld-link.com"
+      - "C:/Program Files/Python311/lld-link.exe"
+      - "C:/Program Files/Python311/lld-link"
+      - "D:/Program Files (x86)/VMware/VMware Workstation/bin/lld-link.com"
+      - "D:/Program Files (x86)/VMware/VMware Workstation/bin/lld-link.exe"
+      - "D:/Program Files (x86)/VMware/VMware Workstation/bin/lld-link"
+      - "C:/Windows/System32/lld-link.com"
+      - "C:/Windows/System32/lld-link.exe"
+      - "C:/Windows/System32/lld-link"
+      - "C:/Windows/lld-link.com"
+      - "C:/Windows/lld-link.exe"
+      - "C:/Windows/lld-link"
+      - "C:/Windows/System32/wbem/lld-link.com"
+      - "C:/Windows/System32/wbem/lld-link.exe"
+      - "C:/Windows/System32/wbem/lld-link"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/lld-link.com"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/lld-link.exe"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/lld-link"
+      - "C:/Windows/System32/OpenSSH/lld-link.com"
+      - "C:/Windows/System32/OpenSSH/lld-link.exe"
+      - "C:/Windows/System32/OpenSSH/lld-link"
+      - "D:/Program Files/Bandizip/lld-link.com"
+      - "D:/Program Files/Bandizip/lld-link.exe"
+      - "D:/Program Files/Bandizip/lld-link"
+      - "C:/Program Files (x86)/NVIDIA Corporation/PhysX/Common/lld-link.com"
+      - "C:/Program Files (x86)/NVIDIA Corporation/PhysX/Common/lld-link.exe"
+      - "C:/Program Files (x86)/NVIDIA Corporation/PhysX/Common/lld-link"
+      - "D:/Program Files (x86)/NetSarang/Xshell 8/lld-link.com"
+      - "D:/Program Files (x86)/NetSarang/Xshell 8/lld-link.exe"
+      - "D:/Program Files (x86)/NetSarang/Xshell 8/lld-link"
+      - "C:/Program Files/ProxyBridge/lld-link.com"
+      - "C:/Program Files/ProxyBridge/lld-link.exe"
+      - "C:/Program Files/ProxyBridge/lld-link"
+      - "C:/Program Files/Git/cmd/lld-link.com"
+      - "C:/Program Files/Git/cmd/lld-link.exe"
+      - "C:/Program Files/Git/cmd/lld-link"
+      - "C:/Program Files (x86)/Windows Kits/10/Windows Performance Toolkit/lld-link.com"
+      - "C:/Program Files (x86)/Windows Kits/10/Windows Performance Toolkit/lld-link.exe"
+      - "C:/Program Files (x86)/Windows Kits/10/Windows Performance Toolkit/lld-link"
+      - "C:/Program Files (x86)/Windows Kits/10/bin/10.0.26100.0/x86/lld-link.com"
+      - "C:/Program Files (x86)/Windows Kits/10/bin/10.0.26100.0/x86/lld-link.exe"
+      - "C:/Program Files (x86)/Windows Kits/10/bin/10.0.26100.0/x86/lld-link"
+      - "C:/Program Files/GitHub CLI/lld-link.com"
+      - "C:/Program Files/GitHub CLI/lld-link.exe"
+      - "C:/Program Files/GitHub CLI/lld-link"
+      - "C:/Program Files/nodejs/lld-link.com"
+      - "C:/Program Files/nodejs/lld-link.exe"
+      - "C:/Program Files/nodejs/lld-link"
+      - "C:/Users/Administrator/.local/bin/lld-link.com"
+      - "C:/Users/Administrator/.local/bin/lld-link.exe"
+      - "C:/Users/Administrator/.local/bin/lld-link"
+      - "C:/Users/Administrator/AppData/Local/Microsoft/WindowsApps/lld-link.com"
+      - "C:/Users/Administrator/AppData/Local/Microsoft/WindowsApps/lld-link.exe"
+      - "C:/Users/Administrator/AppData/Local/Microsoft/WindowsApps/lld-link"
+      - "C:/Users/Administrator/AppData/Local/Programs/Antigravity/bin/lld-link.com"
+      - "C:/Users/Administrator/AppData/Local/Programs/Antigravity/bin/lld-link.exe"
+      - "C:/Users/Administrator/AppData/Local/Programs/Antigravity/bin/lld-link"
+      - "C:/Users/Administrator/AppData/Local/Microsoft/WinGet/Links/lld-link.com"
+      - "C:/Users/Administrator/AppData/Local/Microsoft/WinGet/Links/lld-link.exe"
+      - "C:/Users/Administrator/AppData/Local/Microsoft/WinGet/Links/lld-link"
+      - "C:/Users/Administrator/AppData/Roaming/npm/lld-link.com"
+      - "C:/Users/Administrator/AppData/Roaming/npm/lld-link.exe"
+      - "C:/Users/Administrator/AppData/Roaming/npm/lld-link"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "C:\\Program Files\\Python311\\Scripts\\"
+        - "C:\\Program Files\\Python311\\"
+        - "D:\\Program Files (x86)\\VMware\\VMware Workstation\\bin\\"
+        - "C:\\Windows\\system32"
+        - "C:\\Windows"
+        - "C:\\Windows\\System32\\Wbem"
+        - "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\Windows\\System32\\OpenSSH\\"
+        - "d:\\Program Files\\Bandizip\\"
+        - "C:\\Program Files (x86)\\NVIDIA Corporation\\PhysX\\Common"
+        - "D:\\Program Files (x86)\\NetSarang\\Xshell 8\\"
+        - "C:\\Program Files\\ProxyBridge"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance Toolkit\\"
+        - "C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.26100.0\\x86"
+        - "C:\\Program Files\\GitHub CLI\\"
+        - "C:\\Program Files\\nodejs\\"
+        - "C:\\Users\\Administrator\\.local\\bin"
+        - "C:\\Users\\Administrator\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "C:\\Users\\Administrator\\AppData\\Local\\Programs\\Antigravity\\bin"
+        - "C:\\Users\\Administrator\\AppData\\Local\\Microsoft\\WinGet\\Links"
+        - "C:\\Users\\Administrator\\AppData\\Roaming\\npm"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "C:/Program Files/Python311/Lib/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "C:/Program Files/Python311/Lib/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_LINKER"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "link"
+    candidate_directories:
+      - "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/"
+      - "C:/Program Files/Python311/Scripts/"
+      - "C:/Program Files/Python311/"
+      - "D:/Program Files (x86)/VMware/VMware Workstation/bin/"
+      - "C:/Windows/System32/"
+      - "C:/Windows/"
+      - "C:/Windows/System32/wbem/"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/"
+      - "C:/Windows/System32/OpenSSH/"
+      - "D:/Program Files/Bandizip/"
+      - "C:/Program Files (x86)/NVIDIA Corporation/PhysX/Common/"
+      - "D:/Program Files (x86)/NetSarang/Xshell 8/"
+      - "C:/Program Files/ProxyBridge/"
+      - "C:/Program Files/Git/cmd/"
+      - "C:/Program Files (x86)/Windows Kits/10/Windows Performance Toolkit/"
+      - "C:/Program Files (x86)/Windows Kits/10/bin/10.0.26100.0/x86/"
+      - "C:/Program Files/GitHub CLI/"
+      - "C:/Program Files/nodejs/"
+      - "C:/Users/Administrator/.local/bin/"
+      - "C:/Users/Administrator/AppData/Local/Microsoft/WindowsApps/"
+      - "C:/Users/Administrator/AppData/Local/Programs/Antigravity/bin/"
+      - "C:/Users/Administrator/AppData/Local/Microsoft/WinGet/Links/"
+      - "C:/Users/Administrator/AppData/Roaming/npm/"
+    searched_directories:
+      - "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/link.com"
+    found: "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/link.exe"
+    search_context:
+      ENV{PATH}:
+        - "C:\\Program Files\\Python311\\Scripts\\"
+        - "C:\\Program Files\\Python311\\"
+        - "D:\\Program Files (x86)\\VMware\\VMware Workstation\\bin\\"
+        - "C:\\Windows\\system32"
+        - "C:\\Windows"
+        - "C:\\Windows\\System32\\Wbem"
+        - "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\Windows\\System32\\OpenSSH\\"
+        - "d:\\Program Files\\Bandizip\\"
+        - "C:\\Program Files (x86)\\NVIDIA Corporation\\PhysX\\Common"
+        - "D:\\Program Files (x86)\\NetSarang\\Xshell 8\\"
+        - "C:\\Program Files\\ProxyBridge"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance Toolkit\\"
+        - "C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.26100.0\\x86"
+        - "C:\\Program Files\\GitHub CLI\\"
+        - "C:\\Program Files\\nodejs\\"
+        - "C:\\Users\\Administrator\\.local\\bin"
+        - "C:\\Users\\Administrator\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "C:\\Users\\Administrator\\AppData\\Local\\Programs\\Antigravity\\bin"
+        - "C:\\Users\\Administrator\\AppData\\Local\\Microsoft\\WinGet\\Links"
+        - "C:\\Users\\Administrator\\AppData\\Roaming\\npm"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "C:/Program Files/Python311/Lib/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "C:/Program Files/Python311/Lib/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_MT"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "mt"
+    candidate_directories:
+      - "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/"
+      - "C:/Program Files/Python311/Scripts/"
+      - "C:/Program Files/Python311/"
+      - "D:/Program Files (x86)/VMware/VMware Workstation/bin/"
+      - "C:/Windows/System32/"
+      - "C:/Windows/"
+      - "C:/Windows/System32/wbem/"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/"
+      - "C:/Windows/System32/OpenSSH/"
+      - "D:/Program Files/Bandizip/"
+      - "C:/Program Files (x86)/NVIDIA Corporation/PhysX/Common/"
+      - "D:/Program Files (x86)/NetSarang/Xshell 8/"
+      - "C:/Program Files/ProxyBridge/"
+      - "C:/Program Files/Git/cmd/"
+      - "C:/Program Files (x86)/Windows Kits/10/Windows Performance Toolkit/"
+      - "C:/Program Files (x86)/Windows Kits/10/bin/10.0.26100.0/x86/"
+      - "C:/Program Files/GitHub CLI/"
+      - "C:/Program Files/nodejs/"
+      - "C:/Users/Administrator/.local/bin/"
+      - "C:/Users/Administrator/AppData/Local/Microsoft/WindowsApps/"
+      - "C:/Users/Administrator/AppData/Local/Programs/Antigravity/bin/"
+      - "C:/Users/Administrator/AppData/Local/Microsoft/WinGet/Links/"
+      - "C:/Users/Administrator/AppData/Roaming/npm/"
+    searched_directories:
+      - "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/mt.com"
+      - "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/mt.exe"
+      - "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/mt"
+      - "C:/Program Files/Python311/Scripts/mt.com"
+      - "C:/Program Files/Python311/Scripts/mt.exe"
+      - "C:/Program Files/Python311/Scripts/mt"
+      - "C:/Program Files/Python311/mt.com"
+      - "C:/Program Files/Python311/mt.exe"
+      - "C:/Program Files/Python311/mt"
+      - "D:/Program Files (x86)/VMware/VMware Workstation/bin/mt.com"
+      - "D:/Program Files (x86)/VMware/VMware Workstation/bin/mt.exe"
+      - "D:/Program Files (x86)/VMware/VMware Workstation/bin/mt"
+      - "C:/Windows/System32/mt.com"
+      - "C:/Windows/System32/mt.exe"
+      - "C:/Windows/System32/mt"
+      - "C:/Windows/mt.com"
+      - "C:/Windows/mt.exe"
+      - "C:/Windows/mt"
+      - "C:/Windows/System32/wbem/mt.com"
+      - "C:/Windows/System32/wbem/mt.exe"
+      - "C:/Windows/System32/wbem/mt"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/mt.com"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/mt.exe"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/mt"
+      - "C:/Windows/System32/OpenSSH/mt.com"
+      - "C:/Windows/System32/OpenSSH/mt.exe"
+      - "C:/Windows/System32/OpenSSH/mt"
+      - "D:/Program Files/Bandizip/mt.com"
+      - "D:/Program Files/Bandizip/mt.exe"
+      - "D:/Program Files/Bandizip/mt"
+      - "C:/Program Files (x86)/NVIDIA Corporation/PhysX/Common/mt.com"
+      - "C:/Program Files (x86)/NVIDIA Corporation/PhysX/Common/mt.exe"
+      - "C:/Program Files (x86)/NVIDIA Corporation/PhysX/Common/mt"
+      - "D:/Program Files (x86)/NetSarang/Xshell 8/mt.com"
+      - "D:/Program Files (x86)/NetSarang/Xshell 8/mt.exe"
+      - "D:/Program Files (x86)/NetSarang/Xshell 8/mt"
+      - "C:/Program Files/ProxyBridge/mt.com"
+      - "C:/Program Files/ProxyBridge/mt.exe"
+      - "C:/Program Files/ProxyBridge/mt"
+      - "C:/Program Files/Git/cmd/mt.com"
+      - "C:/Program Files/Git/cmd/mt.exe"
+      - "C:/Program Files/Git/cmd/mt"
+      - "C:/Program Files (x86)/Windows Kits/10/Windows Performance Toolkit/mt.com"
+      - "C:/Program Files (x86)/Windows Kits/10/Windows Performance Toolkit/mt.exe"
+      - "C:/Program Files (x86)/Windows Kits/10/Windows Performance Toolkit/mt"
+      - "C:/Program Files (x86)/Windows Kits/10/bin/10.0.26100.0/x86/mt.com"
+    found: "C:/Program Files (x86)/Windows Kits/10/bin/10.0.26100.0/x86/mt.exe"
+    search_context:
+      ENV{PATH}:
+        - "C:\\Program Files\\Python311\\Scripts\\"
+        - "C:\\Program Files\\Python311\\"
+        - "D:\\Program Files (x86)\\VMware\\VMware Workstation\\bin\\"
+        - "C:\\Windows\\system32"
+        - "C:\\Windows"
+        - "C:\\Windows\\System32\\Wbem"
+        - "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\Windows\\System32\\OpenSSH\\"
+        - "d:\\Program Files\\Bandizip\\"
+        - "C:\\Program Files (x86)\\NVIDIA Corporation\\PhysX\\Common"
+        - "D:\\Program Files (x86)\\NetSarang\\Xshell 8\\"
+        - "C:\\Program Files\\ProxyBridge"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance Toolkit\\"
+        - "C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.26100.0\\x86"
+        - "C:\\Program Files\\GitHub CLI\\"
+        - "C:\\Program Files\\nodejs\\"
+        - "C:\\Users\\Administrator\\.local\\bin"
+        - "C:\\Users\\Administrator\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "C:\\Users\\Administrator\\AppData\\Local\\Programs\\Antigravity\\bin"
+        - "C:\\Users\\Administrator\\AppData\\Local\\Microsoft\\WinGet\\Links"
+        - "C:\\Users\\Administrator\\AppData\\Roaming\\npm"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "C:/Program Files/Python311/Lib/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "C:/Program Files/Python311/Lib/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCXXCompiler.cmake:206 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_AR"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "lib"
+    candidate_directories:
+      - "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/"
+      - "C:/Program Files/Python311/Scripts/"
+      - "C:/Program Files/Python311/"
+      - "D:/Program Files (x86)/VMware/VMware Workstation/bin/"
+      - "C:/Windows/System32/"
+      - "C:/Windows/"
+      - "C:/Windows/System32/wbem/"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/"
+      - "C:/Windows/System32/OpenSSH/"
+      - "D:/Program Files/Bandizip/"
+      - "C:/Program Files (x86)/NVIDIA Corporation/PhysX/Common/"
+      - "D:/Program Files (x86)/NetSarang/Xshell 8/"
+      - "C:/Program Files/ProxyBridge/"
+      - "C:/Program Files/Git/cmd/"
+      - "C:/Program Files (x86)/Windows Kits/10/Windows Performance Toolkit/"
+      - "C:/Program Files (x86)/Windows Kits/10/bin/10.0.26100.0/x86/"
+      - "C:/Program Files/GitHub CLI/"
+      - "C:/Program Files/nodejs/"
+      - "C:/Users/Administrator/.local/bin/"
+      - "C:/Users/Administrator/AppData/Local/Microsoft/WindowsApps/"
+      - "C:/Users/Administrator/AppData/Local/Programs/Antigravity/bin/"
+      - "C:/Users/Administrator/AppData/Local/Microsoft/WinGet/Links/"
+      - "C:/Users/Administrator/AppData/Roaming/npm/"
+    searched_directories:
+      - "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/lib.com"
+    found: "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/Hostx64/x64/lib.exe"
+    search_context:
+      ENV{PATH}:
+        - "C:\\Program Files\\Python311\\Scripts\\"
+        - "C:\\Program Files\\Python311\\"
+        - "D:\\Program Files (x86)\\VMware\\VMware Workstation\\bin\\"
+        - "C:\\Windows\\system32"
+        - "C:\\Windows"
+        - "C:\\Windows\\System32\\Wbem"
+        - "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\Windows\\System32\\OpenSSH\\"
+        - "d:\\Program Files\\Bandizip\\"
+        - "C:\\Program Files (x86)\\NVIDIA Corporation\\PhysX\\Common"
+        - "D:\\Program Files (x86)\\NetSarang\\Xshell 8\\"
+        - "C:\\Program Files\\ProxyBridge"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance Toolkit\\"
+        - "C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.26100.0\\x86"
+        - "C:\\Program Files\\GitHub CLI\\"
+        - "C:\\Program Files\\nodejs\\"
+        - "C:\\Users\\Administrator\\.local\\bin"
+        - "C:\\Users\\Administrator\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "C:\\Users\\Administrator\\AppData\\Local\\Programs\\Antigravity\\bin"
+        - "C:\\Users\\Administrator\\AppData\\Local\\Microsoft\\WinGet\\Links"
+        - "C:\\Users\\Administrator\\AppData\\Roaming\\npm"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "C:/Program Files/Python311/Lib/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineRCCompiler.cmake:40 (find_program)"
+      - "C:/Program Files/Python311/Lib/site-packages/cmake/data/share/cmake-4.2/Modules/Platform/Windows-MSVC.cmake:580 (enable_language)"
+      - "C:/Program Files/Python311/Lib/site-packages/cmake/data/share/cmake-4.2/Modules/Platform/Windows-MSVC.cmake:553 (__windows_compiler_msvc_enable_rc)"
+      - "C:/Program Files/Python311/Lib/site-packages/cmake/data/share/cmake-4.2/Modules/Platform/Windows-MSVC-CXX.cmake:6 (__windows_compiler_msvc)"
+      - "C:/Program Files/Python311/Lib/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeCXXInformation.cmake:48 (include)"
+      - "CMakeLists.txt:2 (project)"
+    mode: "program"
+    variable: "CMAKE_RC_COMPILER"
+    description: "RC compiler"
+    settings:
+      SearchFramework: "NEVER"
+      SearchAppBundle: "NEVER"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "rc"
+    candidate_directories:
+      - "C:/Program Files/Python311/Scripts/"
+      - "C:/Program Files/Python311/"
+      - "D:/Program Files (x86)/VMware/VMware Workstation/bin/"
+      - "C:/Windows/System32/"
+      - "C:/Windows/"
+      - "C:/Windows/System32/wbem/"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/"
+      - "C:/Windows/System32/OpenSSH/"
+      - "D:/Program Files/Bandizip/"
+      - "C:/Program Files (x86)/NVIDIA Corporation/PhysX/Common/"
+      - "D:/Program Files (x86)/NetSarang/Xshell 8/"
+      - "C:/Program Files/ProxyBridge/"
+      - "C:/Program Files/Git/cmd/"
+      - "C:/Program Files (x86)/Windows Kits/10/Windows Performance Toolkit/"
+      - "C:/Program Files (x86)/Windows Kits/10/bin/10.0.26100.0/x86/"
+      - "C:/Program Files/GitHub CLI/"
+      - "C:/Program Files/nodejs/"
+      - "C:/Users/Administrator/.local/bin/"
+      - "C:/Users/Administrator/AppData/Local/Microsoft/WindowsApps/"
+      - "C:/Users/Administrator/AppData/Local/Programs/Antigravity/bin/"
+      - "C:/Users/Administrator/AppData/Local/Microsoft/WinGet/Links/"
+      - "C:/Users/Administrator/AppData/Roaming/npm/"
+      - "C:/Program Files/bin/"
+      - "C:/Program Files/sbin/"
+      - "C:/Program Files/"
+      - "C:/Program Files (x86)/bin/"
+      - "C:/Program Files (x86)/sbin/"
+      - "C:/Program Files (x86)/"
+      - "C:/Program Files/Python311/Lib/site-packages/cmake/data/bin/"
+      - "C:/Program Files/Python311/Lib/site-packages/cmake/data/sbin/"
+      - "C:/Program Files/Python311/Lib/site-packages/cmake/data/"
+      - "C:/Program Files/asio_switch_test/bin/"
+      - "C:/Program Files/asio_switch_test/sbin/"
+      - "C:/Program Files/asio_switch_test/"
+    searched_directories:
+      - "C:/Program Files/Python311/Scripts/rc.com"
+      - "C:/Program Files/Python311/Scripts/rc.exe"
+      - "C:/Program Files/Python311/Scripts/rc"
+      - "C:/Program Files/Python311/rc.com"
+      - "C:/Program Files/Python311/rc.exe"
+      - "C:/Program Files/Python311/rc"
+      - "D:/Program Files (x86)/VMware/VMware Workstation/bin/rc.com"
+      - "D:/Program Files (x86)/VMware/VMware Workstation/bin/rc.exe"
+      - "D:/Program Files (x86)/VMware/VMware Workstation/bin/rc"
+      - "C:/Windows/System32/rc.com"
+      - "C:/Windows/System32/rc.exe"
+      - "C:/Windows/System32/rc"
+      - "C:/Windows/rc.com"
+      - "C:/Windows/rc.exe"
+      - "C:/Windows/rc"
+      - "C:/Windows/System32/wbem/rc.com"
+      - "C:/Windows/System32/wbem/rc.exe"
+      - "C:/Windows/System32/wbem/rc"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/rc.com"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/rc.exe"
+      - "C:/Windows/System32/WindowsPowerShell/v1.0/rc"
+      - "C:/Windows/System32/OpenSSH/rc.com"
+      - "C:/Windows/System32/OpenSSH/rc.exe"
+      - "C:/Windows/System32/OpenSSH/rc"
+      - "D:/Program Files/Bandizip/rc.com"
+      - "D:/Program Files/Bandizip/rc.exe"
+      - "D:/Program Files/Bandizip/rc"
+      - "C:/Program Files (x86)/NVIDIA Corporation/PhysX/Common/rc.com"
+      - "C:/Program Files (x86)/NVIDIA Corporation/PhysX/Common/rc.exe"
+      - "C:/Program Files (x86)/NVIDIA Corporation/PhysX/Common/rc"
+      - "D:/Program Files (x86)/NetSarang/Xshell 8/rc.com"
+      - "D:/Program Files (x86)/NetSarang/Xshell 8/rc.exe"
+      - "D:/Program Files (x86)/NetSarang/Xshell 8/rc"
+      - "C:/Program Files/ProxyBridge/rc.com"
+      - "C:/Program Files/ProxyBridge/rc.exe"
+      - "C:/Program Files/ProxyBridge/rc"
+      - "C:/Program Files/Git/cmd/rc.com"
+      - "C:/Program Files/Git/cmd/rc.exe"
+      - "C:/Program Files/Git/cmd/rc"
+      - "C:/Program Files (x86)/Windows Kits/10/Windows Performance Toolkit/rc.com"
+      - "C:/Program Files (x86)/Windows Kits/10/Windows Performance Toolkit/rc.exe"
+      - "C:/Program Files (x86)/Windows Kits/10/Windows Performance Toolkit/rc"
+      - "C:/Program Files (x86)/Windows Kits/10/bin/10.0.26100.0/x86/rc.com"
+    found: "C:/Program Files (x86)/Windows Kits/10/bin/10.0.26100.0/x86/rc.exe"
+    search_context:
+      ENV{PATH}:
+        - "C:\\Program Files\\Python311\\Scripts\\"
+        - "C:\\Program Files\\Python311\\"
+        - "D:\\Program Files (x86)\\VMware\\VMware Workstation\\bin\\"
+        - "C:\\Windows\\system32"
+        - "C:\\Windows"
+        - "C:\\Windows\\System32\\Wbem"
+        - "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\"
+        - "C:\\Windows\\System32\\OpenSSH\\"
+        - "d:\\Program Files\\Bandizip\\"
+        - "C:\\Program Files (x86)\\NVIDIA Corporation\\PhysX\\Common"
+        - "D:\\Program Files (x86)\\NetSarang\\Xshell 8\\"
+        - "C:\\Program Files\\ProxyBridge"
+        - "C:\\Program Files\\Git\\cmd"
+        - "C:\\Program Files (x86)\\Windows Kits\\10\\Windows Performance Toolkit\\"
+        - "C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.26100.0\\x86"
+        - "C:\\Program Files\\GitHub CLI\\"
+        - "C:\\Program Files\\nodejs\\"
+        - "C:\\Users\\Administrator\\.local\\bin"
+        - "C:\\Users\\Administrator\\AppData\\Local\\Microsoft\\WindowsApps"
+        - "C:\\Users\\Administrator\\AppData\\Local\\Programs\\Antigravity\\bin"
+        - "C:\\Users\\Administrator\\AppData\\Local\\Microsoft\\WinGet\\Links"
+        - "C:\\Users\\Administrator\\AppData\\Roaming\\npm"
+      CMAKE_INSTALL_PREFIX: "C:/Program Files/asio_switch_test"
+      CMAKE_SYSTEM_PREFIX_PATH:
+        - "C:/Program Files"
+        - "C:/Program Files (x86)"
+        - "C:/Program Files/Python311/Lib/site-packages/cmake/data"
+        - "C:/Program Files/asio_switch_test"
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/Python311/Lib/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerABI.cmake:83 (try_compile)"
+      - "C:/Program Files/Python311/Lib/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    checks:
+      - "Detecting CXX compiler ABI info"
+    directories:
+      source: "D:/Autigravity/UMCasio/tools/build/CMakeFiles/CMakeScratch/TryCompile-30ykcr"
+      binary: "D:/Autigravity/UMCasio/tools/build/CMakeFiles/CMakeScratch/TryCompile-30ykcr"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: "/DWIN32 /D_WINDOWS /GR /EHsc"
+      CMAKE_CXX_FLAGS_DEBUG: "/Zi /Ob0 /Od /RTC1"
+      CMAKE_CXX_SCAN_FOR_MODULES: "OFF"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+    buildResult:
+      variable: "CMAKE_CXX_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: 'D:/Autigravity/UMCasio/tools/build/CMakeFiles/CMakeScratch/TryCompile-30ykcr'
+        
+        Run Build Command(s): "C:/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/amd64/MSBuild.exe" cmTC_fd07a.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        閫傜敤浜?.NET Framework MSBuild 鐗堟湰 17.14.40+3e7442088
+        鐢熸垚鍚姩鏃堕棿涓?2026/3/28 21:40:47銆?
+        
+        鑺傜偣 1 涓婄殑椤圭洰鈥淒:\\Autigravity\\UMCasio\\tools\\build\\CMakeFiles\\CMakeScratch\\TryCompile-30ykcr\\cmTC_fd07a.vcxproj鈥?榛樿鐩爣)銆?
+        PrepareForBuild:
+          宸插惎鐢ㄧ粨鏋勫寲杈撳嚭銆傜紪璇戝櫒璇婃柇鐨勬牸寮忚缃皢鍙嶆槧閿欒灞傛缁撴瀯銆傛湁鍏宠缁嗕俊鎭紝璇峰弬闃?https://aka.ms/cpp/structured-output銆?
+          姝ｅ湪鍒涘缓鐩綍鈥淒:\\Autigravity\\UMCasio\\tools\\build\\CMakeFiles\\CMakeScratch\\TryCompile-30ykcr\\Debug\\鈥濄€?
+          姝ｅ湪鍒涘缓鐩綍鈥渃mTC_fd07a.dir\\Debug\\cmTC_fd07a.tlog\\鈥濄€?
+        InitializeBuildStatus:
+          姝ｅ湪鍒涘缓鈥渃mTC_fd07a.dir\\Debug\\cmTC_fd07a.tlog\\unsuccessfulbuild鈥濓紝鍥犱负宸叉寚瀹氣€淎lwaysCreate鈥濄€?
+          姝ｅ湪瀵光€渃mTC_fd07a.dir\\Debug\\cmTC_fd07a.tlog\\unsuccessfulbuild鈥濇墽琛?Touch 浠诲姟銆?
+        ClCompile:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D _MBCS /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GR /Fo"cmTC_fd07a.dir\\Debug\\\\" /Fd"cmTC_fd07a.dir\\Debug\\vc143.pdb" /external:W1 /TP /errorReport:queue "C:\\Program Files\\Python311\\Lib\\site-packages\\cmake\\data\\share\\cmake-4.2\\Modules\\CMakeCXXCompilerABI.cpp"
+          鐢ㄤ簬 x64 鐨?Microsoft (R) C/C++ 浼樺寲缂栬瘧鍣?19.44.35225 鐗?
+          鐗堟潈鎵€鏈?C) Microsoft Corporation銆備繚鐣欐墍鏈夋潈鍒┿€?
+          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D _MBCS /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GR /Fo"cmTC_fd07a.dir\\Debug\\\\" /Fd"cmTC_fd07a.dir\\Debug\\vc143.pdb" /external:W1 /TP /errorReport:queue "C:\\Program Files\\Python311\\Lib\\site-packages\\cmake\\data\\share\\cmake-4.2\\Modules\\CMakeCXXCompilerABI.cpp"
+          CMakeCXXCompilerABI.cpp
+        Link:
+          C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\link.exe /OUT:"D:\\Autigravity\\UMCasio\\tools\\build\\CMakeFiles\\CMakeScratch\\TryCompile-30ykcr\\Debug\\cmTC_fd07a.exe" /INCREMENTAL /ILK:"cmTC_fd07a.dir\\Debug\\cmTC_fd07a.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:/Autigravity/UMCasio/tools/build/CMakeFiles/CMakeScratch/TryCompile-30ykcr/Debug/cmTC_fd07a.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /IMPLIB:"D:/Autigravity/UMCasio/tools/build/CMakeFiles/CMakeScratch/TryCompile-30ykcr/Debug/cmTC_fd07a.lib" /MACHINE:X64  /machine:x64 cmTC_fd07a.dir\\Debug\\CMakeCXXCompilerABI.obj
+          cmTC_fd07a.vcxproj -> D:\\Autigravity\\UMCasio\\tools\\build\\CMakeFiles\\CMakeScratch\\TryCompile-30ykcr\\Debug\\cmTC_fd07a.exe
+        FinalizeBuildStatus:
+          姝ｅ湪鍒犻櫎鏂囦欢鈥渃mTC_fd07a.dir\\Debug\\cmTC_fd07a.tlog\\unsuccessfulbuild鈥濄€?
+          姝ｅ湪瀵光€渃mTC_fd07a.dir\\Debug\\cmTC_fd07a.tlog\\cmTC_fd07a.lastbuildstate鈥濇墽琛?Touch 浠诲姟銆?
+        宸插畬鎴愮敓鎴愰」鐩€淒:\\Autigravity\\UMCasio\\tools\\build\\CMakeFiles\\CMakeScratch\\TryCompile-30ykcr\\cmTC_fd07a.vcxproj鈥?榛樿鐩爣)鐨勬搷浣溿€?
+        
+        宸叉垚鍔熺敓鎴愩€?
+            0 涓鍛?
+            0 涓敊璇?
+        
+        宸茬敤鏃堕棿 00:00:00.76
+        
+      exitCode: 0
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/Python311/Lib/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerABI.cmake:253 (message)"
+      - "C:/Program Files/Python311/Lib/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Parsed CXX implicit link information:
+        link line regex: [^( *|.*[/\\])(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)|link\\.exe|lld-link(\\.exe)?|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
+        linker tool regex: [^[ 	]*(->|"|[0-9]+>[ 	-]*Build:[ 	0-9]+ ms[ 	]*)?[ 	]*(([^"]*[/\\])?(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)|link\\.exe|lld-link(\\.exe)?))("|,| |$)]
+        linker tool for 'CXX': C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/HostX64/x64/link.exe
+        implicit libs: []
+        implicit objs: []
+        implicit dirs: []
+        implicit fwks: []
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/Python311/Lib/site-packages/cmake/data/share/cmake-4.2/Modules/Internal/CMakeDetermineLinkerId.cmake:38 (message)"
+      - "C:/Program Files/Python311/Lib/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeDetermineCompilerABI.cmake:299 (cmake_determine_linker_id)"
+      - "C:/Program Files/Python311/Lib/site-packages/cmake/data/share/cmake-4.2/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Running the CXX compiler's linker: "C:/Program Files/Microsoft Visual Studio/2022/Community/VC/Tools/MSVC/14.44.35207/bin/HostX64/x64/link.exe" "-v"
+      Microsoft (R) Incremental Linker Version 14.44.35225.0
+      Copyright (C) Microsoft Corporation.  All rights reserved.
+...

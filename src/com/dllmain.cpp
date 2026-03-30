@@ -53,7 +53,10 @@ static const GUID CLSID_OfficialBehringer =
     { 0x0351302f, 0xb1f1, 0x4a5d, { 0x86, 0x13, 0x78, 0x7f, 0x77, 0xc2, 0x0e, 0xa4 } };
 
 // DllGetClassObject - Called by COM to get the class factory
+thread_local GUID g_RequestedCLSID = {0};
+
 STDAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, LPVOID* ppv) {
+    g_RequestedCLSID = rclsid;
     if (!ppv) return E_POINTER;
     *ppv = nullptr;
 

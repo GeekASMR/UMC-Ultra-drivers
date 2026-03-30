@@ -81,8 +81,8 @@ BehringerASIO::BehringerASIO(LPUNKNOWN pUnk, HRESULT* phr)
                         isTarget = true;
                     }
                 } else {
-                    const char* targets[] = {"UMC", "Audient", "Solid State Logic", "TUSBAUDIO", "USB Audio", "Onyx", "TASCAM", "FiiO", "Topping", "iFi", "Yamaha", "Steinberg", "MOTU", "Presonus", "Focusrite", "Ploytec", "ART", "Audiolink"};
-                    for (int i = 0; i < 18; i++) {
+                    const char* targets[] = {"UMC", "Audient", "Solid State Logic", "TUSBAUDIO", "USB Audio", "Onyx", "TASCAM", "FiiO", "Topping", "iFi", "Yamaha", "Steinberg", "MOTU", "Presonus", "Focusrite", "Ploytec", "ART", "Audiolink", "LEWITT"};
+                    for (int i = 0; i < 19; i++) {
                         if (strstr(subKeyName, targets[i])) { isTarget = true; break; }
                     }
                 }

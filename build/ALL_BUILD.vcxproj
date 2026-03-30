@@ -174,13 +174,65 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </ProjectReference>
-    <ProjectReference Include="D:\Autigravity\UMCasio\build\BehringerASIO.vcxproj">
-      <Project>{1C321030-1F6F-3978-98CF-C5C26F6D344B}</Project>
-      <Name>BehringerASIO</Name>
+    <ProjectReference Include="D:\Autigravity\UMCasio\build\ASIOUltraControlPanel.vcxproj">
+      <Project>{65364CE5-81A1-34D3-97E0-CFDB251E99B9}</Project>
+      <Name>ASIOUltraControlPanel</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Autigravity\UMCasio\build\ASMRTOP_ART.vcxproj">
+      <Project>{192E47CB-699F-3DC4-9938-2CDAA884D640}</Project>
+      <Name>ASMRTOP_ART</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Autigravity\UMCasio\build\ASMRTOP_AUDIENT.vcxproj">
+      <Project>{CA11D789-ED9B-37EC-9343-044A2DE49BCE}</Project>
+      <Name>ASMRTOP_AUDIENT</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Autigravity\UMCasio\build\ASMRTOP_BEHRINGER.vcxproj">
+      <Project>{13ABFE66-5A55-3B96-BDA5-C9733F1EA393}</Project>
+      <Name>ASMRTOP_BEHRINGER</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Autigravity\UMCasio\build\ASMRTOP_FOCUSRITE.vcxproj">
+      <Project>{25AAA12E-D04E-3E2F-9D41-528C183D8A75}</Project>
+      <Name>ASMRTOP_FOCUSRITE</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Autigravity\UMCasio\build\ASMRTOP_MACKIE.vcxproj">
+      <Project>{9ABBE807-DA10-3E2D-A1E3-4396EAA3780A}</Project>
+      <Name>ASMRTOP_MACKIE</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Autigravity\UMCasio\build\ASMRTOP_MOTU.vcxproj">
+      <Project>{24E794D2-6D60-3253-A576-AAAA76B676D8}</Project>
+      <Name>ASMRTOP_MOTU</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Autigravity\UMCasio\build\ASMRTOP_PRESONUS.vcxproj">
+      <Project>{84B28432-4820-3147-8999-F9B151237384}</Project>
+      <Name>ASMRTOP_PRESONUS</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Autigravity\UMCasio\build\ASMRTOP_SSL.vcxproj">
+      <Project>{C33648FB-5D19-3B90-8455-D3D394D68C34}</Project>
+      <Name>ASMRTOP_SSL</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Autigravity\UMCasio\build\ASMRTOP_TASCAM.vcxproj">
+      <Project>{E7E1F222-D115-3F59-8923-8ADC72AE654B}</Project>
+      <Name>ASMRTOP_TASCAM</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Autigravity\UMCasio\build\ASMRTOP_YAMAHA.vcxproj">
+      <Project>{B1751791-1B3E-35C8-92A3-623B8488947B}</Project>
+      <Name>ASMRTOP_YAMAHA</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Autigravity\UMCasio\build\ASMRTOP_ZOOM.vcxproj">
+      <Project>{727C6136-F5C1-3759-B069-A0689E8B83E4}</Project>
+      <Name>ASMRTOP_ZOOM</Name>
     </ProjectReference>
     <ProjectReference Include="D:\Autigravity\UMCasio\build\UMCControlProxy.vcxproj">
       <Project>{5A1F4855-8A38-344D-AE99-D52ECA614B38}</Project>
       <Name>UMCControlProxy</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Autigravity\UMCasio\build\UMCOptimizer.vcxproj">
+      <Project>{0A4B01DE-BF2D-35E7-BE62-F8E224611211}</Project>
+      <Name>UMCOptimizer</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Autigravity\UMCasio\build\asio_switch_test.vcxproj">
+      <Project>{AF2280DB-D64D-3387-8270-27E2525FDC81}</Project>
+      <Name>asio_switch_test</Name>
     </ProjectReference>
     <ProjectReference Include="D:\Autigravity\UMCasio\build\audio_diag.vcxproj">
       <Project>{C41831F7-147F-313F-89AF-7B96EED3E867}</Project>

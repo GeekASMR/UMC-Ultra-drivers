@@ -1,0 +1,3 @@
+D:/Autigravity/UMCasio/tools/build/CMakeFiles/asio_switch_test.dir
+D:/Autigravity/UMCasio/tools/build/CMakeFiles/ALL_BUILD.dir
+D:/Autigravity/UMCasio/tools/build/CMakeFiles/ZERO_CHECK.dir
