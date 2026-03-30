@@ -93,6 +93,14 @@ if (isset($_GET['reset_id'])) {
     exit;
 }
 
+// ---- 删除卡密 ----
+if (isset($_GET['del_license_id'])) {
+    $del = $pdo->prepare("DELETE FROM licenses WHERE id = ?");
+    $del->execute([(int)$_GET['del_license_id']]);
+    header("Location: asmrtap.php?msg=" . urlencode("卡密已成功彻底删除！"));
+    exit;
+}
+
 // ---- 下载用户试用时间重置工具 ----
 if (isset($_GET['action']) && $_GET['action'] === 'download_reset') {
     header("Content-Type: application/octet-stream");
@@ -286,7 +294,8 @@ if (!empty($logFiles)) {
         <td><?php echo $l['order_no']; ?></td>
         <td><?php echo $l['last_activated'] ?: '从未激活'; ?></td>
         <td>
-            <a href="?reset_id=<?php echo $l['id']; ?>" class="btn btn-danger" onclick="return confirm('确定解绑此卡密的所有机器吗？')">清空重置电脑</a>
+            <a href="?reset_id=<?php echo $l['id']; ?>" class="btn btn-warning" style="background:#f59e0b;color:white;text-decoration:none;" onclick="return confirm('确定解绑此卡密的所有机器吗？')">清空重置电脑</a>
+            <a href="?del_license_id=<?php echo $l['id']; ?>" class="btn btn-danger" style="text-decoration:none; margin-left:8px;" onclick="return confirm('确定要彻底永久删除此卡密吗？本操作不可逆复原！\n如果此卡密已被客户激活，客户将会在下次强制断网核对时被封禁！')">彻底删除</a>
         </td>
     </tr>
     <?php endforeach; ?>
