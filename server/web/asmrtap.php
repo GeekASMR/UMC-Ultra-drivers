@@ -9,7 +9,8 @@ define('ADMIN_PASS', 'Asmrtop2025.'); // 修改为你想要的后台登录密码
 if (isset($_POST['login_pass'])) {
     if ($_POST['login_pass'] === ADMIN_PASS) {
         $_SESSION['admin_logged_in'] = true;
-        header("Location: asmrtap.php");
+        $script_name = basename($_SERVER['PHP_SELF']);
+        header("Location: $script_name");
         exit;
     } else {
         $error = "密码错误！";
@@ -19,7 +20,8 @@ if (isset($_POST['login_pass'])) {
 // 退出登录
 if (isset($_GET['logout'])) {
     session_destroy();
-    header("Location: asmrtap.php");
+    $script_name = basename($_SERVER['PHP_SELF']);
+    header("Location: $script_name");
     exit;
 }
 
@@ -62,7 +64,8 @@ if (isset($_POST['action']) && $_POST['action'] === 'update_price') {
     if ($newPrice > 0) {
         $upd = $pdo->prepare("INSERT INTO settings (setting_key, setting_value) VALUES ('price', ?) ON DUPLICATE KEY UPDATE setting_value = ?");
         $upd->execute([$newPrice, $newPrice]);
-        header("Location: asmrtap.php?msg=" . urlencode("售卖价格已成功更新为： ¥ $newPrice"));
+        $script_name = basename($_SERVER['PHP_SELF']);
+        header("Location: $script_name?msg=" . urlencode("售卖价格已成功更新为： ¥ $newPrice"));
         exit;
     }
 }
@@ -81,7 +84,8 @@ if (isset($_POST['action']) && $_POST['action'] === 'generate_key') {
     $ins = $pdo->prepare("INSERT INTO licenses (license_key, max_machines, machines_bound, order_no) VALUES (?, ?, '[]', 'Manual-Gen')");
     $ins->execute([$licenseKey, LICENSE_MAX_MACHINES]);
     $msg = "成功生成卡密： $licenseKey";
-    header("Location: asmrtap.php?msg=" . urlencode($msg));
+    $script_name = basename($_SERVER['PHP_SELF']);
+    header("Location: $script_name?msg=" . urlencode($msg) . "#tab-licenses");
     exit;
 }
 
@@ -128,7 +132,8 @@ if (isset($_GET['reset_machine'])) {
     $mId = $_GET['reset_machine'];
     $upd = $pdo->prepare("UPDATE machines SET reset_flag = 1 WHERE machine_id = ?");
     $upd->execute([$mId]);
-    header("Location: asmrtap.php?msg=" . urlencode("重置试用时长指令已下发！在线终端将自动恢复为 60 分钟试用。"));
+    $script_name = basename($_SERVER['PHP_SELF']);
+    header("Location: $script_name?msg=" . urlencode("重置试用时长指令已下发！在线终端将自动恢复为 60 分钟试用。") . "#tab-users");
     exit;
 }
 
@@ -139,7 +144,8 @@ if (isset($_GET['del_log'])) {
         $logPath = realpath(__DIR__ . '/logs/' . $rel);
         if ($logPath && strpos($logPath, realpath(__DIR__ . '/logs/')) === 0) {
             unlink($logPath);
-            header("Location: asmrtap.php?msg=" . urlencode("日志文件已成功删除！"));
+            $script_name = basename($_SERVER['PHP_SELF']);
+            header("Location: $script_name?msg=" . urlencode("日志文件已成功删除！") . "#tab-logs");
             exit;
         }
     }
