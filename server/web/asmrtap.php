@@ -103,6 +103,15 @@ if (isset($_GET['del_license_id'])) {
     exit;
 }
 
+// ---- 清空未付款订单 ----
+if (isset($_GET['del_unpaid'])) {
+    $del = $pdo->prepare("DELETE FROM orders WHERE status != 'paid'");
+    $del->execute();
+    $script_name = basename($_SERVER['PHP_SELF']);
+    header("Location: $script_name?msg=" . urlencode("未支付订单已经全部一键清空！") . "#tab-orders");
+    exit;
+}
+
 // ---- 下载用户试用时间重置工具 ----
 if (isset($_GET['action']) && $_GET['action'] === 'download_reset') {
     header("Content-Type: application/octet-stream");
@@ -305,7 +314,10 @@ if (!empty($logFiles)) {
 </div>
 
 <div id="tab-orders" class="tab-content" style="display: none;">
-<h3>最近订单 (Orders)</h3>
+<h3 style="display:flex; justify-content:space-between; align-items:center;">
+    <span>最近订单 (Orders)</span>
+    <a href="?del_unpaid=1" class="btn btn-warning" style="background:#ea580c;color:white;text-decoration:none;font-size:14px;padding:6px 12px;border-radius:4px;" onclick="return confirm('确定要一键清空所有尚未完成支付的冗余订单吗？')">🗑️ 一键清空未付款订单</a>
+</h3>
 <table>
     <tr>
         <th>ID</th>
