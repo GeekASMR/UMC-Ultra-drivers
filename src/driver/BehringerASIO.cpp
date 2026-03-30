@@ -375,9 +375,9 @@ ASIOError BehringerASIO::getChannelInfo(ASIOChannelInfo* info) {
     info->type = ASIOSTFloat32LSB; // Virtual natively supports flawless 32-bit floats!
 
     if (info->isInput) {
-        snprintf(info->name, 32, "%s Virtual %d", g_CurrentTarget.searchKeyword, vIdx + 1);
+        snprintf(info->name, 32, "Virtual IN %d", vIdx + 1);
     } else {
-        snprintf(info->name, 32, "%s Mic %d", g_CurrentTarget.searchKeyword, vIdx + 1);
+        snprintf(info->name, 32, "Virtual OUT %d", vIdx + 1);
     }
     return ASE_OK;
 }

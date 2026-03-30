@@ -13,10 +13,8 @@ std::vector<StudioOneItem> OptimizerManager::s_s1Items;
 HWND OptimizerManager::s_hAsioList = NULL;
 HWND OptimizerManager::s_hS1List = NULL;
 
-#include <string>
-
-static void readAsioRoot(HKEY hRoot, bool isLegacyHiddenPath, std::vector<AsioItem>& items, DWORD viewFlag) {
-    std::wstring basePath = isLegacyHiddenPath ? L"SOFTWARE\\ASIO_HIDDEN" : L"SOFTWARE\\ASIO";
+static void readAsioRoot(HKEY hRoot, bool hidden, std::vector<AsioItem>& items, DWORD viewFlag) {
+    std::wstring basePath = hidden ? L"SOFTWARE\\ASIO_HIDDEN" : L"SOFTWARE\\ASIO";
     HKEY hKey;
     if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, basePath.c_str(), 0, KEY_READ | viewFlag, &hKey) == ERROR_SUCCESS) {
         wchar_t subName[256];
@@ -40,7 +38,7 @@ static void readAsioRoot(HKEY hRoot, bool isLegacyHiddenPath, std::vector<AsioIt
                 }
                 
                 if (!dup && sn != L"UMC Ultra" && sn != L"UMC Ultra By ASMRTOP") {
-                    items.push_back({sn, clsid, desc, isLegacyHiddenPath});
+                    items.push_back({sn, clsid, desc, hidden});
                 }
                 RegCloseKey(hSub);
             }
@@ -53,9 +51,11 @@ void OptimizerManager::ScanSystem() {
     s_asioItems.clear();
     s_s1Items.clear();
 
-    // 1. Scan ASIO (64-bit determines GUI visibility)
+    // 1. Scan ASIO (both architectures defensively)
     readAsioRoot(HKEY_LOCAL_MACHINE, false, s_asioItems, KEY_WOW64_64KEY);
+    readAsioRoot(HKEY_LOCAL_MACHINE, false, s_asioItems, KEY_WOW64_32KEY);
     readAsioRoot(HKEY_LOCAL_MACHINE, true, s_asioItems, KEY_WOW64_64KEY);
+    readAsioRoot(HKEY_LOCAL_MACHINE, true, s_asioItems, KEY_WOW64_32KEY);
 
     // 2. Scan Studio One / Studio Pro 8 locations (Simulated recursive PS sweep)
     const wchar_t* drives[] = { L"C:\\", L"D:\\", L"E:\\", L"F:\\" };
@@ -138,9 +138,6 @@ void OptimizerManager::ScanSystem() {
 void OptimizerManager::ApplyChanges() {
     // Note: Applying requires UAC. If the UI runs as Admin (like DAW context), it succeeds directly.
     // If not, it will silently fail or we need to restart as Admin.
-    // Handle ASIO hiding by physically moving 64-bit registry keys to ASIO_HIDDEN.
-    // We STRICTLY preserve 32-bit registry keys so ASIO Link Pro backing continues to function seamlessly.
-    
     for (int i=0; i<ListView_GetItemCount(s_hAsioList); i++) {
         bool wantsHidden = ListView_GetCheckState(s_hAsioList, i);
         if (s_asioItems[i].hidden != wantsHidden) {
@@ -148,43 +145,22 @@ void OptimizerManager::ApplyChanges() {
             std::wstring sc = s_asioItems[i].clsid;
             std::wstring sd = s_asioItems[i].desc;
             
-            // Extract pure CLSID
-            std::wstring pureSc = sc;
-            size_t ppos = pureSc.find(L'{');
-            size_t pend = pureSc.find(L'}');
-            if (ppos != std::wstring::npos && pend != std::wstring::npos && pend > ppos) {
-                pureSc = pureSc.substr(ppos, pend - ppos + 1);
-            }
-
-            // 64-bit mapping (hides from DAW)
-            std::wstring dest64 = wantsHidden ? (L"SOFTWARE\\ASIO_HIDDEN\\" + sn) : (L"SOFTWARE\\ASIO\\" + sn);
-            // 32-bit mapping (NEVER hidden, always ASIO, protects ASIO Link Pro tool which is 32-bit)
-            std::wstring dest32 = L"SOFTWARE\\WOW6432Node\\ASIO\\" + sn;
+            std::wstring src64 = s_asioItems[i].hidden ? (L"SOFTWARE\\ASIO_HIDDEN\\" + sn) : (L"SOFTWARE\\ASIO\\" + sn);
+            std::wstring src32 = s_asioItems[i].hidden ? (L"SOFTWARE\\WOW6432Node\\ASIO_HIDDEN\\" + sn) : (L"SOFTWARE\\WOW6432Node\\ASIO\\" + sn);
+            std::wstring destKey = wantsHidden ? (L"SOFTWARE\\ASIO_HIDDEN\\" + sn) : (L"SOFTWARE\\ASIO\\" + sn);
             
+            // Do for both 64 and 32 bit views
             DWORD views[] = { KEY_WOW64_64KEY, KEY_WOW64_32KEY };
-            std::wstring dests[] = { dest64, dest32 };
-            
             for(int v=0; v<2; v++) {
                 HKEY hDest;
-                if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, dests[v].c_str(), 0, NULL, 0, KEY_WRITE | views[v], NULL, &hDest, NULL) == ERROR_SUCCESS) {
-                    if (!pureSc.empty()) RegSetValueExW(hDest, L"CLSID", 0, REG_SZ, (BYTE*)pureSc.c_str(), (pureSc.length()+1)*2);
-                    if (!sd.empty()) RegSetValueExW(hDest, L"Description", 0, REG_SZ, (BYTE*)sd.c_str(), (sd.length()+1)*2);
+                if (RegCreateKeyExW(HKEY_LOCAL_MACHINE, destKey.c_str(), 0, NULL, 0, KEY_WRITE | views[v], NULL, &hDest, NULL) == ERROR_SUCCESS) {
+                    RegSetValueExW(hDest, L"CLSID", 0, REG_SZ, (BYTE*)sc.c_str(), (sc.length()+1)*2);
+                    RegSetValueExW(hDest, L"Description", 0, REG_SZ, (BYTE*)sd.c_str(), (sd.length()+1)*2);
                     RegCloseKey(hDest);
                 }
             }
-            
-            // Delete old keys specifically to enforce visibility changes
-            if (wantsHidden) {
-                // If it is now hidden, we must physically delete the visible 64-bit key branch
-                SHDeleteKeyW(HKEY_LOCAL_MACHINE, (L"SOFTWARE\\ASIO\\" + sn).c_str());
-            } else {
-                // If it is now visible, we must physically delete the hidden 64-bit key branch
-                SHDeleteKeyW(HKEY_LOCAL_MACHINE, (L"SOFTWARE\\ASIO_HIDDEN\\" + sn).c_str());
-            }
-
-            // ALWAYS purge legacy 32-bit hidden keys just in case they were dumped here in older versions
-            SHDeleteKeyW(HKEY_LOCAL_MACHINE, (L"SOFTWARE\\WOW6432Node\\ASIO_HIDDEN\\" + sn).c_str());
-            
+            SHDeleteKeyW(HKEY_LOCAL_MACHINE, src64.c_str());
+            SHDeleteKeyW(HKEY_LOCAL_MACHINE, src32.c_str());
             s_asioItems[i].hidden = wantsHidden;
         }
     }
