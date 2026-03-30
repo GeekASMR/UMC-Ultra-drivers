@@ -1,11 +1,12 @@
 cmake_minimum_required(VERSION 3.16)
-project(BehringerASIO VERSION 7.0.0 LANGUAGES CXX)
+project(BehringerASIO VERSION 7.0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(MSVC)
     add_compile_options("/utf-8")
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif()
 
 # Output directory
@@ -189,11 +190,6 @@ add_executable(ASIOUltraControlPanel WIN32 src/gui/UMCControlPanel.cpp src/gui/O
 target_link_libraries(ASIOUltraControlPanel PRIVATE shlwapi shell32 user32 gdi32 comctl32 wininet winhttp)
 set_target_properties(ASIOUltraControlPanel PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level='requireAdministrator' uiAccess='false'\"")
 
-# === UMC Optimizer Standalone Tool ===
-add_executable(UMCOptimizer WIN32 src/gui/UMCOptimizer.cpp src/gui/OptimizerManager.cpp src/gui/app.rc)
-target_compile_definitions(UMCOptimizer PRIVATE UNICODE _UNICODE)
-target_link_libraries(UMCOptimizer PRIVATE shlwapi shell32 user32 gdi32 comctl32 dwmapi uxtheme)
-set_target_properties(UMCOptimizer PROPERTIES LINK_FLAGS "/MANIFESTUAC:\"level='requireAdministrator' uiAccess='false'\"")
 
 # === ASIO Buffer Switch Stress Test ===
 add_executable(asio_switch_test tools/asio_switch_test.cpp)

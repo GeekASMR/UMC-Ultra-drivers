@@ -1,7 +1,7 @@
 ; BehringerASIO.def - DLL Export Definition File
 ; Defines the COM DLL entry points required for ASIO driver registration
 
-LIBRARY "BehringerASIO"
+
 
 EXPORTS
     DllGetClassObject   PRIVATE

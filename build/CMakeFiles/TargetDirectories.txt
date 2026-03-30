@@ -25,7 +25,6 @@ D:/Autigravity/UMCasio/build/CMakeFiles/ipc_output_test.dir
 D:/Autigravity/UMCasio/build/CMakeFiles/ipc_pop_detect.dir
 D:/Autigravity/UMCasio/build/CMakeFiles/ds_sine_test.dir
 D:/Autigravity/UMCasio/build/CMakeFiles/ASIOUltraControlPanel.dir
-D:/Autigravity/UMCasio/build/CMakeFiles/UMCOptimizer.dir
 D:/Autigravity/UMCasio/build/CMakeFiles/asio_switch_test.dir
 D:/Autigravity/UMCasio/build/CMakeFiles/INSTALL.dir
 D:/Autigravity/UMCasio/build/CMakeFiles/ALL_BUILD.dir

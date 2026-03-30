@@ -15,7 +15,7 @@
 #define LOG_MODULE "DllMain"
 
 // Module handle
-static HMODULE g_hModule = nullptr;
+HMODULE g_hModule = nullptr;
 
 // DLL reference count
 static volatile LONG g_dllRefCount = 0;

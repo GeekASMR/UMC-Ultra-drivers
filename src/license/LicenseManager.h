@@ -191,7 +191,6 @@ public:
         std::string machineId = getMachineId();
 
         int trialLeft = getTrialMinutesRemaining();
-        char msg[1024];
 
         Status st = check();
         if (st == ACTIVE) {

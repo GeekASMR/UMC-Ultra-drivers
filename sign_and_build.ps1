@@ -24,7 +24,7 @@ if ($LASTEXITCODE -ne 0) {
     Exit
 }
 
-$brands = @("BEHRINGER", "AUDIENT", "SSL", "MACKIE", "TASCAM", "YAMAHA", "MOTU", "PRESONUS", "FOCUSRITE", "ZOOM", "ART")
+$brands = @("BEHRINGER", "AUDIENT", "SSL", "MACKIE", "TASCAM", "YAMAHA", "MOTU", "PRESONUS", "FOCUSRITE", "ZOOM", "ART", "ROLAND", "MAUDIO", "UAD_VOLT")
 
 # Step 1: Sign Binaries
 Write-Host "[1] Starting SHA256 Code Sign..." -ForegroundColor Green
@@ -45,12 +45,6 @@ if (Test-Path $exePath) {
     Copy-Item $exePath -Destination (Join-Path $installerDir "ASIOUltraControlPanel.exe") -Force
 }
 
-$optPath = Join-Path $buildDir "bin\Release\UMCOptimizer.exe"
-if (Test-Path $optPath) {
-    & $signtool sign /f $pfx /p $pfxPass /fd SHA256 $optPath
-    Copy-Item $optPath -Destination (Join-Path $installerDir "UMCOptimizer.exe") -Force
-}
-
 # Step 4: Run ISCC compiler
 Write-Host "[4] Inno Setup Packaging..." -ForegroundColor Green
 Set-Location $installerDir
@@ -66,7 +60,7 @@ $appVer = $appVer.Trim()
 
 # Step 5: Sign the Output Installer!
 Write-Host "[5] Signing final Setup Installer..." -ForegroundColor Green
-$installerOut = Join-Path $installerDir "out\ASIOUltra_V$($appVer)_Setup_Test.exe"
+$installerOut = Join-Path $installerDir "out\ASIOUltra_V$($appVer)_Setup.exe"
 $installerSignedOut = Join-Path $installerDir "out\ASIOUltra_V$($appVer)_Setup_Signed.exe"
 if (Test-Path $installerOut) {
     & $signtool sign /f $pfx /p $pfxPass /fd SHA256 $installerOut

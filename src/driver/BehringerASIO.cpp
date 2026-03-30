@@ -85,9 +85,12 @@ BehringerASIO::BehringerASIO(LPUNKNOWN pUnk, HRESULT* phr)
                     if (strstr(subKeyName, explicitKeyword)) {
                         isTarget = true;
                     }
+                    if (strstr(explicitKeyword, "UMC") && (strstr(subKeyName, "BEHRINGER") || strstr(subKeyName, "USB AUDIO"))) {
+                        isTarget = true;
+                    }
                 } else {
-                    const char* targets[] = {"UMC", "Audient", "Solid State Logic", "TUSBAUDIO", "USB Audio", "Onyx", "TASCAM", "FiiO", "Topping", "iFi", "Yamaha", "Steinberg", "MOTU", "Presonus", "Focusrite", "Ploytec", "ART", "Audiolink", "LEWITT", "OCTA", "M-Audio", "M-Track", "Delta", "Volt"};
-                    for (int i = 0; i < 24; i++) {
+                    const char* targets[] = {"BEHRINGER", "UMC", "Audient", "Solid State Logic", "TUSBAUDIO", "USB Audio", "Onyx", "TASCAM", "FiiO", "Topping", "iFi", "Yamaha", "Steinberg", "MOTU", "Presonus", "Focusrite", "Ploytec", "ART", "Audiolink", "LEWITT", "OCTA", "M-Audio", "M-Track", "Delta", "Volt"};
+                    for (int i = 0; i < 25; i++) {
                         if (strstr(subKeyName, targets[i])) { isTarget = true; break; }
                     }
                 }
@@ -543,9 +546,15 @@ ASIOError BehringerASIO::disposeBuffers() {
 }
 
 ASIOError BehringerASIO::controlPanel() {
-    // 拦截 DAW 发出的控制面板请求，优先唤起我们自定义的全新暗黑模式面板！
+    extern HMODULE g_hModule;
+    HMODULE hModule = g_hModule;
+    
     wchar_t path[MAX_PATH] = {0};
-    GetModuleFileNameW(GetModuleHandleW(L"BehringerASIO.dll"), path, MAX_PATH);
+    if (hModule) {
+        GetModuleFileNameW(hModule, path, MAX_PATH);
+    } else {
+        wcscpy(path, L"C:\\Program Files\\UMC Ultra By ASMRTOP\\ASMRTOP_BEHRINGER.dll");
+    }
     std::wstring ePath = path;
     ePath = ePath.substr(0, ePath.find_last_of(L"\\/")) + L"\\ASIOUltraControlPanel.exe";
     

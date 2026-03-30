@@ -238,10 +238,6 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <Project>{5A1F4855-8A38-344D-AE99-D52ECA614B38}</Project>
       <Name>UMCControlProxy</Name>
     </ProjectReference>
-    <ProjectReference Include="D:\Autigravity\UMCasio\build\UMCOptimizer.vcxproj">
-      <Project>{0A4B01DE-BF2D-35E7-BE62-F8E224611211}</Project>
-      <Name>UMCOptimizer</Name>
-    </ProjectReference>
     <ProjectReference Include="D:\Autigravity\UMCasio\build\asio_switch_test.vcxproj">
       <Project>{AF2280DB-D64D-3387-8270-27E2525FDC81}</Project>
       <Name>asio_switch_test</Name>
