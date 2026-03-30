@@ -89,7 +89,8 @@ if (isset($_POST['action']) && $_POST['action'] === 'generate_key') {
 if (isset($_GET['reset_id'])) {
     $upd = $pdo->prepare("UPDATE licenses SET machines_bound = '[]' WHERE id = ?");
     $upd->execute([(int)$_GET['reset_id']]);
-    header("Location: asmrtap.php");
+    $script_name = basename($_SERVER['PHP_SELF']);
+    header("Location: $script_name#tab-licenses");
     exit;
 }
 
@@ -97,7 +98,8 @@ if (isset($_GET['reset_id'])) {
 if (isset($_GET['del_license_id'])) {
     $del = $pdo->prepare("DELETE FROM licenses WHERE id = ?");
     $del->execute([(int)$_GET['del_license_id']]);
-    header("Location: asmrtap.php?msg=" . urlencode("卡密已成功彻底删除！"));
+    $script_name = basename($_SERVER['PHP_SELF']);
+    header("Location: $script_name?msg=" . urlencode("卡密已成功彻底删除！") . "#tab-licenses");
     exit;
 }
 
@@ -406,6 +408,14 @@ function switchTab(tabId) {
         activeBtn.style.color = 'white';
     }
 }
+
+// Check for hash on load to switch to specific tab
+document.addEventListener("DOMContentLoaded", function() {
+    let hash = window.location.hash;
+    if(hash && document.getElementById(hash.substring(1))) {
+        switchTab(hash.substring(1));
+    }
+});
 </script>
 
 <div style="height:100px;"></div>
