@@ -24,7 +24,7 @@ if ($LASTEXITCODE -ne 0) {
     Exit
 }
 
-$brands = @("BEHRINGER", "AUDIENT", "SSL", "MACKIE", "TASCAM", "YAMAHA", "MOTU", "PRESONUS", "FOCUSRITE", "ZOOM", "ART", "ROLAND", "MAUDIO", "UAD_VOLT")
+$brands = @("BEHRINGER", "AUDIENT", "SSL", "MACKIE", "TASCAM", "YAMAHA", "MOTU", "PRESONUS", "FOCUSRITE", "ZOOM", "ART", "ROLAND", "MAUDIO", "UAD_VOLT", "FENDER")
 
 # Step 1: Sign Binaries
 Write-Host "[1] Starting SHA256 Code Sign..." -ForegroundColor Green

@@ -81,6 +81,11 @@ static const AsioBrandTarget g_CurrentTarget = {
     "Volt", "UA Volt Ultra By ASMRTOP", "{A1B2C3D4-E5F6-7890-ABCD-EF1234560113}",
     { 0xA1B2C3D4, 0xE5F6, 0x7890, { 0xAB, 0xCD, 0xEF, 0x12, 0x34, 0x56, 0x01, 0x13 } }
 };
+#elif defined(ASMRTOP_TARGET_FENDER)
+static const AsioBrandTarget g_CurrentTarget = {
+    "Fender", "Fender Ultra By ASMRTOP", "{A1B2C3D4-E5F6-7890-ABCD-EF1234560114}",
+    { 0xA1B2C3D4, 0xE5F6, 0x7890, { 0xAB, 0xCD, 0xEF, 0x12, 0x34, 0x56, 0x01, 0x14 } }
+};
 #else
 // Default Generic Fallback for Testing
 static const AsioBrandTarget g_CurrentTarget = {
