@@ -20,10 +20,12 @@ HMODULE g_hModule = nullptr;
 // DLL reference count
 static volatile LONG g_dllRefCount = 0;
 
-// Driver info for registration
-static const char* DRIVER_NAME   = "UMC Ultra";
-static const char* DRIVER_DESC   = "UMC Ultra";
-static const char* DRIVER_CLSID  = "{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}";
+#include "../AsioTargets.h"
+
+// Driver info for registration dynamically injected via compiler directives
+#define DRIVER_NAME   g_CurrentTarget.brandPrefix
+#define DRIVER_DESC   g_CurrentTarget.brandPrefix
+#define DRIVER_CLSID  g_CurrentTarget.clsidStr
 
 //-------------------------------------------------------------------
 // DLL Entry Point
@@ -92,6 +94,38 @@ static HRESULT RegSetString(HKEY hKey, const char* valueName, const char* value)
     return (result == ERROR_SUCCESS) ? S_OK : HRESULT_FROM_WIN32(result);
 }
 
+// Dynamically probes the registry for the true host ASIO name and appends " Ultra"
+static void GetDynamicAsioName(char* outName, size_t maxLen) {
+    strncpy(outName, DRIVER_NAME, maxLen); // Strict Fallback
+    
+    HKEY hKeyAsio;
+    if (RegOpenKeyExA(HKEY_LOCAL_MACHINE, "SOFTWARE\\ASIO", 0, KEY_READ, &hKeyAsio) == ERROR_SUCCESS) {
+        char subKeyName[256];
+        DWORD index = 0;
+        DWORD nameLen = sizeof(subKeyName);
+        while (RegEnumKeyExA(hKeyAsio, index, subKeyName, &nameLen, nullptr, nullptr, nullptr, nullptr) == ERROR_SUCCESS) {
+            bool isBlacklisted = false;
+            const char* blacklist[] = {"Ultra", "ASMRTOP", "WDM2VST", "Virtual"};
+            for (int b = 0; b < 4; b++) {
+                if (strstr(subKeyName, blacklist[b])) { isBlacklisted = true; break; }
+            }
+            if (!isBlacklisted && g_CurrentTarget.searchKeyword && strstr(subKeyName, g_CurrentTarget.searchKeyword)) {
+                // Remove trailing ASIO if present to keep it clean (e.g. "MOTU Audio ASIO" -> "MOTU Audio Ultra")
+                char cleanName[256];
+                strncpy(cleanName, subKeyName, sizeof(cleanName));
+                char* pAsio = strstr(cleanName, " ASIO");
+                if (pAsio) *pAsio = '\0';
+                
+                snprintf(outName, maxLen, "%s Ultra", cleanName);
+                break;
+            }
+            index++;
+            nameLen = sizeof(subKeyName);
+        }
+        RegCloseKey(hKeyAsio);
+    }
+}
+
 // DllRegisterServer - Register the ASIO driver in the Windows registry
 STDAPI DllRegisterServer() {
     try {
@@ -104,6 +138,9 @@ STDAPI DllRegisterServer() {
 
         Logger::getInstance().init();
         LOG_INFO(LOG_MODULE, "Registering ASIO driver: %s", modulePath);
+        
+        char dynamicName[256];
+        GetDynamicAsioName(dynamicName, sizeof(dynamicName));
 
         // 1. Register COM class
         //    HKCR\CLSID\{...}\InprocServer32
@@ -119,8 +156,8 @@ STDAPI DllRegisterServer() {
         }
 
         // Set default value to driver name
-        RegSetString(hKey, nullptr, DRIVER_NAME);
-        RegSetString(hKey, "Description", DRIVER_DESC);
+        RegSetString(hKey, nullptr, dynamicName);
+        RegSetString(hKey, "Description", dynamicName);
 
         // Create InprocServer32 subkey
         result = RegCreateKeyExA(hKey, "InprocServer32", 0, nullptr,
@@ -137,7 +174,7 @@ STDAPI DllRegisterServer() {
         // 2. Register ASIO driver
         //    HKLM\SOFTWARE\ASIO\<DriverName>
         char asioKey[256];
-        StringCchPrintfA(asioKey, 256, "SOFTWARE\\ASIO\\%s", DRIVER_NAME);
+        StringCchPrintfA(asioKey, 256, "SOFTWARE\\ASIO\\%s", dynamicName);
 
         result = RegCreateKeyExA(HKEY_LOCAL_MACHINE, asioKey, 0, nullptr,
                                   REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr,
@@ -148,10 +185,10 @@ STDAPI DllRegisterServer() {
         }
 
         RegSetString(hKey, "CLSID", DRIVER_CLSID);
-        RegSetString(hKey, "Description", DRIVER_DESC);
+        RegSetString(hKey, "Description", dynamicName);
         RegCloseKey(hKey);
 
-        LOG_INFO(LOG_MODULE, "ASIO driver registered successfully");
+        LOG_INFO(LOG_MODULE, "ASIO driver registered successfully AS: %s", dynamicName);
         return S_OK;
     }
     catch (...) {
@@ -165,11 +202,21 @@ STDAPI DllUnregisterServer() {
     try {
         Logger::getInstance().init();
         LOG_INFO(LOG_MODULE, "Unregistering ASIO driver");
+        
+        char dynamicName[256];
+        GetDynamicAsioName(dynamicName, sizeof(dynamicName));
 
-        // 1. Remove ASIO key
+        // 1. Remove dynamically resolved ASIO key
         char asioKey[256];
+        StringCchPrintfA(asioKey, 256, "SOFTWARE\\ASIO\\%s", dynamicName);
+        RegDeleteKeyA(HKEY_LOCAL_MACHINE, asioKey);
+        
+        // Also enthusiastically wipe the fallback name just in case the dynamic state changed
         StringCchPrintfA(asioKey, 256, "SOFTWARE\\ASIO\\%s", DRIVER_NAME);
         RegDeleteKeyA(HKEY_LOCAL_MACHINE, asioKey);
+        
+        // Clean up legacy UMC Ultra bug footprint if present for this CLSID (clean uninstall logic)
+        RegDeleteKeyA(HKEY_LOCAL_MACHINE, "SOFTWARE\\ASIO\\UMC Ultra");
 
         // 2. Remove COM registration
         char clsidKey[256];
@@ -189,3 +236,4 @@ STDAPI DllUnregisterServer() {
         return E_UNEXPECTED;
     }
 }
+

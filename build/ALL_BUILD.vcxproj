@@ -190,6 +190,10 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <Project>{13ABFE66-5A55-3B96-BDA5-C9733F1EA393}</Project>
       <Name>ASMRTOP_BEHRINGER</Name>
     </ProjectReference>
+    <ProjectReference Include="D:\Autigravity\UMCasio\build\ASMRTOP_FENDER.vcxproj">
+      <Project>{34BB71E8-3B53-3ED4-8A11-8CB87CC546F4}</Project>
+      <Name>ASMRTOP_FENDER</Name>
+    </ProjectReference>
     <ProjectReference Include="D:\Autigravity\UMCasio\build\ASMRTOP_FOCUSRITE.vcxproj">
       <Project>{25AAA12E-D04E-3E2F-9D41-528C183D8A75}</Project>
       <Name>ASMRTOP_FOCUSRITE</Name>

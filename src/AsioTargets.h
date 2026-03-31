@@ -43,7 +43,7 @@ static const AsioBrandTarget g_CurrentTarget = {
 };
 #elif defined(ASMRTOP_TARGET_MOTU)
 static const AsioBrandTarget g_CurrentTarget = {
-    "MOTU M Series", "MOTU Ultra By ASMRTOP", "{A1B2C3D4-E5F6-7890-ABCD-EF123456000C}",
+    "MOTU Audio ASIO", "MOTU Ultra By ASMRTOP", "{A1B2C3D4-E5F6-7890-ABCD-EF123456000C}",
     { 0xA1B2C3D4, 0xE5F6, 0x7890, { 0xAB, 0xCD, 0xEF, 0x12, 0x34, 0x56, 0x00, 0x0C } }
 };
 #elif defined(ASMRTOP_TARGET_PRESONUS)

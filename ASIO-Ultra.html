@@ -49,10 +49,10 @@ table.mt tbody td{padding:11px 16px;font-size:13px;color:var(--txt2);border-bott
 table.mt tbody tr:last-child td{border-bottom:none}
 table.mt tbody tr:hover td{background:rgba(79,138,255,.04)}
 table.mt td.model{color:var(--txt);font-weight:500}
-table.mt tr.hl-real td{background:rgba(34,197,94,.16);border-bottom:1px solid rgba(34,197,94,.4);color:#fff;position:relative}
-table.mt tr.hl-real td.model{color:#fff;font-weight:700;text-shadow:0 0 10px rgba(34,197,94,.6)}
-table.mt tr.hl-real td:first-child{border-left:4px solid var(--green);box-shadow:inset 4px 0 16px -4px rgba(34,197,94,.8)}
-table.mt tr.hl-real:hover td{background:rgba(34,197,94,.22)}
+table.mt tr.hl-real td{background:rgba(34,197,94,.08);border-bottom:1px solid rgba(34,197,94,.25);color:#e2e8f0;position:relative;font-weight:500}
+table.mt tr.hl-real td.model{color:#fff;font-weight:700}
+table.mt tr.hl-real td:first-child{border-left:4px solid var(--green)}
+table.mt tr.hl-real:hover td{background:rgba(34,197,94,.12)}
 .stars{letter-spacing:2px;font-size:14px}
 .s5{color:var(--green)}.s4{color:var(--cyan)}.s3{color:var(--yellow)}
 
@@ -79,7 +79,7 @@ table.mt tr.hl-real:hover td{background:rgba(34,197,94,.22)}
   <div class="badge">🔬 ASMRTOP V7 技术白皮书 · 驱动逆向审查 + 架构原理</div>
   <h1>ASIO Ultra 全品牌<br>兼容性验证矩阵</h1>
   <p class="sub">基于对市面主流 USB 音频接口原厂驱动的逆向拆解与审查，全面验证 ASIO Ultra V7 的兼容覆盖范围、虚拟通道能力与稳定性保障。</p>
-  <div class="vtag">ENGINE v7.0.1 · BUILD 2026.03.31 · 驱动源: 各品牌技术支持官网</div>
+  <div class="vtag">ENGINE v7.0.2 · BUILD 2026.03.31 · 驱动源: 各品牌技术支持官网</div>
   
   <div class="card" style="margin-top:24px; border:1px solid var(--purple); background:linear-gradient(145deg, rgba(168,85,247,0.1) 0%, rgba(0,0,0,0) 100%);">
     <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
@@ -222,7 +222,7 @@ table.mt tr.hl-real:hover td{background:rgba(34,197,94,.22)}
   <table class="mt">
     <thead><tr><th>系列</th><th>型号</th><th>通道接口核心</th><th>是否实机验证</th><th>架构兼容状态</th></tr></thead>
     <tbody>
-      <tr class="hl-real"><td>Quantum</td><td class="model">Quantum LT2 / LT4</td><td>Fender PAE 通用核心</td><td><span style="color:var(--purple);font-weight:600">🧪 V7 组合靶向专供识别库强力寻址加载通关</span></td><td><span class="stars s5">★★★★★</span></td></tr>
+      <tr><td>Quantum</td><td class="model">Quantum LT2 / LT4</td><td>Fender PAE 通用核心</td><td><span style="color:var(--purple);font-weight:600">🧪 V7 组合靶向专供识别库强力寻址加载通关</span></td><td><span class="stars s5">★★★★★</span></td></tr>
       <tr><td>Quantum HD</td><td class="model">Quantum HD 系列</td><td>高度保密 DSP + Fender 控制台</td><td><span style="color:var(--cyan)">💻 V7 基于PAE核心演化引擎智能接管推演</span></td><td><span class="stars s4">★★★★☆</span></td></tr>
     </tbody>
   </table>
@@ -303,6 +303,7 @@ table.mt tr.hl-real:hover td{background:rgba(34,197,94,.22)}
   <table class="mt">
     <thead><tr><th>系列</th><th>型号</th><th>通道 (I/O)</th><th>是否实机验证</th><th>架构兼容状态</th></tr></thead>
     <tbody>
+      <tr class="hl-real"><td>Audio Express</td><td class="model">Audio Express (FireWire/USB)</td><td>6×6</td><td><span style="color:var(--green);font-weight:700">✅ 实体硬件测试通过</span></td><td><span class="stars s5">★★★★★</span></td></tr>
       <tr><td>M Series</td><td class="model">M2 / M4</td><td>2×2 / 4×4</td><td><span style="color:var(--purple);font-weight:600">🧪 M系驱动沙盒拦截成功</span></td><td><span class="stars s4">★★★★☆</span></td></tr>
       <tr><td>M Series</td><td class="model">M6</td><td>6×4</td><td><span style="color:var(--cyan)">💻 同核驱动理论兼容</span></td><td><span class="stars s4">★★★★☆</span></td></tr>
       <tr><td>UltraLite</td><td class="model">UltraLite-mk5</td><td>18×22</td><td><span style="color:var(--cyan)">💻 大轨道通道流待实地并发测试</span></td><td><span class="stars s3">★★★☆☆</span></td></tr>
