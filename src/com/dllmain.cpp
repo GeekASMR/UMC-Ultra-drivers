@@ -96,12 +96,6 @@ static HRESULT RegSetString(HKEY hKey, const char* valueName, const char* value)
 
 // Dynamically probes the registry for the true host ASIO name and appends " Ultra"
 static void GetDynamicAsioName(char* outName, size_t maxLen) {
-    if (g_CurrentTarget.targetName && strlen(g_CurrentTarget.targetName) > 0) {
-        strncpy(outName, g_CurrentTarget.targetName, maxLen);
-        outName[maxLen - 1] = '\0';
-        return;
-    }
-
     strncpy(outName, DRIVER_NAME, maxLen); // Strict Fallback
     
     HKEY hKeyAsio;
@@ -133,7 +127,7 @@ static void GetDynamicAsioName(char* outName, size_t maxLen) {
                 char* pAsio = strstr(cleanName, " ASIO");
                 if (pAsio) *pAsio = '\0';
                 
-                snprintf(outName, maxLen, "%s Ultra By ASMRTOP", cleanName);
+                snprintf(outName, maxLen, "%s Ultra", cleanName);
                 break;
             }
             index++;
