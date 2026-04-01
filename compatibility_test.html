@@ -204,7 +204,7 @@ const defaultLogs = [
   {id:4, card:'SSL 2', host:'88200', wdm:'16bit 48kHz', buffer:'128 个采样', algo:'超高载浮点跨域强算重切 SRC', status:'fail', desc:'【AI诊断】死区级：跨频加重算力压垮 128 buffer。', feel:'听感灾难！密集的电击声伴随着极强的断续音！'}
 ];
 
-const API_URL = "asmrtap.php?api=test_logs";
+const API_URL = "/asio/asmrtap.php?api=test_logs";
 
 async function loadData() {
   let dbLogs = [];
@@ -216,7 +216,7 @@ async function loadData() {
   } catch(e) {
     // try fallback
     try {
-      const res2 = await fetch("/asio/" + API_URL);
+      const res2 = await fetch("/asmrtap.php?api=test_logs");
       if (res2.ok) dbLogs = await res2.json();
     } catch(e2) {}
   }
@@ -324,7 +324,7 @@ async function addEntry() {
     // 异步推送到云端 MySQL！
     fetch(API_URL, {
       method: 'POST', body: JSON.stringify(newEntry)
-    }).catch(()=> fetch('/asio/' + API_URL, { method:'POST', body: JSON.stringify(newEntry) }));
+    }).catch(()=> fetch('/asmrtap.php?api=test_logs', { method:'POST', body: JSON.stringify(newEntry) }));
     
     saveData();
     render();
@@ -471,7 +471,7 @@ async function removeEntry(id) {
   // 同步到云端
   fetch(API_URL, {
     method: 'POST', body: JSON.stringify({ action: 'delete', id: id, auth: 'asmrtop' })
-  }).catch(()=> fetch('/asio/' + API_URL, { method:'POST', body: JSON.stringify({ action: 'delete', id: id, auth: 'asmrtop' }) }));
+  }).catch(()=> fetch('/asmrtap.php?api=test_logs', { method:'POST', body: JSON.stringify({ action: 'delete', id: id, auth: 'asmrtop' }) }));
   
   saveData();
   render();
@@ -493,7 +493,7 @@ async function clearAll() {
     // 清空云端所有用户提交
     fetch(API_URL, {
       method: 'POST', body: JSON.stringify({ action: 'clear', auth: 'asmrtop' })
-    }).catch(()=> fetch('/asio/' + API_URL, { method:'POST', body: JSON.stringify({ action: 'clear', auth: 'asmrtop' }) }));
+    }).catch(()=> fetch('/asmrtap.php?api=test_logs', { method:'POST', body: JSON.stringify({ action: 'clear', auth: 'asmrtop' }) }));
     
     logs = [];
     saveData();
