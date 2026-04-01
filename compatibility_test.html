@@ -154,7 +154,13 @@ table.mt tbody tr:hover td{background:rgba(79,138,255,.03)}
   <div class="full">
     <span class="row-label">📎 附加实录实测音频 (可选，支持高精度原始对齐检测，仅限载入 MP3 或 WAV)</span>
     <input type="file" id="i_audio" accept="audio/mpeg, audio/wav, .mp3, .wav" style="cursor:pointer; padding:6px 10px;">
-    <input type="hidden" id="i_audio_b64" value="">
+    
+    <!-- Upload Progress Visualizer -->
+    <div id="upload_progress_container" style="display:none; margin-top:12px; width:100%; height:6px; background:rgba(255,255,255,0.05); border-radius:3px; overflow:hidden;">
+        <div id="upload_progress_bar" style="width:0%; height:100%; background:var(--cyan); transition:width 0.2s, background 0.2s; box-shadow:0 0 8px rgba(0,212,255,0.8);"></div>
+    </div>
+    <div id="upload_progress_text" style="display:none; margin-top:4px; font-size:12px; color:var(--cyan); font-weight:bold; letter-spacing:1px; text-align:right;">0%</div>
+    
   </div>
   <div class="full action-bar">
     <div style="flex:1; padding-right:16px;">
@@ -323,6 +329,10 @@ async function addEntry() {
   btn.innerText = "🚀 数据正在推流至云端...";
   btn.disabled = true;
 
+  const progContainer = document.getElementById("upload_progress_container");
+  const progBar = document.getElementById("upload_progress_bar");
+  const progText = document.getElementById("upload_progress_text");
+
   const newEntry = {
     id: Date.now(),
     card, host, wdm, buffer, status, algo, desc, feel, audio: ""
@@ -351,13 +361,49 @@ async function addEntry() {
       fetchBody = JSON.stringify(newEntry);
   }
 
+  // 构建支持原生进度监听的 XHR Promise，替代不支持流式监听的旧版 fetch
+  const uploadViaXHR = (url, bodyData) => {
+      return new Promise((resolve) => {
+          const xhr = new XMLHttpRequest();
+          xhr.open("POST", url, true);
+          
+          xhr.upload.onprogress = (e) => {
+              if (e.lengthComputable && file) {
+                  const percent = Math.round((e.loaded / e.total) * 100);
+                  progContainer.style.display = "block";
+                  progText.style.display = "block";
+                  progBar.style.width = percent + "%";
+                  progBar.style.background = percent === 100 ? "#4caf50" : "var(--cyan)";
+                  progText.innerText = "📤 " + percent + "%  /  " + (e.loaded / 1024 / 1024).toFixed(2) + " MB";
+              }
+          };
+
+          xhr.onload = () => {
+              if (xhr.status >= 200 && xhr.status < 300) {
+                  try {
+                      const res = JSON.parse(xhr.responseText);
+                      resolve({ ok: true, json: () => Promise.resolve(res) });
+                  } catch(err) { resolve({ ok: false }); }
+              } else {
+                  resolve({ ok: false });
+              }
+          };
+
+          xhr.onerror = () => resolve({ ok: false });
+
+          if (typeof bodyData === 'string') {
+              xhr.setRequestHeader('Content-Type', 'application/json');
+          }
+          xhr.send(bodyData);
+      });
+  };
+
   try {
-    // 同步等待云端 MySQL 响应，不提前抢跑写入本地！
-    let r = await fetch(API_URL, {
-      method: 'POST', body: fetchBody
-    });
+    // 同步等待云端 MySQL 响应，不提前抢跑写入本地
+    let r = await uploadViaXHR(API_URL, fetchBody);
     if (!r.ok) {
-        r = await fetch('/asmrtap.php?api=test_logs', { method:'POST', body: fetchBody }); 
+        // 重试本地回退链路
+        r = await uploadViaXHR('/asmrtap.php?api=test_logs', fetchBody); 
     }
     
     if (r.ok) {
@@ -391,6 +437,14 @@ async function addEntry() {
   } finally {
     btn.innerText = "📥 写入到测试库";
     btn.disabled = false;
+    
+    // 重置进度条界面
+    setTimeout(() => {
+        progContainer.style.display = "none";
+        progText.style.display = "none";
+        progBar.style.width = "0%";
+        progBar.style.background = "var(--cyan)";
+    }, 1500);
   }
 }
 
