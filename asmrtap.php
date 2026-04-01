@@ -11,7 +11,14 @@ if (isset($_GET['api']) && $_GET['api'] === 'test_logs') {
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $data = json_decode(file_get_contents('php://input'), true);
-        if (!$data) { http_response_code(400); exit; }
+        if (!$data) { 
+            // Fallback to normal multipart form POST for large file uploads
+            if (isset($_POST['id'])) {
+                $data = $_POST;
+            } else {
+                http_response_code(400); exit; 
+            }
+        }
         
         if (isset($data['action']) && $data['action'] === 'delete') {
             if (empty($data['auth']) || $data['auth'] !== 'asmrtop') { http_response_code(403); exit; }
@@ -45,12 +52,25 @@ if (isset($_GET['api']) && $_GET['api'] === 'test_logs') {
         }
         
         $audioUrl = '';
-        if (!empty($data['audio']) && strpos($data['audio'], 'data:audio/') === 0) {
+        // 优先处理直接传来的原生二进制大文件 (Multipart)
+        if (isset($_FILES['audio_file']) && $_FILES['audio_file']['error'] === UPLOAD_ERR_OK) {
+            $ext = 'wav';
+            if (stripos($_FILES['audio_file']['name'], '.mp3') !== false) $ext = 'mp3';
+            
+            $uploadDir = __DIR__ . '/uploads';
+            if (!is_dir($uploadDir)) @mkdir($uploadDir, 0755, true);
+            
+            $filename = 'test_' . $data['id'] . '.' . $ext;
+            if (move_uploaded_file($_FILES['audio_file']['tmp_name'], $uploadDir . '/' . $filename)) {
+                $audioUrl = '/asio/uploads/' . $filename;
+            }
+        } 
+        // 兼容处理老式 Base64 上传方案
+        else if (!empty($data['audio']) && strpos($data['audio'], 'data:audio/') === 0) {
             $base64 = $data['audio'];
             $ext = 'wav';
             if (strpos($base64, 'audio/mpeg') !== false || strpos($base64, 'audio/mp3') !== false) $ext = 'mp3';
             
-            // 剥离 Base64 头
             $parts = explode(',', $base64);
             if (count($parts) === 2) {
                 $decoded = base64_decode($parts[1]);
@@ -59,7 +79,6 @@ if (isset($_GET['api']) && $_GET['api'] === 'test_logs') {
                 
                 $filename = 'test_' . $data['id'] . '.' . $ext;
                 file_put_contents($uploadDir . '/' . $filename, $decoded);
-                // 存入相对于域名的绝对路径，防止 HTML 与 PHP 不同级引发 404
                 $audioUrl = '/asio/uploads/' . $filename; 
             }
         } else if (!empty($data['audio'])) {
@@ -72,7 +91,7 @@ if (isset($_GET['api']) && $_GET['api'] === 'test_logs') {
             // update with actual file URL now
             $stmt2 = $pdo->prepare("UPDATE asio_test_logs SET audio = ? WHERE id = ?");
             $stmt2->execute([$audioUrl, $data['id']]);
-            echo json_encode(['ok'=>1]);
+            echo json_encode(['ok'=>1, 'url'=>$audioUrl]);
         }
         exit;
     }

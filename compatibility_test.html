@@ -325,35 +325,54 @@ async function addEntry() {
 
   const newEntry = {
     id: Date.now(),
-    card, host, wdm, buffer, status, algo, desc, feel, audio
+    card, host, wdm, buffer, status, algo, desc, feel, audio: ""
   };
+
+  let fetchBody = null;
+  const fileInput = document.getElementById('i_audio');
+  const file = fileInput.files[0];
+  
+  if (file) {
+      // 启用高性能原生流式表单上传，彻底抛弃导致内存雪崩的 Base64 编码！
+      const formData = new FormData();
+      formData.append('id', newEntry.id);
+      formData.append('card', newEntry.card);
+      formData.append('host', newEntry.host);
+      formData.append('wdm', newEntry.wdm);
+      formData.append('buffer', newEntry.buffer);
+      formData.append('status', newEntry.status);
+      formData.append('algo', newEntry.algo);
+      formData.append('desc', newEntry.desc);
+      formData.append('feel', newEntry.feel);
+      formData.append('audio_file', file);
+      fetchBody = formData;
+  } else {
+      // 兼容无附件情况下的极速纯文字序列化通信
+      fetchBody = JSON.stringify(newEntry);
+  }
 
   try {
     // 同步等待云端 MySQL 响应，不提前抢跑写入本地！
     let r = await fetch(API_URL, {
-      method: 'POST', body: JSON.stringify(newEntry)
+      method: 'POST', body: fetchBody
     });
     if (!r.ok) {
-        r = await fetch('/asmrtap.php?api=test_logs', { method:'POST', body: JSON.stringify(newEntry) }); 
+        r = await fetch('/asmrtap.php?api=test_logs', { method:'POST', body: fetchBody }); 
     }
     
     if (r.ok) {
         let resData = await r.json();
         if (resData.url) {
             // 服务器已成功物理落盘文件，并下发了超短 URL 路径
-            // 此时必须替换掉客户端身上背负的这坨 4MB+ 的 Base64 毒瘤！
+            // 前端只保存只有几十字节长度的 URL！
             newEntry.audio = resData.url;
-        } else if (newEntry.audio && newEntry.audio.length > 500000) {
-            // 异常兜底，防止硬存爆掉 LocalStorage
-            newEntry.audio = "";
         }
     } else {
         throw new Error("云端服务器以错误码拒绝 (可能是 Nginx 体积顶撞或网络断网)");
     }
   } catch(e) {
-      if (newEntry.audio && newEntry.audio.length > 2000000) {
-          alert("⚠️ 云盘写入受阻！您录音包超过服务器最大阈值或网络异常。为防止本地缓存崩溃，该记录将以 [无附件形式] 保留至本地库。");
-          newEntry.audio = ""; // 果断剥离大文件，保全用户文字纪要
+      if (file) {
+          alert("⚠️ 云盘写入受阻！您挂载的录音文件包可能已超过服务器底层宽带最大吞吐阈值，或您的网络隧道已断开！\n为防止浏览器内存崩溃，本次测试记录将以 [无附件纯文本形式] 退回并保留至您的本地离线库。");
       }
   }
 
@@ -597,13 +616,14 @@ document.getElementById('i_audio').addEventListener('change', function(e) {
     document.getElementById('i_audio_b64').value = "";
     return;
   }
-
-  const reader = new FileReader();
-  reader.onload = function(evt) {
-    document.getElementById('i_audio_b64').value = evt.target.result;
-    saveFormCache(); // Also cache the Base64 audio string just in case they refresh
-  };
-  reader.readAsDataURL(file);
+  if (file.size > 20 * 1024 * 1024) {
+      alert("📦 文件体积过于庞大 (超过 20MB)！为保护通信服务器免受洪泛攻击，服务器拒收过大数据，请截取片段再传。");
+      e.target.value = "";
+      return;
+  }
+  
+  // 彻底废弃旧版在此处把上兆文件转码成 Base64 塞爆缓存的智障行为
+  // 点击提交会自动挂载高速二进制流上传通道！
 });
 
 // Init
