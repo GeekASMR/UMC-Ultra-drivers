@@ -200,25 +200,44 @@ public:
         if (st == ACTIVE) {
             char key[128] = {}, expiry[64] = {};
             HKEY hKey;
-            if (RegOpenKeyExA(HKEY_CURRENT_USER, LIC_REG_KEY, 0, KEY_READ, &hKey) == ERROR_SUCCESS) {
+            if (RegOpenKeyExA(HKEY_CURRENT_USER, LIC_REG_KEY, 0, KEY_ALL_ACCESS, &hKey) == ERROR_SUCCESS) {
                 DWORD sz = sizeof(key);
                 RegQueryValueExA(hKey, "LicenseKey", 0, 0, (BYTE*)key, &sz);
                 sz = sizeof(expiry);
                 RegQueryValueExA(hKey, "Expiry", 0, 0, (BYTE*)expiry, &sz);
+
+                // --- 强制进行一次网络同步验证 (解决后台解绑后客户端状态滞后问题) ---
+                if (strlen(key) >= 4) {
+                    char body[512];
+                    snprintf(body, sizeof(body), "{\"key\":\"%s\",\"machine_id\":\"%s\"}", key, machineId.c_str());
+                    std::string response;
+                    if (httpPost(LIC_SERVER_HOST, LIC_VERIFY_PATH, body, response)) {
+                        if (jsonVal(response, "status") == "invalid") {
+                            // 后台已被清空/解绑，立刻物理清除本地缓存并转为过期模式
+                            RegDeleteValueA(hKey, "Token");
+                            RegDeleteValueA(hKey, "Expiry");
+                            st = EXPIRED; 
+                            s_activated = false;
+                        }
+                    }
+                }
                 RegCloseKey(hKey);
             }
-            wchar_t wMsg[1024];
-            swprintf(wMsg, sizeof(wMsg)/sizeof(wchar_t),
-                L"ASIO Ultra  v%s\n\n"
-                L"许可状态: 已激活 ✓\n"
-                L"许可密钥: %S\n"
-                L"有效期至: %S\n"
-                L"机器码: %S",
-                UMC_VERSION_WSTR, key, expiry, machineId.c_str());
-            wchar_t wTitle[256];
-            swprintf(wTitle, sizeof(wTitle)/sizeof(wchar_t), L"ASIO Ultra Professional v%s", UMC_VERSION_WSTR);
-            MessageBoxW(parent, wMsg, wTitle, MB_ICONINFORMATION);
-            return true;
+            
+            if (st == ACTIVE) {
+                wchar_t wMsg[1024];
+                swprintf(wMsg, sizeof(wMsg)/sizeof(wchar_t),
+                    L"ASIO Ultra  v%s\n\n"
+                    L"许可状态: 已激活 ✓\n"
+                    L"许可密钥: %S\n"
+                    L"有效期至: %S\n"
+                    L"机器码: %S",
+                    UMC_VERSION_WSTR, key, expiry, machineId.c_str());
+                wchar_t wTitle[256];
+                swprintf(wTitle, sizeof(wTitle)/sizeof(wchar_t), L"ASIO Ultra Professional v%s", UMC_VERSION_WSTR);
+                MessageBoxW(parent, wMsg, wTitle, MB_ICONINFORMATION);
+                return true;
+            }
         }
 
         if (st == TRIAL) {
