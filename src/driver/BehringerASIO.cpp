@@ -291,8 +291,11 @@ ASIOError BehringerASIO::getChannels(long* numInputChannels, long* numOutputChan
     m_numVirtualInputs = NUM_VIRTUAL_PAIRS * 2;
     m_numVirtualOutputs = NUM_VIRTUAL_PAIRS * 2;
     
-    if (numInputChannels) *numInputChannels = hwIn + m_numVirtualInputs;
-    if (numOutputChannels) *numOutputChannels = hwOut + m_numVirtualOutputs;
+    int padIn = (hwIn % 2);
+    int padOut = (hwOut % 2);
+
+    if (numInputChannels) *numInputChannels = hwIn + padIn + m_numVirtualInputs;
+    if (numOutputChannels) *numOutputChannels = hwOut + padOut + m_numVirtualOutputs;
     return ASE_OK;
 }
 
@@ -351,28 +354,48 @@ ASIOError BehringerASIO::getChannelInfo(ASIOChannelInfo* info) {
         m_baseAsio->getChannels(&m_hwNumInputs, &m_hwNumOutputs);
     }
 
+    bool isPad = false;
     bool isVrt = false;
     int vIdx = 0;
 
+    int padIn = (m_hwNumInputs % 2);
+    int padOut = (m_hwNumOutputs % 2);
+
+    long effHwIn = m_hwNumInputs + padIn;
+    long effHwOut = m_hwNumOutputs + padOut;
+
     if (info->isInput) {
-        if (info->channel >= m_hwNumInputs) {
+        if (info->channel < m_hwNumInputs) {
+            // original hw
+        } else if (info->channel < effHwIn) {
+            isPad = true;
+        } else {
             isVrt = true;
-            vIdx = info->channel - m_hwNumInputs;
+            vIdx = info->channel - effHwIn;
         }
     } else {
-        if (info->channel >= m_hwNumOutputs) {
+        if (info->channel < m_hwNumOutputs) {
+            // original hw
+        } else if (info->channel < effHwOut) {
+            isPad = true;
+        } else {
             isVrt = true;
-            vIdx = info->channel - m_hwNumOutputs;
+            vIdx = info->channel - effHwOut;
         }
     }
 
-    if (!isVrt) {
+    if (!isVrt && !isPad) {
         return m_baseAsio->getChannelInfo(info);
     }
 
     info->isActive = ASIOTrue;
     info->channelGroup = 0;
-    info->type = ASIOSTFloat32LSB; // Virtual natively supports flawless 32-bit floats!
+    info->type = ASIOSTFloat32LSB; // Virtual and pad natively supports 32-bit floats
+
+    if (isPad) {
+        snprintf(info->name, 32, "--- Unused Alignment ---");
+        return ASE_OK;
+    }
 
     if (info->isInput) {
         snprintf(info->name, 32, "Virtual IN %d", vIdx + 1);
@@ -433,27 +456,40 @@ ASIOError BehringerASIO::createBuffers(ASIOBufferInfo* bufferInfos, long numChan
     
     std::vector<ASIOBufferInfo> baseBufferInfos;
 
+    int padIn = (m_hwNumInputs % 2);
+    int padOut = (m_hwNumOutputs % 2);
+    long effHwIn = m_hwNumInputs + padIn;
+    long effHwOut = m_hwNumOutputs + padOut;
+
     for (long i = 0; i < numChannels; i++) {
         ProxyBuffer pb;
         pb.wrapper = bufferInfos[i];
         pb.isVirtual = false;
+        pb.isPad = false;
         pb.virtualIndex = -1;
         
-        if (pb.wrapper.isInput && pb.wrapper.channelNum >= m_hwNumInputs) {
-            pb.isVirtual = true;
-            pb.virtualIndex = pb.wrapper.channelNum - m_hwNumInputs;
-        }
-        if (!pb.wrapper.isInput && pb.wrapper.channelNum >= m_hwNumOutputs) {
-            pb.isVirtual = true;
-            pb.virtualIndex = pb.wrapper.channelNum - m_hwNumOutputs;
+        if (pb.wrapper.isInput) {
+            if (pb.wrapper.channelNum >= effHwIn) {
+                pb.isVirtual = true;
+                pb.virtualIndex = pb.wrapper.channelNum - effHwIn;
+            } else if (pb.wrapper.channelNum >= m_hwNumInputs) {
+                pb.isPad = true;
+            }
+        } else {
+            if (pb.wrapper.channelNum >= effHwOut) {
+                pb.isVirtual = true;
+                pb.virtualIndex = pb.wrapper.channelNum - effHwOut;
+            } else if (pb.wrapper.channelNum >= m_hwNumOutputs) {
+                pb.isPad = true;
+            }
         }
 
-        if (!pb.isVirtual) {
+        if (!pb.isVirtual && !pb.isPad) {
             baseBufferInfos.push_back(pb.wrapper);
             pb.original = baseBufferInfos.back(); // keep track for map
             m_bufferMap.push_back(pb);
         } else {
-            // Virtual channel: allocate AVX-aligned raw float buffers
+            // Virtual/Pad channel: allocate AVX-aligned raw float buffers
             pb.original.isInput = pb.wrapper.isInput;
             pb.original.channelNum = pb.wrapper.channelNum; // Keep its real physical ASIO index, don't use -1
             
@@ -517,8 +553,8 @@ ASIOError BehringerASIO::createBuffers(ASIOBufferInfo* bufferInfos, long numChan
     // Map the returned buffer pointers back to the DAW
     int baseIdx = 0;
     for (size_t i = 0; i < m_bufferMap.size(); i++) {
-        if (m_bufferMap[i].isVirtual) {
-            // Virtual
+        if (m_bufferMap[i].isVirtual || m_bufferMap[i].isPad) {
+            // Virtual or Pad
             bufferInfos[i].buffers[0] = m_bufferMap[i].original.buffers[0];
             bufferInfos[i].buffers[1] = m_bufferMap[i].original.buffers[1];
         } else {

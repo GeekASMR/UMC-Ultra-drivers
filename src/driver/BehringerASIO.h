@@ -123,6 +123,7 @@ private:
         ASIOBufferInfo original;
         ASIOBufferInfo wrapper;
         bool isVirtual;
+        bool isPad;
         int virtualIndex;
     };
     
