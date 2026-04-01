@@ -2,6 +2,60 @@
 session_start();
 require_once 'config.php';
 
+// ---- ASIO Compatibility Test Data API (No Auth Required for GET/Public POST) ----
+if (isset($_GET['api']) && $_GET['api'] === 'test_logs') {
+    $pdo = getDb();
+    try {
+        $pdo->exec("CREATE TABLE IF NOT EXISTS asio_test_logs (id BIGINT PRIMARY KEY, card VARCHAR(100), host VARCHAR(50), wdm VARCHAR(50), buffer VARCHAR(50), algo VARCHAR(255), status VARCHAR(20), desc_text TEXT, feel TEXT, audio LONGTEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)");
+    } catch(Exception $e) {}
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $data = json_decode(file_get_contents('php://input'), true);
+        if (!$data) { http_response_code(400); exit; }
+        
+        if (isset($data['action']) && $data['action'] === 'delete') {
+            if (empty($data['auth']) || $data['auth'] !== 'asmrtop') { http_response_code(403); exit; }
+            $pdo->prepare("DELETE FROM asio_test_logs WHERE id = ?")->execute([$data['id']]);
+            echo json_encode(['ok'=>1]);
+            exit;
+        }
+        if (isset($data['action']) && $data['action'] === 'clear') {
+            if (empty($data['auth']) || $data['auth'] !== 'asmrtop') { http_response_code(403); exit; }
+            $pdo->exec("DELETE FROM asio_test_logs");
+            echo json_encode(['ok'=>1]);
+            exit;
+        }
+        
+        if (!empty($data['id'])) {
+            $stmt = $pdo->prepare("INSERT INTO asio_test_logs (id, card, host, wdm, buffer, algo, status, desc_text, feel, audio) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE status=status");
+            $stmt->execute([$data['id'], $data['card'], $data['host'], $data['wdm'], $data['buffer'], $data['algo'], $data['status'], $data['desc'], $data['feel'], $data['audio'] ?? '']);
+            echo json_encode(['ok'=>1]);
+        }
+        exit;
+    }
+    
+    header('Content-Type: application/json');
+    $rows = $pdo->query("SELECT * FROM asio_test_logs ORDER BY id DESC")->fetchAll(PDO::FETCH_ASSOC);
+    $out = [];
+    foreach ($rows as $r) {
+        $out[] = [
+            'id' => (int)$r['id'],
+            'card' => $r['card'],
+            'host' => $r['host'],
+            'wdm' => $r['wdm'],
+            'buffer' => $r['buffer'],
+            'algo' => $r['algo'],
+            'status' => $r['status'],
+            'desc' => $r['desc_text'],
+            'feel' => $r['feel'],
+            'audio' => $r['audio']
+        ];
+    }
+    echo json_encode($out);
+    exit;
+}
+// ---- END API ----
+
 // ---- 管理员密码设置 ----
 define('ADMIN_PASS', 'Asmrtop2025.'); // 修改为你想要的后台登录密码
 

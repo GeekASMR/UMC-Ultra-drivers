@@ -204,26 +204,44 @@ const defaultLogs = [
   {id:4, card:'SSL 2', host:'88200', wdm:'16bit 48kHz', buffer:'128 个采样', algo:'超高载浮点跨域强算重切 SRC', status:'fail', desc:'【AI诊断】死区级：跨频加重算力压垮 128 buffer。', feel:'听感灾难！密集的电击声伴随着极强的断续音！'}
 ];
 
-function loadData() {
-  const d = localStorage.getItem('asio_test_logs');
-  let deletedIds = JSON.parse(localStorage.getItem('deleted_ids') || '[]');
-  let userLogs = [];
-  
-  if (d) {
-    let localLogs = JSON.parse(d);
-    // 过滤掉所有已删除的元素
-    userLogs = localLogs.filter(l => l.id > 1000000 && !deletedIds.includes(l.id));
+const API_URL = "asmrtap.php?api=test_logs";
+
+async function loadData() {
+  let dbLogs = [];
+  try {
+    const res = await fetch(API_URL);
+    if (res.ok) {
+      dbLogs = await res.json();
+    }
+  } catch(e) {
+    // try fallback
+    try {
+      const res2 = await fetch("/asio/" + API_URL);
+      if (res2.ok) dbLogs = await res2.json();
+    } catch(e2) {}
   }
+
+  let deletedIds = JSON.parse(localStorage.getItem('deleted_ids') || '[]');
   
+  // 过滤掉所有被管理员在本地打入冷宫的 ID
+  let activeDB = dbLogs.filter(l => !deletedIds.includes(l.id));
   let activeDefaults = defaultLogs.filter(l => !deletedIds.includes(l.id));
   
-  // 将最新的原生默认数据库和用户的本地留存合并（用户新增排在前面）
-  logs = [...userLogs, ...activeDefaults];
+  // 将最新的原生默认数据库和数据库的留存合并
+  logs = [...activeDB, ...activeDefaults];
+  
+  // 降级去重
+  const seen = new Set();
+  logs = logs.filter(l => {
+    if (seen.has(l.id)) return false;
+    seen.add(l.id);
+    return true;
+  });
   
   saveData();
   render();
 }
-
+  
 function saveData() {
   localStorage.setItem('asio_test_logs', JSON.stringify(logs));
 }
@@ -279,7 +297,7 @@ function render() {
   });
 }
 
-function addEntry() {
+async function addEntry() {
   const card = document.getElementById('i_card').value;
   const host = document.getElementById('i_host').value;
   const wdm = document.getElementById('i_wdm').value;
@@ -296,10 +314,17 @@ function addEntry() {
   }
 
   try {
-    logs.unshift({
+    const newEntry = {
       id: Date.now(),
       card, host, wdm, buffer, status, algo, desc, feel, audio
-    });
+    };
+    logs.unshift(newEntry);
+    
+    // 异步推送到云端 MySQL！
+    fetch(API_URL, {
+      method: 'POST', body: JSON.stringify(newEntry)
+    }).catch(()=> fetch('/asio/' + API_URL, { method:'POST', body: JSON.stringify(newEntry) }));
+    
     saveData();
     render();
     
@@ -364,6 +389,11 @@ async function removeEntry(id) {
     localStorage.setItem('deleted_ids', JSON.stringify(deletedIds));
   }
   
+  // 同步到云端
+  fetch(API_URL, {
+    method: 'POST', body: JSON.stringify({ action: 'delete', id: id, auth: 'asmrtop' })
+  }).catch(()=> fetch('/asio/' + API_URL, { method:'POST', body: JSON.stringify({ action: 'delete', id: id, auth: 'asmrtop' }) }));
+  
   saveData();
   render();
 }
@@ -380,6 +410,11 @@ async function clearAll() {
       if (!deletedIds.includes(l.id)) deletedIds.push(l.id);
     });
     localStorage.setItem('deleted_ids', JSON.stringify(deletedIds));
+    
+    // 清空云端所有用户提交
+    fetch(API_URL, {
+      method: 'POST', body: JSON.stringify({ action: 'clear', auth: 'asmrtop' })
+    }).catch(()=> fetch('/asio/' + API_URL, { method:'POST', body: JSON.stringify({ action: 'clear', auth: 'asmrtop' }) }));
     
     logs = [];
     saveData();
