@@ -88,6 +88,10 @@ BehringerASIO::BehringerASIO(LPUNKNOWN pUnk, HRESULT* phr)
                     if (strstr(explicitKeyword, "UMC") && (strstr(subKeyName, "BEHRINGER") || strstr(subKeyName, "USB AUDIO"))) {
                         isTarget = true;
                     }
+                    if ((strstr(explicitKeyword, "Fender") || strstr(explicitKeyword, "Studio USB")) && 
+                        (strstr(subKeyName, "Quantum") || strstr(subKeyName, "Universal Control"))) {
+                        isTarget = true;
+                    }
                 } else {
                     const char* targets[] = {"BEHRINGER", "UMC", "Audient", "Solid State Logic", "TUSBAUDIO", "USB Audio", "Onyx", "TASCAM", "FiiO", "Topping", "iFi", "Yamaha", "Steinberg", "MOTU", "Presonus", "Focusrite", "Ploytec", "ART", "Audiolink", "LEWITT", "OCTA", "M-Audio", "M-Track", "Delta", "Volt"};
                     for (int i = 0; i < 25; i++) {

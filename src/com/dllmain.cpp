@@ -109,14 +109,25 @@ static void GetDynamicAsioName(char* outName, size_t maxLen) {
             for (int b = 0; b < 4; b++) {
                 if (strstr(subKeyName, blacklist[b])) { isBlacklisted = true; break; }
             }
-            if (!isBlacklisted && g_CurrentTarget.searchKeyword && strstr(subKeyName, g_CurrentTarget.searchKeyword)) {
+            bool isMatch = false;
+            if (!isBlacklisted && g_CurrentTarget.searchKeyword) {
+                if (strstr(subKeyName, g_CurrentTarget.searchKeyword)) {
+                    isMatch = true;
+                }
+                if ((strstr(g_CurrentTarget.searchKeyword, "Fender") || strstr(g_CurrentTarget.searchKeyword, "Studio USB")) &&
+                    (strstr(subKeyName, "Quantum") || strstr(subKeyName, "Universal Control"))) {
+                    isMatch = true;
+                }
+            }
+
+            if (isMatch) {
                 // Remove trailing ASIO if present to keep it clean (e.g. "MOTU Audio ASIO" -> "MOTU Audio Ultra")
                 char cleanName[256];
                 strncpy(cleanName, subKeyName, sizeof(cleanName));
                 char* pAsio = strstr(cleanName, " ASIO");
                 if (pAsio) *pAsio = '\0';
                 
-                snprintf(outName, maxLen, "%s Ultra", cleanName);
+                snprintf(outName, maxLen, "%s Ultra By ASMRTOP", cleanName);
                 break;
             }
             index++;
