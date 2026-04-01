@@ -186,6 +186,10 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <Project>{CA11D789-ED9B-37EC-9343-044A2DE49BCE}</Project>
       <Name>ASMRTOP_AUDIENT</Name>
     </ProjectReference>
+    <ProjectReference Include="D:\Autigravity\UMCasio\build\ASMRTOP_AVID_MBOX.vcxproj">
+      <Project>{59A8C5F2-B028-30C0-BC64-6808FDC90B4D}</Project>
+      <Name>ASMRTOP_AVID_MBOX</Name>
+    </ProjectReference>
     <ProjectReference Include="D:\Autigravity\UMCasio\build\ASMRTOP_BEHRINGER.vcxproj">
       <Project>{13ABFE66-5A55-3B96-BDA5-C9733F1EA393}</Project>
       <Name>ASMRTOP_BEHRINGER</Name>

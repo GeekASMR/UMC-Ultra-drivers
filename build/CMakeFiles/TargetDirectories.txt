@@ -13,6 +13,7 @@ D:/Autigravity/UMCasio/build/CMakeFiles/ASMRTOP_ROLAND.dir
 D:/Autigravity/UMCasio/build/CMakeFiles/ASMRTOP_MAUDIO.dir
 D:/Autigravity/UMCasio/build/CMakeFiles/ASMRTOP_UAD_VOLT.dir
 D:/Autigravity/UMCasio/build/CMakeFiles/ASMRTOP_FENDER.dir
+D:/Autigravity/UMCasio/build/CMakeFiles/ASMRTOP_AVID_MBOX.dir
 D:/Autigravity/UMCasio/build/CMakeFiles/UMCControlProxy.dir
 D:/Autigravity/UMCasio/build/CMakeFiles/ipc_monitor.dir
 D:/Autigravity/UMCasio/build/CMakeFiles/ipc_quality_test.dir

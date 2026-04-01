@@ -62,8 +62,8 @@ STDAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, LPVOID* ppv) {
     if (!ppv) return E_POINTER;
     *ppv = nullptr;
 
-    // Accept both our CLSID and the official Behringer CLSID
-    if (rclsid != CLSID_BehringerASIO && rclsid != CLSID_OfficialBehringer) {
+    // Accept the brand-specific CLSID from AsioTargets.h AND the legacy official Behringer CLSID
+    if (rclsid != g_CurrentTarget.clsid && rclsid != CLSID_OfficialBehringer && rclsid != CLSID_BehringerASIO) {
         return CLASS_E_CLASSNOTAVAILABLE;
     }
 
@@ -142,12 +142,12 @@ STDAPI DllRegisterServer() {
         char dynamicName[256];
         GetDynamicAsioName(dynamicName, sizeof(dynamicName));
 
-        // 1. Register COM class
-        //    HKCR\CLSID\{...}\InprocServer32
+        // 1. Register COM class STRICTLY to HKLM, bypassing HKCR virtualization
+        //    HKLM\SOFTWARE\Classes\CLSID\{...}\InprocServer32
         char clsidKey[256];
-        StringCchPrintfA(clsidKey, 256, "CLSID\\%s", DRIVER_CLSID);
+        StringCchPrintfA(clsidKey, 256, "SOFTWARE\\Classes\\CLSID\\%s", DRIVER_CLSID);
 
-        LONG result = RegCreateKeyExA(HKEY_CLASSES_ROOT, clsidKey, 0, nullptr,
+        LONG result = RegCreateKeyExA(HKEY_LOCAL_MACHINE, clsidKey, 0, nullptr,
                                        REG_OPTION_NON_VOLATILE, KEY_WRITE, nullptr,
                                        &hKey, &dwDisp);
         if (result != ERROR_SUCCESS) {
@@ -222,11 +222,11 @@ STDAPI DllUnregisterServer() {
         char clsidKey[256];
         
         // Remove InprocServer32 first (must delete subkeys before parent)
-        StringCchPrintfA(clsidKey, 256, "CLSID\\%s\\InprocServer32", DRIVER_CLSID);
-        RegDeleteKeyA(HKEY_CLASSES_ROOT, clsidKey);
+        StringCchPrintfA(clsidKey, 256, "SOFTWARE\\Classes\\CLSID\\%s\\InprocServer32", DRIVER_CLSID);
+        RegDeleteKeyA(HKEY_LOCAL_MACHINE, clsidKey);
         
-        StringCchPrintfA(clsidKey, 256, "CLSID\\%s", DRIVER_CLSID);
-        RegDeleteKeyA(HKEY_CLASSES_ROOT, clsidKey);
+        StringCchPrintfA(clsidKey, 256, "SOFTWARE\\Classes\\CLSID\\%s", DRIVER_CLSID);
+        RegDeleteKeyA(HKEY_LOCAL_MACHINE, clsidKey);
 
         LOG_INFO(LOG_MODULE, "ASIO driver unregistered");
         return S_OK;

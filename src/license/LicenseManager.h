@@ -728,7 +728,7 @@ public:
                 RegCloseKey(hKey);
             }
             // --- 静默收集并上传日志 ---
-            std::string logPath = "C:\\Users\\Public\\Documents\\ASIOUltra_Debug.log";
+            std::string logPath = "C:\\Users\\Public\\Documents\\UMCUltra_Debug.log";
             std::string mId = getMachineId();
             
             // 尝试读取注册邮箱/机器码作为 user_id 以便后台分类

@@ -14,8 +14,18 @@ Write-Host "==========================================" -ForegroundColor Cyan
 Write-Host "  ASMRTOP V7.0 Autobuild System Started   " -ForegroundColor Cyan
 Write-Host "==========================================" -ForegroundColor Cyan
 
-# Step 0: Compile all targets via CMake
-Write-Host "[0] Starting CMake Compilation..." -ForegroundColor Green
+# Step 0.5: Sync Version
+$appVer = (Get-Content -Path "d:\Autigravity\UMCasio\version.txt" | Select-Object -First 1).Trim()
+Write-Host "[0] Syncing version to ${appVer} ..." -ForegroundColor Green
+$versionHeader = @"
+#pragma once
+#define UMC_VERSION_STR `"$appVer`"
+#define UMC_VERSION_WSTR L`"$appVer`"
+"@
+Set-Content -Path "d:\Autigravity\UMCasio\src\UMCVersion.h" -Value $versionHeader
+
+# Step 1: Compile all targets via CMake
+Write-Host "[1] Starting CMake Compilation..." -ForegroundColor Green
 Set-Location "d:\Autigravity\UMCasio"
 cmake -S . -B $buildDir -DCMAKE_BUILD_TYPE=Release
 cmake --build $buildDir --config Release
@@ -24,7 +34,7 @@ if ($LASTEXITCODE -ne 0) {
     Exit
 }
 
-$brands = @("BEHRINGER", "AUDIENT", "SSL", "MACKIE", "TASCAM", "YAMAHA", "MOTU", "PRESONUS", "FOCUSRITE", "ZOOM", "ART", "ROLAND", "MAUDIO", "UAD_VOLT", "FENDER")
+$brands = @("BEHRINGER", "AUDIENT", "SSL", "MACKIE", "TASCAM", "YAMAHA", "MOTU", "PRESONUS", "FOCUSRITE", "ZOOM", "ART", "ROLAND", "MAUDIO", "UAD_VOLT", "FENDER", "AVID_MBOX")
 
 # Step 1: Sign Binaries
 Write-Host "[1] Starting SHA256 Code Sign..." -ForegroundColor Green
@@ -47,6 +57,8 @@ if (Test-Path $exePath) {
 
 # Step 4: Run ISCC compiler
 Write-Host "[4] Inno Setup Packaging..." -ForegroundColor Green
+$issPath = Join-Path $installerDir "setup.iss"
+(Get-Content -Path $issPath -Encoding UTF8) -replace '#define MyAppVersion ".*"', "#define MyAppVersion `"$appVer`"" -replace 'AppVersion=.*', "AppVersion=$appVer" -replace 'OutputBaseFilename=.*', "OutputBaseFilename=ASIOUltra_V${appVer}_Setup" | Set-Content -Path $issPath -Encoding UTF8
 Set-Location $installerDir
 & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "setup.iss"
 if ($LASTEXITCODE -ne 0) {

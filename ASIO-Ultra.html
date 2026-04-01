@@ -70,6 +70,15 @@ table.mt tr.hl-real:hover td{background:rgba(34,197,94,.12)}
 .footer{text-align:center;padding:40px 0;border-top:1px solid var(--border);color:var(--dim);font-size:12px}
 .footer a{color:var(--blue);text-decoration:none}
 @media(max-width:768px){.hero h1{font-size:28px}.hero .sub{font-size:14px}.c{padding:0 15px}.card{padding:16px}.sec h2{font-size:22px;letter-spacing:0}.brand-tech{padding:12px;word-break:break-all}.brand-tech div{display:block;margin-bottom:10px}.brand-tech span{display:inline-block;width:auto;margin-bottom:3px}.brand-meta{display:flex;flex-direction:column;gap:6px}.brand-meta span{margin-right:0}.risk{flex-direction:column;gap:10px;padding:15px}.bltags{gap:5px}.bltag{font-size:11px}table.mt,table.mt thead,table.mt tbody,table.mt td{display:block;width:100%}table.mt thead{display:none}table.mt tr{display:flex;flex-direction:column;margin-bottom:12px;padding:14px;background:rgba(0,0,0,.2)!important;border:1px solid var(--border);border-radius:10px;position:relative}table.mt tr.hl-real{background:rgba(34,197,94,.08)!important;border-left:4px solid var(--green)}table.mt td{background:transparent!important;border:none!important;box-shadow:none!important;padding:0!important;text-align:left;white-space:normal;line-height:1.4}.brand-sec table.mt td:nth-child(2){order:1;font-size:15px!important;font-weight:700;color:#fff;margin-bottom:4px;padding-right:70px!important;display:block}.brand-sec table.mt td:nth-child(1){order:2;font-size:12px!important;color:var(--txt2);font-weight:600;display:block;margin-bottom:2px}.brand-sec table.mt td:nth-child(3){order:3;font-size:12px!important;color:var(--cyan);display:block}.brand-sec table.mt td:nth-child(4){order:4;font-size:12px!important;margin-top:8px;padding-top:8px!important;border-top:1px dashed rgba(255,255,255,.08)!important;display:block}.brand-sec table.mt td:nth-child(5){position:absolute;top:14px;right:14px;width:auto;text-align:right;font-size:12px!important}.tb-summary td:nth-child(1){order:1;font-size:15px!important;font-weight:700;color:#fff;margin-bottom:4px;display:block}.tb-summary td:nth-child(2){order:2;font-size:12px!important;color:var(--txt2);margin-bottom:6px;display:block}.tb-summary td:nth-child(3){order:3;font-size:12px!important;padding-top:8px!important;border-top:1px dashed rgba(255,255,255,.08)!important;display:block;margin-top:4px}.tb-summary td:nth-child(4){order:4;font-size:12px!important;display:block;margin-top:2px}.tb-qa td:nth-child(1){order:1;font-size:14px!important;font-weight:700;color:var(--cyan);margin-bottom:4px;display:block}.tb-qa td:nth-child(2){order:2;font-size:12px!important;color:var(--txt2);margin-bottom:6px;display:block}.tb-qa td:nth-child(3){order:3;font-size:12px!important;padding-top:8px!important;border-top:1px dashed rgba(255,255,255,.08)!important;display:block;margin-top:4px;color:#fff}table.mt td:before{display:none!important}}
+
+details.brand-sec > summary::-webkit-details-marker { display: none; }
+details.brand-sec > summary { list-style: none; user-select: none; position: relative; padding-right: 30px; }
+details.brand-sec > summary h3 { margin: 0; padding-bottom: 0; display: inline-block; }
+details.brand-sec > summary::after { content: "▼"; font-size: 14px; color: var(--cyan); position: absolute; right: 20px; top: 46%; transform: translateY(-50%) rotate(-90deg); transition: transform 0.2s ease, color 0.2s ease; }
+details.brand-sec[open] > summary::after { transform: translateY(-50%) rotate(0deg); color: var(--green); }
+details.brand-sec[open] > summary h3 { margin-bottom: 12px; }
+details.brand-sec[open] { animation: fadeIn 0.3s ease-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
 </style>
 </head>
 <body>
@@ -99,6 +108,22 @@ table.mt tr.hl-real:hover td{background:rgba(34,197,94,.12)}
   </div>
 </div>
 
+<br>
+<!-- 感谢名单 -->
+<div class="sec">
+  <div class="sec-num">Hall of Fame 当期致谢名录</div>
+  <h2>ASIO Ultra 领航者计划：实机验证先驱殿堂</h2>
+  <p class="qt">每一次无缝衔接与完美低延迟的背后，都离不开在枪林弹雨的真实复杂宿主环境中，冒着声卡炸音风险、无条件信任并提供绝密黑匣子调试日记的硬核内测发烧友。以下是经过我们最高 V7 司令部核实认领、最终协助我们攻破对应厂家架构壁垒的英灵殿名册。</p>
+  <table class="mt tb-qa">
+    <thead><tr><th style="white-space:nowrap">QQ</th><th style="white-space:nowrap">昵称</th><th>攻克堡垒型号</th><th>铭刻勋章与贡献纪要</th></tr></thead>
+    <tbody>
+      <tr><td style="white-space:nowrap">873480390</td><td style="white-space:nowrap">亲情是陪伴</td><td class="model" style="color:var(--cyan);white-space:nowrap">Behringer UM2</td><td><span style="color:var(--green);font-weight:600">✅ 首位 UMC 系列先驱验证者，以最经典的百灵达 UM2 完成了 V7 代理引擎从底层 COM 注册到宿主挂载的全链路穿刺验证，为核心架构的稳定性提供了不可替代的第一手实战数据。</span></td></tr>
+      <tr><td style="white-space:nowrap">81668116</td><td style="white-space:nowrap">简单的我</td><td class="model" style="color:var(--cyan);white-space:nowrap">MOTU Audio Express</td><td><span style="color:var(--green);font-weight:600">✅ 提供极稀有的 MOTU M 系列外独立架构真机日志，协助 V7 引擎成功实现对 MOTU 闭环内核的动态穿透与零迟听接管。</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+
 <!-- ==================== PART A: 驱动逆向审查表 ==================== -->
 <div class="sec">
   <div class="sec-num">Part A · 驱动逆向审查</div>
@@ -107,8 +132,8 @@ table.mt tr.hl-real:hover td{background:rgba(34,197,94,.12)}
 </div>
 
 <!-- Behringer -->
-<div class="brand-sec card">
-  <h3>🎛️ Behringer (Music Tribe) <span class="tag-tusb">Thesycon TUSBAUDIO</span></h3>
+<details class="brand-sec card">
+  <summary style="cursor:pointer; outline:none;"><h3 style="display:inline-block; margin-bottom:0;">🎛️ Behringer (Music Tribe) <span class="tag-tusb">Thesycon TUSBAUDIO</span></h3></summary>
   <div class="brand-meta"><span>🏭 驱动供应商: Thesycon GmbH</span><span>📦 安装包: UMC_ASIO_Driver</span><span class="tag-vc-no">❌ 无原生虚拟通道</span></div>
   <div class="brand-tech">
     <div><span style="color:var(--cyan)">[驱动架构]</span> Thesycon TUSBAUDIO OEM 公版</div>
@@ -139,11 +164,11 @@ table.mt tr.hl-real:hover td{background:rgba(34,197,94,.12)}
       但根据实机连结挂载 <code>UMC22</code> 与 <code>UM22</code> 后我们发现：该通用协议层依旧完全能暴力向下兼通它们！而且一旦安装，驱动将在设备管理器强行排他控制注册为 <code>Device Manager > USB Controllers > BEHRINGER USB AUDIO 2.8.40</code>，完全匹配 ASIO Ultra 代理搜捕网特性。
     </div>
   </div>
-</div>
+</details>
 
 <!-- Focusrite -->
-<div class="brand-sec card">
-  <h3>🔴 Focusrite <span class="tag-self">自研 Focusrite USB ASIO</span></h3>
+<details class="brand-sec card">
+  <summary style="cursor:pointer; outline:none;"><h3 style="display:inline-block; margin-bottom:0;">🔴 Focusrite <span class="tag-self">自研 Focusrite USB ASIO</span></h3></summary>
   <div class="brand-meta"><span>🏭 驱动: Focusrite Control v3.18.0.204 (Focusrite Audio Engineering Ltd.)</span><span class="tag-vc-yes">✅ Scarlett 4th Gen 起提供 Loopback</span></div>
   <div class="brand-tech">
     <div><span style="color:var(--cyan)">[驱动架构]</span> Focusrite 深度打磨闭源自研核心架构</div>
@@ -162,11 +187,11 @@ table.mt tr.hl-real:hover td{background:rgba(34,197,94,.12)}
       <tr><td>Vocaster</td><td class="model">Vocaster One / Two</td><td>—</td><td><span style="color:var(--cyan)">💻 架构与 4th gen 共有</span></td><td><span class="stars s4">★★★★☆</span></td></tr>
     </tbody>
   </table>
-</div>
+</details>
 
 <!-- Yamaha Steinberg -->
-<div class="brand-sec card">
-  <h3>🎹 Yamaha / Steinberg <span class="tag-hybrid">自研 YSUSB 驱动</span></h3>
+<details class="brand-sec card">
+  <summary style="cursor:pointer; outline:none;"><h3 style="display:inline-block; margin-bottom:0;">🎹 Yamaha / Steinberg <span class="tag-hybrid">自研 YSUSB 驱动</span></h3></summary>
   <div class="brand-meta"><span>🏭 驱动: ysusb_asio64.dll（YSUSB V2.1.9）+ TOOLS_for_URC V4.0.0</span><span class="tag-vc-yes">✅ UR-C 系列提供硬件 DSP Loopback</span></div>
   <div class="brand-tech">
     <div><span style="color:var(--cyan)">[驱动架构]</span> Yamaha 硬件集团与 Steinberg 软核深度联合绑定的 YSUSB</div>
@@ -184,11 +209,11 @@ table.mt tr.hl-real:hover td{background:rgba(34,197,94,.12)}
       <tr><td>UR-C</td><td class="model">UR816C</td><td>16×8</td><td><span style="color:var(--cyan)">💻 多轨道沙盒理论推演</span></td><td><span class="stars s3">★★★☆☆</span></td></tr>
     </tbody>
   </table>
-</div>
+</details>
 
 <!-- PreSonus -->
-<div class="brand-sec card">
-  <h3>🎤 PreSonus <span class="tag-self">自研 PAE 内核架构 (搭载独立 Loopback 驱动)</span></h3>
+<details class="brand-sec card">
+  <summary style="cursor:pointer; outline:none;"><h3 style="display:inline-block; margin-bottom:0;">🎤 PreSonus <span class="tag-self">自研 PAE 内核架构 (搭载独立 Loopback 驱动)</span></h3></summary>
   <div class="brand-meta"><span>🏭 驱动提取: paeusbaudio*.sys / PaeStudioUsb_loopback.sys</span><span class="tag-vc-yes">✅ 原生包含 _loopback.sys 内核级驱动过滤</span></div>
   <div class="brand-tech">
     <div><span style="color:var(--cyan)">[驱动架构]</span> PreSonus 保密自研 PAE (PreSonus Audio Electronics)</div>
@@ -206,11 +231,11 @@ table.mt tr.hl-real:hover td{background:rgba(34,197,94,.12)}
       <tr><td>StudioLive</td><td class="model">StudioLive AR系列等</td><td>PaeStudioLiveARasio_x64.dll</td><td><span style="color:var(--cyan)">💻 依赖同源 PAE 体系</span></td><td><span class="stars s4">★★★★☆</span></td></tr>
     </tbody>
   </table>
-</div>
+</details>
 
 <!-- Fender -->
-<div class="brand-sec card">
-  <h3>🎸 Fender (芬达) <span class="tag-self">PAE 深度融合定制架构 (PreSonus同源)</span></h3>
+<details class="brand-sec card">
+  <summary style="cursor:pointer; outline:none;"><h3 style="display:inline-block; margin-bottom:0;">🎸 Fender (芬达) <span class="tag-self">PAE 深度融合定制架构 (PreSonus同源)</span></h3></summary>
   <div class="brand-meta"><span>🏭 驱动提取: Universal Control 控制台</span><span class="tag-vc-yes">✅ 原生包含硬件 Loopback (同源 PAE)</span></div>
   <div class="brand-tech">
     <div><span style="color:var(--cyan)">[驱动架构]</span> 归属 Fender 旗下的 PreSonus 实验室，采用高度复用的 PAE 驱动架构，搭载全功能控制台</div>
@@ -226,11 +251,11 @@ table.mt tr.hl-real:hover td{background:rgba(34,197,94,.12)}
       <tr><td>Quantum HD</td><td class="model">Quantum HD 系列</td><td>高度保密 DSP + Fender 控制台</td><td><span style="color:var(--cyan)">💻 V7 基于PAE核心演化引擎智能接管推演</span></td><td><span class="stars s4">★★★★☆</span></td></tr>
     </tbody>
   </table>
-</div>
+</details>
 
 <!-- M-Audio -->
-<div class="brand-sec card">
-  <h3>🎹 M-Audio <span class="tag-hybrid">C-Media / Thesycon 定制派与自研遗产派混血</span></h3>
+<details class="brand-sec card">
+  <summary style="cursor:pointer; outline:none;"><h3 style="display:inline-block; margin-bottom:0;">🎹 M-Audio <span class="tag-hybrid">C-Media / Thesycon 定制派与自研遗产派混血</span></h3></summary>
   <div class="brand-meta"><span>🏭 驱动提取: M-Audio_AIR_192_x_Driver.exe</span><span class="tag-vc-no">❌ 绝大多数无硬件原生 Loopback (AIR 系列无)</span></div>
   <div class="brand-tech">
     <div><span style="color:var(--cyan)">[驱动架构]</span> 阵营极其割裂：老牌 Delta 芯片遗产派，与新星 AIR / M-Track 系的 C-Media 与 Thesycon 深度混剪框架</div>
@@ -247,11 +272,11 @@ table.mt tr.hl-real:hover td{background:rgba(34,197,94,.12)}
       <tr><td>Fast Track</td><td class="model">Pro / Ultra (含 Avid 包)</td><td>非标老旧 C-Media 核</td><td><span style="color:var(--orange)">⚠️ 仅限纯 Win10 环境及以下生效</span></td><td><span class="stars s3">★★★☆☆</span></td></tr>
     </tbody>
   </table>
-</div>
+</details>
 
 <!-- Universal Audio Volt -->
-<div class="brand-sec card">
-  <h3>⚡ Universal Audio <span class="tag-tusb">(特赦豁免) Volt 亲民系列</span></h3>
+<details class="brand-sec card">
+  <summary style="cursor:pointer; outline:none;"><h3 style="display:inline-block; margin-bottom:0;">⚡ Universal Audio <span class="tag-tusb">(特赦豁免) Volt 亲民系列</span></h3></summary>
   <div class="brand-meta"><span>🏭 驱动提取: UA Connect 后台组件</span><span class="tag-vc-yes">✅ 原版提供 Vintage 话放级监听软控</span></div>
   <div class="brand-tech">
     <div><span style="color:var(--cyan)">[驱动架构]</span> 剥离了 Apollo 恐怖的 DSP 硬件反作弊重锁，回归标准的 USB Class Compliant 音频子层驱动 (定制版 Thesycon 换壳)</div>
@@ -267,11 +292,11 @@ table.mt tr.hl-real:hover td{background:rgba(34,197,94,.12)}
       <tr><td>Apollo</td><td class="model">Apollo Twin / Solo系</td><td>狂魔级双头独立运算芯片加密锁</td><td><span style="color:var(--red);font-weight:600">❌ 禁忌：硬件防御锁已击毙挂起</span></td><td><span class="stars">🚫 强规避黑名单项</span></td></tr>
     </tbody>
   </table>
-</div>
+</details>
 
 <!-- LEWITT -->
-<div class="brand-sec card">
-  <h3>🎙️ LEWITT (莱维特) <span class="tag-self">核心控制中心重构架构</span></h3>
+<details class="brand-sec card">
+  <summary style="cursor:pointer; outline:none;"><h3 style="display:inline-block; margin-bottom:0;">🎙️ LEWITT (莱维特) <span class="tag-self">核心控制中心重构架构</span></h3></summary>
   <div class="brand-meta"><span>🏭 驱动提取: LEWITT Control Center.exe</span><span class="tag-vc-yes">✅ Connect 系原生提供极强 DSP 路由组</span></div>
   <div class="brand-tech">
     <div><span style="color:var(--cyan)">[驱动架构]</span> 极具现代特征的数字中枢体系，强依赖控制面板的图形化串流网</div>
@@ -287,11 +312,11 @@ table.mt tr.hl-real:hover td{background:rgba(34,197,94,.12)}
       <tr><td>Legacy 系</td><td class="model">早年零散声卡</td><td>无强大中心网</td><td><span style="color:var(--cyan)">💻 标准 COM 握手测试</span></td><td><span class="stars s4">★★★★☆</span></td></tr>
     </tbody>
   </table>
-</div>
+</details>
 
 <!-- MOTU -->
-<div class="brand-sec card">
-  <h3>🖥️ MOTU (Mark of the Unicorn) <span class="tag-self">MOTU 独立自研架构</span></h3>
+<details class="brand-sec card">
+  <summary style="cursor:pointer; outline:none;"><h3 style="display:inline-block; margin-bottom:0;">🖥️ MOTU (Mark of the Unicorn) <span class="tag-self">MOTU 独立自研架构</span></h3></summary>
   <div class="brand-meta"><span>🏭 驱动: MOTU M Series Setup v4.3.0.455（Inno Setup 封装）</span><span class="tag-vc-yes">✅ 固件级原生硬件 Loopback 通道</span></div>
   <div class="brand-tech">
     <div><span style="color:var(--cyan)">[驱动架构]</span> Mark of the Unicorn 纯自研闭环数据交换架构</div>
@@ -309,11 +334,11 @@ table.mt tr.hl-real:hover td{background:rgba(34,197,94,.12)}
       <tr><td>UltraLite</td><td class="model">UltraLite-mk5</td><td>18×22</td><td><span style="color:var(--cyan)">💻 大轨道通道流待实地并发测试</span></td><td><span class="stars s3">★★★☆☆</span></td></tr>
     </tbody>
   </table>
-</div>
+</details>
 
 <!-- Roland -->
-<div class="brand-sec card" style="border:1px solid #a855f7; background: rgba(168, 85, 247, 0.05);">
-  <h3>🎹 Roland / BOSS <span class="tag-self">高度非标定制 ASIO 闭环核</span></h3>
+<details class="brand-sec card" style="border:1px solid #a855f7; background: rgba(168, 85, 247, 0.05);">
+  <summary style="cursor:pointer; outline:none;"><h3 style="display:inline-block; margin-bottom:0;">🎹 Roland / BOSS <span class="tag-self">高度非标定制 ASIO 闭环核</span></h3></summary>
   <div class="brand-meta"><span>🏭 驱动: OCTA-CAPTURE Driver v1.5.3 (Roland Corp)</span><span class="tag-vc-yes">✅ 原厂面板包含硬件级跳线矩阵</span></div>
   <div class="brand-tech">
     <div><span style="color:var(--cyan)">[驱动架构]</span> 极端非标 <code>I_ASIO</code> 混编接口与双头 <code>RDAS1110.DLL</code></div>
@@ -329,11 +354,11 @@ table.mt tr.hl-real:hover td{background:rgba(34,197,94,.12)}
     </tbody>
   </table>
   <div style="font-size:13px;color:var(--dim);margin-top:12px;">注：接管后请直接在 ASIO 控制中心分配虚拟输入，勿使用罗兰原厂自带硬件防爆音面板强行争夺独占权。</div>
-</div>
+</details>
 
 <!-- SSL -->
-<div class="brand-sec card">
-  <h3>🔒 Solid State Logic (SSL) <span class="tag-tusb">Thesycon TUSBAUDIO v5.74.5</span></h3>
+<details class="brand-sec card">
+  <summary style="cursor:pointer; outline:none;"><h3 style="display:inline-block; margin-bottom:0;">🔒 Solid State Logic (SSL) <span class="tag-tusb">Thesycon TUSBAUDIO v5.74.5</span></h3></summary>
   <div class="brand-meta"><span>🏭 驱动: SolidStateLogic_UsbAudio_v5.74.5_2025-11-10.msi</span><span class="tag-vc-no">❌ 绝大多数型号无虚拟通道</span></div>
   <div class="brand-tech">
     <div><span style="color:var(--cyan)">[驱动架构]</span> Thesycon v5.74.5 极新定制版底盘</div>
@@ -348,11 +373,11 @@ table.mt tr.hl-real:hover td{background:rgba(34,197,94,.12)}
       <tr><td>SSL USB</td><td class="model">SSL 12</td><td>12×4</td><td><span style="color:var(--cyan)">💻 大型面板联动推演通过</span></td><td><span class="stars s4">★★★★☆</span></td></tr>
     </tbody>
   </table>
-</div>
+</details>
 
 <!-- Audient -->
-<div class="brand-sec card">
-  <h3>🎧 Audient (英国傲然) <span class="tag-tusb">Thesycon 定制底包 + iD DSP 混音器</span></h3>
+<details class="brand-sec card">
+  <summary style="cursor:pointer; outline:none;"><h3 style="display:inline-block; margin-bottom:0;">🎧 Audient (英国傲然) <span class="tag-tusb">Thesycon 定制底包 + iD DSP 混音器</span></h3></summary>
   <div class="brand-meta"><span>🏭 驱动提取: Audient iD / EVO Windows Installer</span><span class="tag-vc-yes">✅ EVO 系与 iD MkII 及以上标配 Loop-back 端点</span></div>
   <div class="brand-tech">
     <div><span style="color:var(--cyan)">[驱动架构]</span> 表面沿用 Thesycon 挂载体系，后台驻留极其复杂的图形化数字 DSP 混音互斥台</div>
@@ -369,11 +394,11 @@ table.mt tr.hl-real:hover td{background:rgba(34,197,94,.12)}
       <tr><td>EVO 纯黑阵列</td><td class="model">EVO 4 / 8 / 16</td><td>智能增益板载系统</td><td><span style="color:var(--purple);font-weight:600">🧪 驱动沙盒阻抗测通</span></td><td><span class="stars s5">★★★★★</span></td></tr>
     </tbody>
   </table>
-</div>
+</details>
 
 <!-- Mackie, Tascam, Zoom, ART, 简略表格并入实机标签 -->
-<div class="brand-sec card">
-  <h3>🎚️ 其他 Thesycon 及非标定制军团摘要清单</h3>
+<details class="brand-sec card">
+  <summary style="cursor:pointer; outline:none;"><h3 style="display:inline-block; margin-bottom:0;">🎚️ 其他 Thesycon 及非标定制军团摘要清单</h3></summary>
   <div class="brand-meta"><span>🏭 基于大规模工业提取样本进行的快速架构推测池</span></div>
   <table class="mt">
     <thead><tr><th>品牌</th><th>型号代表</th><th>核心驱动架构锁定</th><th>是否实机验证</th><th>状态</th></tr></thead>
@@ -384,7 +409,7 @@ table.mt tr.hl-real:hover td{background:rgba(34,197,94,.12)}
       <tr><td>ART</td><td class="model">USBMix 系列</td><td>Thesycon 标准公版底层</td><td><span style="color:var(--purple);font-weight:600">🧪 TUSBAudio 通配组测通</span></td><td><span class="stars s5">★★★★★</span></td></tr>
     </tbody>
   </table>
-</div>
+</details>
 
 <!-- 虚拟通道总览 -->
 <div class="sec" style="margin-top:50px">
@@ -474,7 +499,6 @@ table.mt tr.hl-real:hover td{background:rgba(34,197,94,.12)}
   </table>
   <div class="risk"><div class="ic">⚠️</div><div class="ct"><strong>无法抹去的边缘物理黑盒交火地带：</strong>个别有病态占有欲的非标奇葩自研私家驱动有极低概率可能会在一出厂的内部核源代码底端 `createBuffers()` 函数调管内硬写入防抄袭防外部调度的防干扰固件实体设备自校准实体物理时相时钟验证密码本比照或者死结硬件同步握手连带检测卡核扣。个别会在核心数据传送泵 `bufferSwitch()` 函数体上写入脱离微软官方设计规矩瞎扯独大乱魔改的超高危多核跨程抢占模型或有悖系统总线安全的时空死锁阻塞流操作机制，亦或是在上游强加白名单在调拨 `QueryInterface()` COM组件查户口认证时一经发现请求者不在自身所写白名单上当即强制锁死翻脸挂错甚至自杀进程阻断数据释放通道。对于此类绝对孤本暗箱防弹雷点，在尚未发生且实战爆发出来前只能见招拆招靠着玩家社区上报反馈来进行靶向穿刺打补丁，以此逆向攻破封控强突接管重排数据线从而重新盘活解套实现控制桥通兼容归宗打入囊中之极道。</div></div>
 </div>
-
 <!-- 黑名单 -->
 <div class="sec">
   <div class="sec-num">Appendix 绝世白皮防蓝屏禁入封签</div>

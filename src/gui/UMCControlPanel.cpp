@@ -7,6 +7,7 @@
 #pragma comment(lib, "dwmapi.lib")
 #include "../license/LicenseManager.h"
 #include "OptimizerManager.h"
+#include "../UMCVersion.h"
 
 #define WM_TRAYICON (WM_USER + 1)
 #define ID_TRAY_APP_ICON 1001
@@ -23,7 +24,8 @@ void ShowContextMenu(HWND hwnd);
 HICON ExtractOfficialIcon();
 
 void UpdateASIORegistryDescription() {
-    // Obsolete: Registration is now dynamically cleaned inside LicenseManager.h purifyReg callback!
+    // 每次控制面板启动时，强制以 Admin 权限同步注册表的 ASIO 显示名称
+    g_license.syncRegistryNamesNative();
 }
 
 void ShowContextMenu(HWND hwnd) {
@@ -351,7 +353,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             g_nid.hIcon = ExtractOfficialIcon();
             wcscpy_s(g_nid.szTip, L"ASIO Ultra Control Panel");
             wcscpy_s(g_nid.szInfo, L"UMC 引擎已启动");
-            wcscpy_s(g_nid.szInfoTitle, L"ASIO Ultra v7.0.0");
+            swprintf(g_nid.szInfoTitle, sizeof(g_nid.szInfoTitle)/sizeof(wchar_t), L"ASIO Ultra v%s", UMC_VERSION_WSTR);
             g_nid.dwInfoFlags = NIIF_INFO;
             Shell_NotifyIconW(NIM_ADD, &g_nid);
             break;

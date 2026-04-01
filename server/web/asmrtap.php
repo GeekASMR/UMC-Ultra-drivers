@@ -107,6 +107,15 @@ if (isset($_GET['del_license_id'])) {
     exit;
 }
 
+// ---- 更新卡密备注 ----
+if (isset($_POST['action']) && $_POST['action'] === 'update_remark') {
+    $upd = $pdo->prepare("UPDATE licenses SET remark = ? WHERE id = ?");
+    $upd->execute([$_POST['remark'], (int)$_POST['license_id']]);
+    $script_name = basename($_SERVER['PHP_SELF']);
+    header("Location: $script_name?msg=" . urlencode("卡密备注已更新！") . "#tab-licenses");
+    exit;
+}
+
 // ---- 清空未付款订单 ----
 if (isset($_GET['del_unpaid'])) {
     $del = $pdo->prepare("DELETE FROM orders WHERE status != 'paid'");
@@ -198,6 +207,18 @@ try {
     $machines = [];
 }
 
+// Build machine_id -> license lookup for user dashboard
+$machineLicenseMap = [];
+foreach ($licenses as $lic) {
+    $boundMachines = json_decode($lic['machines_bound'], true) ?? [];
+    foreach ($boundMachines as $mid) {
+        $machineLicenseMap[$mid] = [
+            'key' => $lic['license_key'],
+            'remark' => $lic['remark'] ?? ''
+        ];
+    }
+}
+
 // 查询日志文件 (支持用户子目录)
 $logFiles = array_merge(
     (array)glob(__DIR__ . '/logs/*.log'),
@@ -266,7 +287,7 @@ if (!empty($logFiles)) {
         <div style="display:flex; gap:10px;">
             <input type="text" name="q" placeholder="输入搜索关键词..." value="<?php echo htmlspecialchars($searchQ); ?>" style="margin:0; flex:1; padding:10px; border:1px solid #475569; background:#0f172a; color:white; border-radius:4px;">
             <button type="submit" class="btn" style="background: #eab308; color: #000; font-weight: bold;">查询</button>
-            <?php if($searchQ): ?><a href="asmrtap.php" class="btn" style="background: #4b5563;">清除</a><?php endif; ?>
+            <?php if($searchQ): ?><a href="<?php echo basename($_SERVER['PHP_SELF']); ?>" class="btn" style="background: #4b5563;">清除</a><?php endif; ?>
         </div>
     </form>
 
@@ -296,6 +317,7 @@ if (!empty($logFiles)) {
         <th>绑定机器数</th>
         <th>状态</th>
         <th>关联订单</th>
+        <th>备注 (Remark)</th>
         <th>最后激活时间</th>
         <th>操作</th>
     </tr>
@@ -309,10 +331,18 @@ if (!empty($logFiles)) {
         <td><?php echo $mc . ' / ' . $l['max_machines']; ?></td>
         <td><?php echo $l['status'] == 'active' ? '<span class="success">正常</span>' : '<span class="btn-danger">封禁</span>'; ?></td>
         <td><?php echo $l['order_no']; ?></td>
+        <td>
+            <form method="post" style="display:flex; gap:5px; margin:0; line-height:1;">
+                <input type="hidden" name="action" value="update_remark">
+                <input type="hidden" name="license_id" value="<?php echo $l['id']; ?>">
+                <input type="text" name="remark" value="<?php echo htmlspecialchars($l['remark'] ?? ''); ?>" placeholder="点击添加备注..." style="width:120px; padding:4px 8px; font-size:12px; margin:0;" onblur="this.form.submit()">
+                <button type="submit" style="display:none;">保存</button>
+            </form>
+        </td>
         <td><?php echo $l['last_activated'] ?: '从未激活'; ?></td>
         <td>
-            <a href="?reset_id=<?php echo $l['id']; ?>" class="btn btn-warning" style="background:#f59e0b;color:white;text-decoration:none;" onclick="return confirm('确定解绑此卡密的所有机器吗？')">清空重置电脑</a>
-            <a href="?del_license_id=<?php echo $l['id']; ?>" class="btn btn-danger" style="text-decoration:none; margin-left:8px;" onclick="return confirm('确定要彻底永久删除此卡密吗？本操作不可逆复原！\n如果此卡密已被客户激活，客户将会在下次强制断网核对时被封禁！')">彻底删除</a>
+            <a href="?reset_id=<?php echo $l['id']; ?>" class="btn btn-warning" style="background:#f59e0b;color:white;text-decoration:none;padding:4px 8px;font-size:12px;" onclick="return confirm('确定解绑此卡密的所有机器吗？')">清空重置设备</a>
+            <a href="?del_license_id=<?php echo $l['id']; ?>" class="btn btn-danger" style="text-decoration:none; margin-left:4px;padding:4px 8px;font-size:12px;" onclick="return confirm('确定要彻底永久删除此卡密吗？本操作不可逆复原！\n如果此卡密已被客户激活，客户将会在下次强制断网核对时被封禁！')">彻底删除</a>
         </td>
     </tr>
     <?php endforeach; ?>
@@ -356,14 +386,21 @@ if (!empty($logFiles)) {
     <tr>
         <th>机器指纹 ID (Machine ID)</th>
         <th>当前状态 (Status)</th>
+        <th>绑定卡密 (License)</th>
+        <th>备注 (Remark)</th>
         <th>试用剩余时长 (Trial Limit)</th>
         <th>最后心跳时间 (Last Seen)</th>
         <th>远程操作</th>
     </tr>
-    <?php foreach ($machines as $m): ?>
+    <?php foreach ($machines as $m): 
+        $mid = $m['machine_id'];
+        $boundLic = $machineLicenseMap[$mid] ?? null;
+    ?>
     <tr>
-        <td style="font-family: monospace; color:#a7f3d0;"><?php echo htmlspecialchars($m['machine_id']); ?></td>
+        <td style="font-family: monospace; color:#a7f3d0;"><?php echo htmlspecialchars($mid); ?></td>
         <td style="font-weight:bold; color:<?php echo $m['status'] == 'active' ? '#10b981' : '#f59e0b'; ?>"><?php echo $m['status'] == 'active' ? '已激活' : '未激活(试用中)'; ?></td>
+        <td style="font-family:monospace; color:#fbbf24; font-size:12px;"><?php echo $boundLic ? htmlspecialchars($boundLic['key']) : '<span style="color:#64748b;">未绑定</span>'; ?></td>
+        <td style="color:#94a3b8; font-size:13px;"><?php echo $boundLic && $boundLic['remark'] ? htmlspecialchars($boundLic['remark']) : '<span style="color:#475569;">-</span>'; ?></td>
         <td>
             <?php 
                 if ($m['status'] == 'active') echo '<span style="color:#64748b;">无限制</span>';

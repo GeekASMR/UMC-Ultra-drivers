@@ -9,6 +9,7 @@
 #include <fstream>
 #include <mutex>
 #include <cstdarg>
+#include "../UMCVersion.h"
 
 class Logger {
 public:
@@ -36,7 +37,9 @@ public:
             m_logFile.open(defaultPath, std::ios::out | std::ios::app);
         }
         m_initialized = true;
-        log(LOG_INFO, "BehringerASIO", "===== Logger Started (v7.0.0) =====");
+        char logBuffer[256];
+        snprintf(logBuffer, sizeof(logBuffer), "===== Logger Started (v%s) =====", UMC_VERSION_STR);
+        log(LOG_INFO, "ASIOUltra", logBuffer);
         
         // --- 获取 CPU 型号 ---
         char cpuName[256] = "Unknown CPU";
