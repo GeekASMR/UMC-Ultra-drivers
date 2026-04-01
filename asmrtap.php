@@ -15,20 +15,63 @@ if (isset($_GET['api']) && $_GET['api'] === 'test_logs') {
         
         if (isset($data['action']) && $data['action'] === 'delete') {
             if (empty($data['auth']) || $data['auth'] !== 'asmrtop') { http_response_code(403); exit; }
+            
+            // Delete physical file if exists
+            $stmt = $pdo->prepare("SELECT audio FROM asio_test_logs WHERE id = ?");
+            $stmt->execute([$data['id']]);
+            $row = $stmt->fetch();
+            if ($row && !empty($row['audio']) && strpos($row['audio'], '/asio/uploads/') === 0) {
+                $filePath = __DIR__ . '/uploads/' . basename($row['audio']);
+                if (file_exists($filePath)) @unlink($filePath);
+            }
+            
             $pdo->prepare("DELETE FROM asio_test_logs WHERE id = ?")->execute([$data['id']]);
             echo json_encode(['ok'=>1]);
             exit;
         }
         if (isset($data['action']) && $data['action'] === 'clear') {
             if (empty($data['auth']) || $data['auth'] !== 'asmrtop') { http_response_code(403); exit; }
+            
+            // Wipe all files in uploads dir
+            $uploadDir = __DIR__ . '/uploads';
+            if (is_dir($uploadDir)) {
+                $files = glob($uploadDir . '/*');
+                foreach($files as $file) { if(is_file($file)) @unlink($file); }
+            }
+            
             $pdo->exec("DELETE FROM asio_test_logs");
             echo json_encode(['ok'=>1]);
             exit;
         }
         
+        $audioUrl = '';
+        if (!empty($data['audio']) && strpos($data['audio'], 'data:audio/') === 0) {
+            $base64 = $data['audio'];
+            $ext = 'wav';
+            if (strpos($base64, 'audio/mpeg') !== false || strpos($base64, 'audio/mp3') !== false) $ext = 'mp3';
+            
+            // 剥离 Base64 头
+            $parts = explode(',', $base64);
+            if (count($parts) === 2) {
+                $decoded = base64_decode($parts[1]);
+                $uploadDir = __DIR__ . '/uploads';
+                if (!is_dir($uploadDir)) @mkdir($uploadDir, 0755, true);
+                
+                $filename = 'test_' . $data['id'] . '.' . $ext;
+                file_put_contents($uploadDir . '/' . $filename, $decoded);
+                // 存入相对于域名的绝对路径，防止 HTML 与 PHP 不同级引发 404
+                $audioUrl = '/asio/uploads/' . $filename; 
+            }
+        } else if (!empty($data['audio'])) {
+            $audioUrl = $data['audio']; // 已经是 URL 的情况
+        }
+        
         if (!empty($data['id'])) {
             $stmt = $pdo->prepare("INSERT INTO asio_test_logs (id, card, host, wdm, buffer, algo, status, desc_text, feel, audio) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE status=status");
             $stmt->execute([$data['id'], $data['card'], $data['host'], $data['wdm'], $data['buffer'], $data['algo'], $data['status'], $data['desc'], $data['feel'], $data['audio'] ?? '']);
+            // update with actual file URL now
+            $stmt2 = $pdo->prepare("UPDATE asio_test_logs SET audio = ? WHERE id = ?");
+            $stmt2->execute([$audioUrl, $data['id']]);
             echo json_encode(['ok'=>1]);
         }
         exit;
