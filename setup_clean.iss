@@ -83,6 +83,30 @@ Filename: "{cmd}"; Parameters: "/c ""{app}\uninstall.bat"""; Flags: runhidden wa
 Filename: "{sys}\regsvr32.exe"; Parameters: "/u /s ""{app}\BehringerASIO.dll"""; WorkingDir: "{app}"; Flags: runhidden waituntilterminated; RunOnceId: "UnregASIO"
 
 [Code]
+var
+  SoundCardPage: TInputOptionWizardPage;
+
+procedure InitializeWizard;
+begin
+  SoundCardPage := CreateInputOptionPage(wpWelcome,
+    '目标声卡硬件勾选', '请勾选您正在使用的设备型号 (支持多选)',
+    '安装程序将针对您所勾选的硬件型号注入底层 ASIO 对齐微码与虚拟通道路由阵列，多勾选不影响性能。',
+    False, False);
+    
+  SoundCardPage.Add('Behringer U-Phoria UMC22');
+  SoundCardPage.Add('Behringer U-Phoria UM2');
+  SoundCardPage.Add('Behringer U-Phoria UMC202HD');
+  SoundCardPage.Add('Behringer U-Phoria UMC204HD');
+  SoundCardPage.Add('Behringer U-Phoria UMC404HD');
+  SoundCardPage.Add('Behringer U-Phoria UMC1820');
+  
+  { 默认全部勾选推荐型号 }
+  SoundCardPage.Values[2] := True;
+  SoundCardPage.Values[3] := True;
+  SoundCardPage.Values[4] := True;
+  SoundCardPage.Values[5] := True;
+end;
+
 procedure KillDAWProcesses();
 var
   ResultCode: Integer;
