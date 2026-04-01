@@ -222,14 +222,21 @@ async function loadData() {
 
   let deletedIds = JSON.parse(localStorage.getItem('deleted_ids') || '[]');
   
+  let userLogs = [];
+  const localD = localStorage.getItem('asio_test_logs');
+  if (localD) {
+    let localLogs = JSON.parse(localD);
+    userLogs = localLogs.filter(l => l.id > 1000000 && !deletedIds.includes(l.id));
+  }
+  
   // 过滤掉所有被管理员在本地打入冷宫的 ID
   let activeDB = dbLogs.filter(l => !deletedIds.includes(l.id));
   let activeDefaults = defaultLogs.filter(l => !deletedIds.includes(l.id));
   
-  // 将最新的原生默认数据库和数据库的留存合并
-  logs = [...activeDB, ...activeDefaults];
+  // 完美三方合并策略：本地提交的高优先（保证不丢），远端大盘库跟随，最后垫底默认
+  logs = [...userLogs, ...activeDB, ...activeDefaults];
   
-  // 降级去重
+  // 降级去重 (相同 ID 取最靠前的高优先级元素)
   const seen = new Set();
   logs = logs.filter(l => {
     if (seen.has(l.id)) return false;
@@ -322,7 +329,15 @@ async function addEntry() {
     // 异步推送到云端 MySQL！
     fetch(API_URL, {
       method: 'POST', body: JSON.stringify(newEntry)
-    }).then(r => { if (!r.ok) fetch('/asmrtap.php?api=test_logs', { method:'POST', body: JSON.stringify(newEntry) }); });
+    }).then(async r => { 
+      if (!r.ok) {
+        if (newEntry.audio && newEntry.audio.length > 10000) {
+          alert("⚠️ 云盘拒绝写入！您附加的高精度录音包超过了服务器接收阈值。目前该记录仅保存在您的本地主机缓存中。");
+        } else {
+          fetch('/asmrtap.php?api=test_logs', { method:'POST', body: JSON.stringify(newEntry) }); 
+        }
+      }
+    });
     
     saveData();
     render();
