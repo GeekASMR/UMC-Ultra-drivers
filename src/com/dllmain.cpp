@@ -11,6 +11,8 @@
 #include "../driver/BehringerASIO.h"
 #include "../utils/Logger.h"
 #include "../utils/CrashHandler.h"
+#include <vector>
+#include <string>
 
 #define LOG_MODULE "DllMain"
 
@@ -217,12 +219,36 @@ STDAPI DllUnregisterServer() {
         char dynamicName[256];
         GetDynamicAsioName(dynamicName, sizeof(dynamicName));
 
-        // 1. Remove dynamically resolved ASIO key
-        char asioKey[256];
-        StringCchPrintfA(asioKey, 256, "SOFTWARE\\ASIO\\%s", dynamicName);
-        RegDeleteKeyA(HKEY_LOCAL_MACHINE, asioKey);
+        // 1. Remove dynamically resolved ASIO keys by scanning CLSID to catch any LicenseManager renames
+        HKEY hKeyAsio;
+        if (RegOpenKeyExA(HKEY_LOCAL_MACHINE, "SOFTWARE\\ASIO", 0, KEY_ALL_ACCESS, &hKeyAsio) == ERROR_SUCCESS) {
+            char subKeyName[256];
+            DWORD index = 0;
+            DWORD nameLen = sizeof(subKeyName);
+            std::vector<std::string> keysToDelete;
+            while (RegEnumKeyExA(hKeyAsio, index, subKeyName, &nameLen, nullptr, nullptr, nullptr, nullptr) == ERROR_SUCCESS) {
+                HKEY hSubKey;
+                if (RegOpenKeyExA(hKeyAsio, subKeyName, 0, KEY_READ, &hSubKey) == ERROR_SUCCESS) {
+                    char clsidVal[100] = {0};
+                    DWORD clsidLen = sizeof(clsidVal);
+                    if (RegQueryValueExA(hSubKey, "CLSID", nullptr, nullptr, (LPBYTE)clsidVal, &clsidLen) == ERROR_SUCCESS) {
+                        if (_stricmp(clsidVal, DRIVER_CLSID) == 0) {
+                            keysToDelete.push_back(subKeyName);
+                        }
+                    }
+                    RegCloseKey(hSubKey);
+                }
+                index++;
+                nameLen = sizeof(subKeyName);
+            }
+            for (size_t i = 0; i < keysToDelete.size(); i++) {
+                RegDeleteKeyA(hKeyAsio, keysToDelete[i].c_str());
+            }
+            RegCloseKey(hKeyAsio);
+        }
         
-        // Also enthusiastically wipe the fallback name just in case the dynamic state changed
+        // Also enthusiastically wipe the fallback name just in case
+        char asioKey[256];
         StringCchPrintfA(asioKey, 256, "SOFTWARE\\ASIO\\%s", DRIVER_NAME);
         RegDeleteKeyA(HKEY_LOCAL_MACHINE, asioKey);
         
