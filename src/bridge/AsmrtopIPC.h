@@ -210,9 +210,12 @@ public:
             m_prefillMode = true; // Enter prefill to build safe cushion
         }
 
+        int safeCushion = numFrames * 2 + 1200;
+        if (safeCushion < 2400) safeCushion = 2400;
+
         if (m_prefillMode) {
-            // Need at least 2400 samples (~50ms @ 48kHz) to absorb Windows 10ms bursty WDM writes
-            if (available < 2400) {
+            // Need a dynamic cushion to absorb Windows bursty WDM writes without deadlocking large DAW buffers
+            if (available < safeCushion) {
                 if (left)  memset(left,  0, numFrames * sizeof(float));
                 if (right) memset(right, 0, numFrames * sizeof(float));
                 return;
@@ -231,15 +234,14 @@ public:
                 if (fabsf(m_lastReadL) < 1e-7f) m_lastReadL = 0.0f;
                 if (fabsf(m_lastReadR) < 1e-7f) m_lastReadR = 0.0f;
             }
-            m_prefillMode = true; // Wait for buffer to pile back up to 50ms next time
-            return; // We do NOT advance the read pointer, so remaining valid samples are preserved for the next burst
+            m_prefillMode = true; // Wait for buffer to pile back up
+            return; // We do NOT advance the read pointer
         }
 
-        // If buffer gets excessively huge (> 16384 = ~340ms lag), we must cleanly skip forward
-        if (available > 16384) {
-            // Skip directly to a 2400-sample cushion to instantly recover zero-latency sync!
-            r = w - 2400;
-            available = 2400;
+        // Clean slip forward if excessively huge (allows up to 2-second bulk WASAPI blocks without truncating them out of existence!)
+        if (available > 131072 || available > (96000 + safeCushion)) {
+            r = w - safeCushion;
+            available = safeCushion;
         }
 
         // Fast path for perfect sync
@@ -270,13 +272,7 @@ public:
     // When srcRate == dstRate: zero-overhead passthrough to readDirect()
     // When srcRate != dstRate: linear interpolation SRC
     // =========================================================================
-    void readStereoAdaptive(float* left, float* right, int numFrames, double srcRate, double dstRate) {
-        // Fast path: same rate = direct read
-        if (fabs(srcRate - dstRate) < 1.0) {
-            readDirect(left, right, numFrames);
-            return;
-        }
-
+    void readStereoAdaptive(float* left, float* right, int numFrames, double /*deprecated_srcRate*/, double dstRate) {
         validateOrReconnect(); // !! VERY IMPORTANT BUGBIX !!
         if (!m_buf && !tryOpen()) {
             if (left)  memset(left,  0, numFrames * sizeof(float));
@@ -284,38 +280,7 @@ public:
             return;
         }
 
-        // Measure velocity of writePos dynamically to adapt to WASAPI Exclusive rates!
         uint32_t w = m_buf->writePos.load(std::memory_order_acquire);
-        
-        if (m_wpVelocityCount++ > 15) {
-            uint64_t qpcNow;
-            QueryPerformanceCounter((LARGE_INTEGER*)&qpcNow);
-            double elapsedSec = (double)(qpcNow - m_qpcLastV) / (double)m_qpcFreq;
-            if (elapsedSec >= 0.1) { // Evaluate every 100ms
-                double velocity = (double)(w - m_wpVelocityStart) / elapsedSec;
-                // Snap to standard rates if close
-                double standardRates[] = {44100.0, 48000.0, 88200.0, 96000.0, 176400.0, 192000.0, 384000.0};
-                double finalRate = velocity;
-                for (double st : standardRates) {
-                    if (fabs(velocity - st) < (st * 0.05)) { finalRate = st; break; }
-                }
-                if (finalRate > 8000.0 && finalRate < 768000.0) {
-                    // Smooth adaptation
-                    m_detectedWdmRate = m_detectedWdmRate * 0.8 + finalRate * 0.2;
-                }
-                m_qpcLastV = qpcNow;
-                m_wpVelocityStart = w;
-            }
-        } else if (m_wpVelocityCount == 1) {
-            QueryPerformanceCounter((LARGE_INTEGER*)&m_qpcLastV);
-            m_wpVelocityStart = w;
-        }
-
-        // Use the dynamically detected rate!
-        srcRate = m_detectedWdmRate;
-        double ratio = srcRate / dstRate; // e.g. 48000/44100 = 1.0884
-        int srcNeeded = (int)(numFrames * ratio) + 2;
-
         uint32_t r = m_readPos;
         int32_t available = (int32_t)(w - r);
 
@@ -329,10 +294,57 @@ public:
             m_readPosFrac = 0.0;
             m_firstCall = false;
             m_prefillMode = true;
+            // !!! INSTANTLY RESET VELOCITY DETECTOR !!!
+            m_wpVelocityCount = 0;
+            // Best guess for starting rate is DAW dstRate to minimize stutter before detection
+            m_detectedWdmRate = dstRate;
         }
 
+        // Measure velocity of writePos dynamically to adapt to WASAPI Exclusive rates!
+        if (m_wpVelocityCount++ > 0) { // Check every loop!
+            uint64_t qpcNow;
+            QueryPerformanceCounter((LARGE_INTEGER*)&qpcNow);
+            double elapsedSec = (double)(qpcNow - m_qpcLastV) / (double)m_qpcFreq;
+            if (elapsedSec >= 0.1 || m_wpVelocityCount == 2) { // Evaluate every 100ms or instantly!
+                double velocity = (double)(w - m_wpVelocityStart) / elapsedSec;
+                // Snap to standard rates if close
+                double standardRates[] = {44100.0, 48000.0, 88200.0, 96000.0, 176400.0, 192000.0, 384000.0};
+                double finalRate = velocity;
+                bool isStandard = false;
+                for (double st : standardRates) {
+                    if (fabs(velocity - st) < (st * 0.05)) { finalRate = st; isStandard = true; break; }
+                }
+                if (finalRate > 8000.0 && finalRate < 768000.0) {
+                    if (isStandard) {
+                        m_detectedWdmRate = finalRate; // Instant snap
+                    } else {
+                        m_detectedWdmRate = m_detectedWdmRate * 0.8 + finalRate * 0.2; // Smooth drift
+                    }
+                }
+                m_qpcLastV = qpcNow;
+                m_wpVelocityStart = w;
+            }
+        } else {
+            QueryPerformanceCounter((LARGE_INTEGER*)&m_qpcLastV);
+            m_wpVelocityStart = w;
+        }
+
+        // Use the dynamically detected rate!
+        double srcRate = m_detectedWdmRate;
+        
+        // Fast path: dynamically determined same rate = zero overhead direct read!
+        if (fabs(srcRate - dstRate) < 1.0) {
+            readDirect(left, right, numFrames);
+            return;
+        }
+
+        double ratio = srcRate / dstRate; // e.g. 48000/44100 = 1.0884
+        int srcNeeded = (int)(numFrames * ratio) + 2;
+        int safeCushion = srcNeeded * 2 + 1200; // Build healthy dynamic cushion!
+        if (safeCushion < 2400) safeCushion = 2400; // Floor
+
         if (m_prefillMode) {
-            if (available < 2400) {
+            if (available < safeCushion) {
                 if (left)  memset(left,  0, numFrames * sizeof(float));
                 if (right) memset(right, 0, numFrames * sizeof(float));
                 return;
@@ -348,16 +360,16 @@ public:
                 m_lastReadR *= 0.95f;
                 if (left)  left[i]  = m_lastReadL;
                 if (right) right[i] = m_lastReadR;
-                if (fabsf(m_lastReadL) < 1e-7f) m_lastReadL = 0.0f;
-                if (fabsf(m_lastReadR) < 1e-7f) m_lastReadR = 0.0f;
             }
+            if (fabsf(m_lastReadL) < 1e-7f) m_lastReadL = 0.0f;
+            if (fabsf(m_lastReadR) < 1e-7f) m_lastReadR = 0.0f;
             m_prefillMode = true; // Wait for safe cushion again
             return;
         }
 
-        if (available > 16384) {
-            r = w - 2400;
-            available = 2400;
+        if (available > 131072 || available > (96000 + safeCushion)) {
+            r = w - safeCushion;
+            available = safeCushion;
         }
 
         // Math optimization & Hoisted branch
