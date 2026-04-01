@@ -16,12 +16,12 @@ $bw.Write([char[]]"WAVE")
 # fmt chunk
 $bw.Write([char[]]"fmt ")
 $bw.Write([int]16)
-$bw.Write([short]1)
-$bw.Write([short]1)
+$bw.Write([int16]1)
+$bw.Write([int16]1)
 $bw.Write([int]$sampleRate)
 $bw.Write([int]($sampleRate * 2))
-$bw.Write([short]2)
-$bw.Write([short]16)
+$bw.Write([int16]2)
+$bw.Write([int16]16)
 
 # data chunk
 $bw.Write([char[]]"data")
@@ -32,7 +32,7 @@ $freq = 440.0
 for ($i = 0; $i -lt $numSamples; $i++) {
     $t = $i / $sampleRate
     $sample = [System.Math]::Sin(2 * [System.Math]::PI * $freq * $t)
-    $shortVal = [short]($sample * 32767.0)
+    $shortVal = [int16]($sample * 32767.0)
     $bw.Write($shortVal)
 }
 

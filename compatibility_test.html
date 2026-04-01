@@ -319,26 +319,46 @@ async function addEntry() {
     return;
   }
 
+  const btn = document.querySelector('.add-btn');
+  btn.innerText = "🚀 数据正在推流至云端...";
+  btn.disabled = true;
+
+  const newEntry = {
+    id: Date.now(),
+    card, host, wdm, buffer, status, algo, desc, feel, audio
+  };
+
   try {
-    const newEntry = {
-      id: Date.now(),
-      card, host, wdm, buffer, status, algo, desc, feel, audio
-    };
-    logs.unshift(newEntry);
-    
-    // 异步推送到云端 MySQL！
-    fetch(API_URL, {
+    // 同步等待云端 MySQL 响应，不提前抢跑写入本地！
+    let r = await fetch(API_URL, {
       method: 'POST', body: JSON.stringify(newEntry)
-    }).then(async r => { 
-      if (!r.ok) {
-        if (newEntry.audio && newEntry.audio.length > 10000) {
-          alert("⚠️ 云盘拒绝写入！您附加的高精度录音包超过了服务器接收阈值。目前该记录仅保存在您的本地主机缓存中。");
-        } else {
-          fetch('/asmrtap.php?api=test_logs', { method:'POST', body: JSON.stringify(newEntry) }); 
-        }
-      }
     });
+    if (!r.ok) {
+        r = await fetch('/asmrtap.php?api=test_logs', { method:'POST', body: JSON.stringify(newEntry) }); 
+    }
     
+    if (r.ok) {
+        let resData = await r.json();
+        if (resData.url) {
+            // 服务器已成功物理落盘文件，并下发了超短 URL 路径
+            // 此时必须替换掉客户端身上背负的这坨 4MB+ 的 Base64 毒瘤！
+            newEntry.audio = resData.url;
+        } else if (newEntry.audio && newEntry.audio.length > 500000) {
+            // 异常兜底，防止硬存爆掉 LocalStorage
+            newEntry.audio = "";
+        }
+    } else {
+        throw new Error("云端服务器以错误码拒绝 (可能是 Nginx 体积顶撞或网络断网)");
+    }
+  } catch(e) {
+      if (newEntry.audio && newEntry.audio.length > 2000000) {
+          alert("⚠️ 云盘写入受阻！您录音包超过服务器最大阈值或网络异常。为防止本地缓存崩溃，该记录将以 [无附件形式] 保留至本地库。");
+          newEntry.audio = ""; // 果断剥离大文件，保全用户文字纪要
+      }
+  }
+
+  try {
+    logs.unshift(newEntry);
     saveData();
     render();
     
@@ -347,8 +367,11 @@ async function addEntry() {
     document.getElementById('i_audio_b64').value = "";
     saveFormCache();
   } catch(e) {
-    alert("❌ 存储失败！可能是因为附加的音频数据过大导致浏览器 LocalStorage 存储容量超出（通常上限为 5MB）。\n建议清空一些包含大文件的历史记录后重试。");
-    logs.shift(); // remove the failed item
+    alert("❌ 依然存储失败！您的多条历史文字堆积或音频片段过大，浏览器 LocalStorage 已濒临 5MB 极限崩溃点。\n建议您清空网页历史记录后重试。");
+    logs.shift(); // 剔除毒瘤
+  } finally {
+    btn.innerText = "📥 写入到测试库";
+    btn.disabled = false;
   }
 }
 
