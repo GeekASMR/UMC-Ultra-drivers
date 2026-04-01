@@ -39,8 +39,11 @@ public:
         m_readPos(0), m_readPosFrac(0.0), m_lastReadL(0.0f), m_lastReadR(0.0f),
         m_writePosFrac(0.0), m_lastWriteL(0.0f), m_lastWriteR(0.0f),
         m_channelId(-1), m_callCount(0), m_firstCall(true), m_prefillMode(true),
-        m_lastSeenWritePos(0), m_driftCounter(0), m_lastOpenTry(0) {
+        m_lastSeenWritePos(0), m_driftCounter(0), m_lastOpenTry(0),
+        m_detectedWdmRate(48000.0), m_wpVelocityStart(0), m_wpVelocityCount(0) {
         m_direction[0] = '\0';
+        QueryPerformanceFrequency((LARGE_INTEGER*)&m_qpcFreq);
+        QueryPerformanceCounter((LARGE_INTEGER*)&m_qpcLastV);
     }
 
     ~AsmrtopIpcChannel() { close(); }
@@ -107,6 +110,8 @@ public:
         m_firstCall = true;
         m_prefillMode = true;
         m_driftCounter = 0;
+        m_detectedWdmRate = 48000.0;
+        m_wpVelocityCount = 0;
     }
 
     bool isOpen() const { return m_buf != nullptr; }
@@ -132,6 +137,9 @@ public:
             tryOpen();
         }
     }
+
+    // Call this before readStereoAdaptive to get the dynamically measured WDM Sample Rate
+    double getDetectedWdmRate() const { return m_detectedWdmRate; }
 
     // =========================================================================
     // Write to Ring Buffer (DAW VRT OUT -> System Virtual Mic)
@@ -269,16 +277,45 @@ public:
             return;
         }
 
+        validateOrReconnect(); // !! VERY IMPORTANT BUGBIX !!
         if (!m_buf && !tryOpen()) {
             if (left)  memset(left,  0, numFrames * sizeof(float));
             if (right) memset(right, 0, numFrames * sizeof(float));
             return;
         }
 
+        // Measure velocity of writePos dynamically to adapt to WASAPI Exclusive rates!
+        uint32_t w = m_buf->writePos.load(std::memory_order_acquire);
+        
+        if (m_wpVelocityCount++ > 15) {
+            uint64_t qpcNow;
+            QueryPerformanceCounter((LARGE_INTEGER*)&qpcNow);
+            double elapsedSec = (double)(qpcNow - m_qpcLastV) / (double)m_qpcFreq;
+            if (elapsedSec >= 0.1) { // Evaluate every 100ms
+                double velocity = (double)(w - m_wpVelocityStart) / elapsedSec;
+                // Snap to standard rates if close
+                double standardRates[] = {44100.0, 48000.0, 88200.0, 96000.0, 176400.0, 192000.0, 384000.0};
+                double finalRate = velocity;
+                for (double st : standardRates) {
+                    if (fabs(velocity - st) < (st * 0.05)) { finalRate = st; break; }
+                }
+                if (finalRate > 8000.0 && finalRate < 768000.0) {
+                    // Smooth adaptation
+                    m_detectedWdmRate = m_detectedWdmRate * 0.8 + finalRate * 0.2;
+                }
+                m_qpcLastV = qpcNow;
+                m_wpVelocityStart = w;
+            }
+        } else if (m_wpVelocityCount == 1) {
+            QueryPerformanceCounter((LARGE_INTEGER*)&m_qpcLastV);
+            m_wpVelocityStart = w;
+        }
+
+        // Use the dynamically detected rate!
+        srcRate = m_detectedWdmRate;
         double ratio = srcRate / dstRate; // e.g. 48000/44100 = 1.0884
         int srcNeeded = (int)(numFrames * ratio) + 2;
 
-        uint32_t w = m_buf->writePos.load(std::memory_order_acquire);
         uint32_t r = m_readPos;
         int32_t available = (int32_t)(w - r);
 
@@ -453,4 +490,11 @@ private:
     uint32_t m_lastSeenWritePos;  // Last observed writePos value
     int m_driftCounter;           // Rate limits the slip buffer drift adjustments
     DWORD m_lastOpenTry;          // Throttle OpenFileMappingA calls
+
+    // Dynamic Auto-Rate Detection
+    double m_detectedWdmRate;
+    uint32_t m_wpVelocityStart;
+    uint32_t m_wpVelocityCount;
+    uint64_t m_qpcLastV;
+    uint64_t m_qpcFreq;
 };
