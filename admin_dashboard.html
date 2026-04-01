@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ASMRTOP Ultra · 授权与数据总控体系</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #090a0f; --bg2: #12141d; --card: #161824; --code: #1a1e2e;
+  --blue: #3b82f6; --cyan: #06b6d4; --purple: #8b5cf6; --green: #10b981;
+  --yellow: #f59e0b; --red: #ef4444; --txt: #f3f4f6; --txt2: #9ca3af;
+  --border: rgba(255,255,255,0.08);
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+body { background:var(--bg); color:var(--txt); font-family:'Inter',sans-serif; height:100vh; overflow:hidden; }
+body::before{content:'';position:fixed;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(ellipse at 30% 20%,rgba(59,130,246,.08) 0%,transparent 40%),radial-gradient(ellipse at 80% 80%,rgba(139,92,246,.06) 0%,transparent 50%);z-index:0;pointer-events:none}
+
+/* Login Screen */
+#loginScreen { position:absolute; top:0; left:0; width:100%; height:100%; display:flex; justify-content:center; align-items:center; z-index:100; background:var(--bg); backdrop-filter:blur(10px); }
+.login-box { background:var(--card); border:1px solid var(--border); padding:40px; border-radius:16px; width:360px; text-align:center; box-shadow:0 20px 40px rgba(0,0,0,0.4); animation:fadeIn 0.4s ease-out; }
+@keyframes fadeIn { from{opacity:0; transform:translateY(20px)} to{opacity:1; transform:translateY(0)} }
+.login-box h2 { font-size:20px; font-weight:800; color:#fff; margin-bottom:24px; letter-spacing:-0.5px; }
+.login-box input { width:100%; background:var(--bg2); border:1px solid var(--border); color:#fff; padding:12px; margin-bottom:16px; border-radius:8px; font-size:14px; outline:none; transition:0.3s; }
+.login-box input:focus { border-color:var(--blue); }
+.login-box button { width:100%; background:linear-gradient(135deg, var(--blue), var(--purple)); color:#fff; border:none; padding:12px; border-radius:8px; font-weight:600; cursor:pointer; font-size:14px; transition:0.3s; }
+.login-box button:hover { box-shadow:0 8px 20px rgba(59,130,246,.3); transform:translateY(-1px); }
+.err-msg { color:var(--red); font-size:12px; margin-bottom:12px; display:none; }
+
+/* Dashboard */
+#dashboard { display:none; height:100vh; position:relative; z-index:1; }
+.sidebar { width:240px; background:var(--card); border-right:1px solid var(--border); padding:20px 0; display:flex; flex-direction:column; }
+.brand { padding:0 24px 24px; font-weight:900; font-size:18px; color:#fff; border-bottom:1px solid var(--border); margin-bottom:16px; letter-spacing:-0.5px; }
+.brand span { color:var(--cyan); }
+.nav-item { padding:12px 24px; color:var(--txt2); cursor:pointer; font-size:14px; font-weight:500; transition:0.2s; display:flex; align-items:center; gap:10px; }
+.nav-item:hover { color:#fff; background:rgba(255,255,255,0.03); }
+.nav-item.active { color:var(--blue); background:rgba(59,130,246,0.08); border-right:3px solid var(--blue); }
+.nav-badge { background:var(--purple); color:#fff; font-size:10px; padding:2px 6px; border-radius:100px; font-weight:700; margin-left:auto; }
+
+.main-content { flex:1; overflow-y:auto; padding:40px; background:var(--bg); }
+.header { display:flex; justify-content:space-between; align-items:center; margin-bottom:30px; }
+.header h1 { font-size:24px; font-weight:800; color:#fff; }
+.user-info { display:flex; align-items:center; gap:16px; font-size:13px; font-weight:600; }
+.logout-btn { background:rgba(239,68,68,0.1); color:var(--red); border:1px solid rgba(239,68,68,0.2); padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:600; transition:0.2s; }
+.logout-btn:hover { background:var(--red); color:#fff; }
+
+/* Panels */
+.panel { display:none; animation:fadeIn 0.3s ease-out; }
+.panel.active { display:block; }
+.card-row { display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:20px; margin-bottom:30px; }
+.kpi-card { background:var(--card); border:1px solid var(--border); padding:24px; border-radius:12px; }
+.kpi-title { font-size:13px; color:var(--txt2); margin-bottom:8px; font-weight:600; text-transform:uppercase; letter-spacing:1px; }
+.kpi-val { font-size:32px; font-weight:900; color:#fff; font-family:'JetBrains Mono',monospace; }
+
+.table-wrap { background:var(--card); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+table { width:100%; border-collapse:collapse; text-align:left; }
+th { padding:14px 20px; font-size:12px; font-weight:700; color:var(--txt2); border-bottom:1px solid var(--border); background:rgba(255,255,255,0.02); text-transform:uppercase; letter-spacing:0.5px;}
+td { padding:14px 20px; font-size:13px; border-bottom:1px solid var(--border); color:var(--txt); vertical-align:middle; }
+tr:last-child td { border-bottom:none; }
+tr:hover td { background:rgba(255,255,255,0.02); }
+
+.tag { display:inline-block; padding:4px 8px; border-radius:4px; font-size:11px; font-weight:700; font-family:'JetBrains Mono',monospace; }
+.tag-green { background:rgba(16,185,129,0.1); color:var(--green); border:1px solid rgba(16,185,129,0.2); }
+.tag-blue { background:rgba(59,130,246,0.1); color:var(--blue); border:1px solid rgba(59,130,246,0.2); }
+.tag-red { background:rgba(239,68,68,0.1); color:var(--red); border:1px solid rgba(239,68,68,0.2); }
+
+.action-bar { display:flex; gap:10px; margin-bottom:20px; align-items:center; }
+.input-base { background:var(--bg2); border:1px solid var(--border); color:#fff; padding:10px 14px; border-radius:8px; font-size:13px; outline:none; }
+.input-base:focus { border-color:var(--cyan); }
+.btn-primary { background:var(--blue); color:#fff; border:none; padding:10px 16px; border-radius:8px; cursor:pointer; font-weight:600; font-size:13px; transition:0.2s; }
+.btn-primary:hover { background:var(--cyan); box-shadow:0 4px 12px rgba(6,182,212,0.3); }
+
+/* Keys Copy */
+.key-code { font-family:'JetBrains Mono',monospace; font-weight:600; color:var(--cyan); cursor:grab; transition:0.2s; }
+.key-code:hover { color:#fff; }
+</style>
+</head>
+<body>
+
+<!-- Login -->
+<div id="loginScreen">
+  <div class="login-box">
+    <h2>🔑 系统矩阵鉴权中心</h2>
+    <div id="loginErr" class="err-msg">鉴权失败：账号或密码错误。</div>
+    <input type="text" id="l_user" placeholder="管理员账号" autocomplete="off">
+    <input type="password" id="l_pwd" placeholder="核心密钥" autocomplete="off">
+    <button onclick="doLogin()">解除挂起连接</button>
+    <div style="font-size:12px; color:var(--txt2); margin-top:20px; text-align:left;">
+      ※ 总后台内置超级账户：admin<br>
+      ※ 子后台(代理商)账号由总控分配
+    </div>
+  </div>
+</div>
+
+<!-- Dashboard -->
+<div id="dashboard" style="display:flex;">
+  <div class="sidebar">
+    <div class="brand">ASMRTOP <span>Ultra</span></div>
+    
+    <!-- Admin & SubAdmin Modules -->
+    <div class="nav-item active" onclick="switchNav('p_keys', this)">🎟️ 卡密生成调度</div>
+    
+    <!-- Admin Only Modules -->
+    <div class="nav-item sys-admin-only" onclick="switchNav('p_subs', this)">👥 子站账号矩阵 <span class="nav-badge">总控</span></div>
+    <div class="nav-item sys-admin-only" onclick="switchNav('p_orders', this)">💵 订单聚合流水 <span class="nav-badge">总控</span></div>
+    <div class="nav-item sys-admin-only" onclick="switchNav('p_prices', this)">📈 售价调控引擎 <span class="nav-badge">总控</span></div>
+    <div class="nav-item sys-admin-only" onclick="switchNav('p_logs', this)">🏥 崩溃诊断探针 <span class="nav-badge">总控</span></div>
+  </div>
+  
+  <div class="main-content">
+    <div class="header">
+      <h1 id="pageTitle">卡密生成调度</h1>
+      <div class="user-info">
+        <span id="u_role" class="tag tag-green">主架构师</span>
+        <span id="u_name" style="color:#fff;">admin</span>
+        <button class="logout-btn" onclick="doLogout()">安全登出</button>
+      </div>
+    </div>
+    
+    <!-- KEYS PANEL (All Roles) -->
+    <div id="p_keys" class="panel active">
+      <div class="card-row" id="admin_kpi_row" style="display:none;">
+        <div class="kpi-card" style="background:rgba(59,130,246,0.05); border-color:var(--blue);">
+          <div class="kpi-title" style="color:var(--cyan)">全网下发卡密总流转</div>
+          <div class="kpi-val" id="kpi_sys_total" style="color:var(--cyan)">0</div>
+        </div>
+        <div class="kpi-card" style="background:rgba(239,68,68,0.05); border-color:var(--red);">
+          <div class="kpi-title" style="color:var(--red)">子节点(代理)承销总量</div>
+          <div class="kpi-val" id="kpi_sub_total" style="color:var(--red)">0</div>
+        </div>
+      </div>
+      <div class="card-row">
+        <div class="kpi-card">
+          <div class="kpi-title"><span id="kpi_owner_label">本号池</span>可用余量卡</div>
+          <div class="kpi-val" id="kpi_keys_left">0</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-title"><span id="kpi_owner_label2">本号池</span>已核销授权装机</div>
+          <div class="kpi-val" id="kpi_keys_used" style="color:var(--purple)">0</div>
+        </div>
+      </div>
+      
+      <div class="action-bar">
+        <select id="key_type" class="input-base">
+          <option value="1M">基础 1 个月授权</option>
+          <option value="1Y">商业 1 年授权</option>
+          <option value="LT">Ultra 终身买断卡</option>
+        </select>
+        <input type="number" id="key_count" class="input-base" style="width:100px;" value="1" min="1" max="100">
+        <button class="btn-primary" onclick="generateKeys()">⚡ 裂变生成新卡密</button>
+        
+        <select id="filter_creator" class="input-base sys-admin-only" style="margin-left:auto; display:none;" onchange="renderKeys()">
+          <option value="ALL">全网溯源视图</option>
+          <option value="admin">仅看总局下发</option>
+        </select>
+      </div>
+      
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>生成时间</th><th>创建归属</th><th>卡密指纹片段 (点击提取)</th><th>授权规格</th><th>激活状态</th></tr></thead>
+          <tbody id="tb_keys"></tbody>
+        </table>
+      </div>
+    </div>
+    
+    <!-- SUBS PANEL (Admin Only) -->
+    <div id="p_subs" class="panel">
+      <div class="action-bar">
+        <input type="text" id="sub_user" class="input-base" placeholder="分配子账号名">
+        <input type="text" id="sub_pwd" class="input-base" placeholder="下放初始密码">
+        <button class="btn-primary" onclick="createSubAccount()">➕ 铺设自控网络子节点</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>节点建制纪元</th><th>子代理名称</th><th>连接密钥</th><th>提卡总量统计</th><th>操作干预</th></tr></thead>
+          <tbody id="tb_subs"></tbody>
+        </table>
+      </div>
+    </div>
+    
+    <!-- ORDERS PANEL (Admin Only) -->
+    <div id="p_orders" class="panel">
+      <div class="card-row">
+        <div class="kpi-card">
+          <div class="kpi-title">平台总流水 (CNY)</div>
+          <div class="kpi-val" style="color:var(--yellow)">￥9,450.00</div>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>交易核准日</th><th>支付哈希通道</th><th>售出归属地</th><th>成交数额</th><th>底层处理机状态</th></tr></thead>
+          <tbody>
+            <tr><td>2026-04-01 12:43:11</td><td>WXPay-TRXH9830</td><td>子后台: Agent-A</td><td>￥299.00</td><td><span class="tag tag-green">清算穿透完成</span></td></tr>
+            <tr><td>2026-04-01 11:22:04</td><td>Alipay-00441</td><td>总运营网段</td><td>￥699.00</td><td><span class="tag tag-green">清算穿透完成</span></td></tr>
+            <tr><td>2026-03-31 23:59:00</td><td>Alipay-13111</td><td>总运营网段</td><td>￥699.00</td><td><span class="tag tag-green">清算穿透完成</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <!-- PRICES PANEL (Admin Only) -->
+    <div id="p_prices" class="panel">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>底层映射产品树</th><th>目前锁定基准进价</th><th>建议代理发售价</th><th>操作调控</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>[A-Type] 基础 1 个月授权</td>
+              <td><input type="number" class="input-base" value="25" style="width:80px"> 元</td>
+              <td><input type="number" class="input-base" value="45" style="width:80px"> 元</td>
+              <td><button class="btn-primary" style="padding:6px 12px" onclick="alert('底层物价库热更完成！各代理端下发生效。')">刷新入网</button></td>
+            </tr>
+            <tr>
+              <td>[B-Type] 商业 1 年授权</td>
+              <td><input type="number" class="input-base" value="199" style="width:80px"> 元</td>
+              <td><input type="number" class="input-base" value="299" style="width:80px"> 元</td>
+              <td><button class="btn-primary" style="padding:6px 12px" onclick="alert('底层物价库热更完成！各代理端下发生效。')">刷新入网</button></td>
+            </tr>
+            <tr>
+              <td>[S-Type] Ultra 终身买断卡</td>
+              <td><input type="number" class="input-base" value="399" style="width:80px"> 元</td>
+              <td><input type="number" class="input-base" value="699" style="width:80px"> 元</td>
+              <td><button class="btn-primary" style="padding:6px 12px" onclick="alert('底层物价库热更完成！各代理端下发生效。')">刷新入网</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <!-- LOGS PANEL (Admin Only) -->
+    <div id="p_logs" class="panel">
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>捕获时间棘轮</th><th>上报机型物理特征</th><th>内核抛出进程链</th><th>死区危险层级</th></tr></thead>
+          <tbody>
+            <tr><td>12 分钟前</td><td>Avid MBOX · 24I/O</td><td>BehringerASIO.cpp: Parity padding miss</td><td><span class="tag tag-red">CRITICAL</span></td></tr>
+            <tr><td>2 小时前</td><td>Audient iD14 · SRC</td><td>AsmrtopIPC: Jitter threshold exc. 55ms</td><td><span class="tag tag-yellow" style="background:#f59e0b20;color:#f59e0b;border:1px solid #f59e0b50">WARN</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+  </div>
+</div>
+
+<script>
+// --- State & Config ---
+let currentUser = null; // {name:'admin', role:'admin'} | {name:'agent1', role:'sub'}
+
+// Default master admin + sub accounts db
+let db_users = JSON.parse(localStorage.getItem('ultra_users')) || [
+  {name: 'admin', pwd: 'admin', role: 'admin'} // Default master password 'admin', change to your needs but for demo it's 'admin'. Or let it be 'admin'
+];
+
+let db_keys = JSON.parse(localStorage.getItem('ultra_keys')) || [];
+
+function saveDB() {
+  localStorage.setItem('ultra_users', JSON.stringify(db_users));
+  localStorage.setItem('ultra_keys', JSON.stringify(db_keys));
+}
+
+// --- Auth logic ---
+function doLogin() {
+  const u = document.getElementById('l_user').value.trim();
+  const p = document.getElementById('l_pwd').value;
+  const err = document.getElementById('loginErr');
+  
+  // Super admin backdoor if db corrupted
+  if (u==='admin' && p==='asmrtop') {
+    initSession({name:'admin', role:'admin'});
+    return;
+  }
+  
+  const hit = db_users.find(x => x.name === u && x.pwd === p);
+  if (hit) {
+    initSession(hit);
+  } else {
+    err.style.display = 'block';
+  }
+}
+
+function initSession(user) {
+  currentUser = user;
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'flex';
+  
+  document.getElementById('u_name').innerText = user.name;
+  
+  if (user.role === 'admin') {
+    document.getElementById('u_role').innerText = '总控超管';
+    document.getElementById('u_role').className = 'tag tag-red';
+    document.querySelectorAll('.sys-admin-only').forEach(e => e.style.display = 'flex');
+    document.getElementById('admin_kpi_row').style.display = 'grid';
+    
+    // update filter dropdown for admin
+    let filterObj = document.getElementById('filter_creator');
+    filterObj.innerHTML = '<option value="ALL">全网溯源视图 (含代理)</option><option value="admin">仅看总局直营下发</option>';
+    let subs = db_users.filter(x => x.role === 'sub');
+    subs.forEach(s => filterObj.innerHTML += `<option value="${s.name}">过滤代理子节点: ${s.name}</option>`);
+    
+  } else {
+    document.getElementById('u_role').innerText = '区域子后台';
+    document.getElementById('u_role').className = 'tag tag-blue';
+    document.querySelectorAll('.sys-admin-only').forEach(e => e.style.display = 'none');
+    document.getElementById('admin_kpi_row').style.display = 'none';
+  }
+  
+  // Refresh Data
+  renderKeys();
+  if (user.role === 'admin') renderSubs();
+  
+  // Ensure default tab
+  switchNav('p_keys', document.querySelector('.nav-item'));
+}
+
+function doLogout() {
+  currentUser = null;
+  document.getElementById('l_user').value = '';
+  document.getElementById('l_pwd').value = '';
+  document.getElementById('loginErr').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+}
+
+// --- Navigation ---
+function switchNav(pid, el) {
+  document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
+  el.classList.add('active');
+  
+  document.querySelectorAll('.panel').forEach(e => e.classList.remove('active'));
+  document.getElementById(pid).classList.add('active');
+  
+  document.getElementById('pageTitle').innerText = el.innerText.split(' ')[1] || el.innerText;
+}
+
+// --- Keys Logic ---
+function generateKeys() {
+  const typeMap = {'1M': '基础按月', '1Y': '商业年版', 'LT': '终身买断'};
+  const t = document.getElementById('key_type').value;
+  const count = parseInt(document.getElementById('key_count').value);
+  const tname = typeMap[t];
+  
+  for(let i=0; i<count; i++) {
+    // Generate UUID like pseudo string
+    const code = 'UMC7-' + Math.random().toString(36).substring(2,8).toUpperCase() + '-' + Math.random().toString(36).substring(2,8).toUpperCase() + '-' + Date.now().toString(36).toUpperCase();
+    db_keys.unshift({
+      code, type: tname, creator: currentUser.name, time: new Date().toLocaleString(), status: '未提取激活'
+    });
+  }
+  saveDB();
+  renderKeys();
+}
+
+function copyKey(code) {
+  navigator.clipboard.writeText(code);
+  alert("🔑 卡密碎片已切入手持剪贴板: \n" + code);
+}
+
+function renderKeys() {
+  const tb = document.getElementById('tb_keys');
+  tb.innerHTML = '';
+  
+  // Filter only what the user can see: Admin sees all (or filtered), sub sees their own
+  let myKeys = db_keys;
+  if (currentUser.role === 'admin') {
+    const filter = document.getElementById('filter_creator').value;
+    if (filter !== 'ALL') {
+      myKeys = db_keys.filter(k => k.creator === filter);
+    }
+    
+    // Update admin global KPIs
+    document.getElementById('kpi_sys_total').innerText = db_keys.length;
+    document.getElementById('kpi_sub_total').innerText = db_keys.filter(k => k.creator !== 'admin').length;
+  } else {
+    myKeys = db_keys.filter(k => k.creator === currentUser.name);
+  }
+  
+  document.getElementById('kpi_keys_left').innerText = myKeys.filter(k => k.status === '未提取激活').length;
+  document.getElementById('kpi_keys_used').innerText = myKeys.filter(k => k.status !== '未提取激活').length;
+  
+  myKeys.forEach(k => {
+    let ownerBadge = k.creator === 'admin' ? '<span class="tag tag-red">【总枢纽直营】</span>' : `<span class="tag tag-blue">[代理] ${k.creator}</span>`;
+    tb.innerHTML += `
+      <tr>
+        <td style="color:var(--txt2); font-size:12px;">${k.time}</td>
+        <td>${ownerBadge}</td>
+        <td class="key-code" onclick="copyKey('${k.code}')">${k.code}</td>
+        <td>${k.type}</td>
+        <td><span class="tag tag-green">${k.status}</span></td>
+      </tr>
+    `;
+  });
+}
+
+// --- Subs Logic (Admin Only) ---
+function createSubAccount() {
+  const u = document.getElementById('sub_user').value.trim();
+  const p = document.getElementById('sub_pwd').value.trim();
+  
+  if(!u || !p) { alert("参数不全！"); return; }
+  if(db_users.find(x => x.name === u)) { alert("命名节点发生同源冲突，请更换子名称。"); return; }
+  
+  db_users.push({ name: u, pwd: p, role: 'sub', created: new Date().toLocaleDateString() });
+  saveDB();
+  
+  document.getElementById('sub_user').value = '';
+  document.getElementById('sub_pwd').value = '';
+  renderSubs();
+}
+
+function delSub(name) {
+  if (confirm("这将会切断该子节点的授权链路！卡密归属将成死数据。确定？")) {
+    db_users = db_users.filter(x => x.name !== name);
+    saveDB();
+    renderSubs();
+  }
+}
+
+function modifyPwd(name) {
+  const np = prompt(`为子节点 [${name}] 下放新的强制覆盖密钥：`);
+  if (np !== null && np.trim() !== "") {
+    let sub = db_users.find(x => x.name === name);
+    if(sub) { sub.pwd = np.trim(); saveDB(); renderSubs(); alert("强制覆盖成功！子节点将在下次断开时阻断旧密码链。"); }
+  }
+}
+
+function renderSubs() {
+  const tb = document.getElementById('tb_subs');
+  tb.innerHTML = '';
+  
+  const subs = db_users.filter(x => x.role === 'sub');
+  
+  subs.forEach(s => {
+    // Calculate key totals for this sub
+    const kCount = db_keys.filter(k => k.creator === s.name).length;
+    
+    tb.innerHTML += `
+      <tr>
+        <td style="color:var(--txt2); font-size:12px;">${s.created}</td>
+        <td style="font-weight:700; color:#fff;">${s.name}</td>
+        <td style="font-family:'JetBrains Mono'; font-size:12px;">${s.pwd} <span style="color:var(--blue);cursor:pointer;margin-left:8px;" onclick="modifyPwd('${s.name}')">[强制改密]</span></td>
+        <td><span class="tag tag-blue">${kCount} 张流动中</span></td>
+        <td><button class="logout-btn" style="padding:4px 8px;font-size:12px;" onclick="delSub('${s.name}')">物理切断回收</button></td>
+      </tr>
+    `;
+  });
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ASIO Ultra V7 · 跨采样测试日志</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0c14;--bg2:#111420;--card:#161926;--code:#1a1e2e;--blue:#4f8aff;--cyan:#00d4ff;--purple:#a855f7;--green:#22c55e;--yellow:#f59e0b;--red:#ef4444;--orange:#f97316;--txt:#e8eaf0;--txt2:#8b92a8;--dim:#555d75;--border:rgba(255,255,255,0.06)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--txt);font-family:'Inter',sans-serif;line-height:1.7}
+body::before{content:'';position:fixed;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(ellipse at 20% 20%,rgba(79,138,255,.05) 0%,transparent 50%),radial-gradient(ellipse at 80% 80%,rgba(34,197,94,.03) 0%,transparent 50%);z-index:0;pointer-events:none}
+.c{max-width:1300px;margin:0 auto;padding:40px 32px;position:relative;z-index:1}
+.hero{text-align:center;padding:10px 0 40px}
+.badge{display:inline-flex;align-items:center;gap:8px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);border-radius:100px;padding:8px 20px;font-size:13px;font-weight:600;color:var(--green);margin-bottom:16px}
+.hero h1{font-size:32px;font-weight:900;letter-spacing:-1px;margin-bottom:10px;color:#fff}
+
+/* Table Style */
+table.mt{width:100%;border-collapse:separate;border-spacing:0;border-radius:12px;overflow:hidden;border:1px solid var(--border);margin:12px 0;background:var(--card)}
+table.mt thead th{background:rgba(255,255,255,.02);padding:14px 18px;text-align:left;font-size:13px;font-weight:700;color:var(--txt2);border-bottom:1px solid var(--border)}
+table.mt tbody td{padding:14px 18px;font-size:14px;color:var(--txt);border-bottom:1px solid var(--border);vertical-align:middle}
+table.mt tbody tr:last-child td{border-bottom:none}
+table.mt tbody tr:hover td{background:rgba(79,138,255,.03)}
+
+.rate-box{font-family:'JetBrains Mono',monospace;font-weight:600;display:inline-flex;align-items:center;padding:4px 10px;border-radius:6px;font-size:13px}
+.rate-44{color:var(--purple);background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.2)}
+.rate-48{color:var(--cyan);background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.2)}
+.rate-96{color:var(--orange);background:rgba(249,115,22,.1);border:1px solid rgba(249,115,22,.2)}
+.rate-other{color:var(--txt);background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2)}
+
+.buf-box{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--yellow);background:rgba(245,158,11,.1);padding:3px 8px;border-radius:4px;border:1px solid rgba(245,158,11,.2)}
+
+.st-pass{color:var(--green);font-weight:600;font-size:13px}
+.st-warn{color:var(--yellow);font-weight:600;font-size:13px}
+.st-fail{color:var(--red);font-weight:600;font-size:13px}
+
+.algo{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--blue);display:block}
+.desc{font-size:13px;line-height:1.6;color:var(--txt2);margin-top:4px}
+.rm-btn{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2);padding:4px 10px;border-radius:6px;cursor:pointer;font-size:12px;transition:0.2s}
+.rm-btn:hover{background:var(--red);color:#fff}
+
+/* Form panel */
+.form-panel{background:linear-gradient(135deg,rgba(255,255,255,.02),transparent);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:30px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+.form-panel input,.form-panel select,.form-panel textarea{background:var(--bg2);border:1px solid var(--border);color:var(--txt);padding:10px 14px;border-radius:8px;font-family:'Inter',sans-serif;font-size:13px;outline:none;width:100%;transition:0.3s}
+.form-panel input:focus,.form-panel select:focus,.form-panel textarea:focus{border-color:var(--blue)}
+.form-panel .full{grid-column:1 / -1}
+.row-label{font-size:12px;color:var(--txt2);margin-bottom:6px;display:block}
+.add-btn{background:linear-gradient(135deg,var(--cyan),var(--blue));color:#fff;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-weight:600;font-size:14px;transition:0.3s}
+.add-btn:hover{box-shadow:0 6px 16px rgba(79,138,255,.3);transform:translateY(-1px)}
+.action-bar{display:flex;justify-content:space-between;align-items:flex-end}
+.export-btn{background:rgba(255,255,255,.05);color:var(--txt);border:1px solid var(--border);padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer}
+.export-btn:hover{background:rgba(255,255,255,.1)}
+
+/* Custom Modal */
+.modal-overlay {
+  display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+  background:rgba(0,0,0,0.7); z-index:9999; justify-content:center; align-items:center;
+  backdrop-filter: blur(5px);
+}
+.modal-box {
+  background:var(--card); border:1px solid var(--border); border-radius:12px;
+  padding:24px; width:340px; text-align:center; box-shadow:0 10px 30px rgba(0,0,0,0.5);
+  animation: fadeIn 0.2s ease-out;
+}
+@keyframes fadeIn { from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:translateY(0)} }
+.modal-box h3 { margin-top:0; margin-bottom:16px; font-size:16px; color:var(--cyan); }
+.modal-box input {
+  width:100%; background:var(--bg2); border:1px solid rgba(255,255,255,0.1);
+  color:#fff; padding:10px; border-radius:6px; font-size:14px; outline:none; text-align:center;
+  margin-bottom:20px;
+}
+.modal-box input:focus { border-color:var(--cyan); }
+.modal-btns { display:flex; gap:10px; }
+.modal-btns button {
+  flex:1; padding:10px; border-radius:6px; border:none; cursor:pointer; font-weight:600; font-size:13px; transition:0.2s;
+}
+.btn-cancel { background:rgba(255,255,255,0.05); color:var(--txt2); }
+.btn-cancel:hover { background:rgba(255,255,255,0.1); }
+.btn-ok { background:var(--blue); color:#fff; }
+.btn-ok:hover { background:var(--cyan); }
+
+</style>
+</head>
+<body>
+<div class="c">
+
+<div class="hero">
+  <div class="badge">⚙️ IPC 跨代 SRC 补偿观测记录版</div>
+  <h1>采样率与极限延迟性能黑匣子库</h1>
+</div>
+
+<div style="background:linear-gradient(145deg,rgba(79,138,255,0.05),transparent);border:1px solid rgba(79,138,255,0.2);border-radius:12px;padding:24px;margin-bottom:30px;">
+  <h3 style="color:var(--cyan);font-size:16px;margin-bottom:12px;display:flex;align-items:center;gap:8px;">🎙️ 录音循环内录极限防抖断流测试指引</h3>
+  <div style="font-size:14px;color:var(--txt2);line-height:1.7;">
+    <p style="margin-bottom:10px;">1. <a href="ASIO_Test_Audio.wav" download style="display:inline-block;background:var(--blue);color:#fff;padding:2px 10px;border-radius:4px;font-weight:600;text-decoration:none;">⬇️ 点击下载官方实录基准测试源 [ASIO_Test_Audio.wav]</a><br>
+    <span style="font-size:13px;opacity:0.8;margin-left:26px;">此为官方专门渲染的一段绝无杂质的 <b>48kHz 440Hz 纯净正弦波</b>。哪怕底层 IPC 通讯发生 1 个 Slice（切片）的跨频采样插值丢包断流，听感上都会极其明显地出现剧烈的“沙沙电流颗粒、齿轮声或者劈裂咔哒声”！这是极其严苛的放大镜。</span></p>
+    <p style="margin-bottom:10px;"><span style="color:var(--red);font-weight:700">2. ⚠️ 严正警告：不要使用系统自带的媒体播放器进行双击播放测试！</span> 整个测试环节，必须将此音轨文件<strong style="color:#fff">完全拖拽丢入专业宿主软件 (DAW) 的音频工程轨道中进行回放和挂载测量。</strong></p>
+    <p style="margin-bottom:10px;">3. 若您尚未准备用于系统终点捕获的抓录软件，可 <a href="https://www.audacityteam.org/download/windows/" target="_blank" style="color:var(--yellow);font-weight:600;border-bottom:1px solid var(--yellow);text-decoration:none;">🚀 点此跳转下载老牌开源录音机: Audacity</a>。（此工具专门用于挂在系统接收末端，把宿主放出来的声音录下来检查波形！）</p>
+    <p>4. <b>测试全流程：</b>在宿主将纯音轨道挂上死循环播放，切至极限 Buffer Size；接着在那头打开 Audacity 录音机进行同步内录。录制几分钟后带上监听耳机，只要在极限低缓冲下捕获的录音依然极润无任何失真齿轮咔哒声，即可视为位对位极昼安全通过，并请您 <a href="#addForm" style="color:var(--cyan)">进行归档入库登记</a>。</p>
+  </div>
+</div>
+
+<div class="form-panel" id="addForm">
+  <div class="full">
+    <span class="row-label">实机声卡型号 (验证设备)</span>
+    <input type="text" id="i_card" placeholder="例如: Behringer UM2, Avid MBOX Studio, MOTU M4...">
+  </div>
+  <div>
+    <span class="row-label">宿主 (DAW) 采样率</span>
+    <select id="i_host">
+      <option value="48000">48,000 Hz</option>
+      <option value="44100">44,100 Hz</option>
+      <option value="88200">88,200 Hz</option>
+      <option value="96000">96,000 Hz</option>
+      <option value="192000">192,000 Hz</option>
+    </select>
+  </div>
+  <div>
+    <span class="row-label">系统 (WDM) 端采样点阵</span>
+    <select id="i_wdm">
+      <option value="16bit 44.1kHz">2 通道, 16 位, 44100 Hz (CD 音质)</option>
+      <option value="16bit 48kHz">2 通道, 16 位, 48000 Hz (DVD 音质)</option>
+      <option value="32bit 48kHz">2 通道, 32 位, 48000 Hz (录音室音质)</option>
+      <option value="24bit 96kHz">2 通道, 24 位, 96000 Hz (录音室音质)</option>
+      <option value="24bit 192kHz">2 通道, 24 位, 192000 Hz (录音室音质)</option>
+    </select>
+  </div>
+  <div>
+    <span class="row-label">测试极限缓冲 (Buffer Size)</span>
+    <select id="i_buffer">
+      <option value="8 个采样">8 个采样</option>
+      <option value="16 个采样">16 个采样</option>
+      <option value="32 个采样">32 个采样</option>
+      <option value="64 个采样">64 个采样</option>
+      <option value="128 个采样" selected>128 个采样</option>
+      <option value="256 个采样">256 个采样</option>
+      <option value="512 个采样">512 个采样</option>
+      <option value="1024 个采样">1024 个采样</option>
+      <option value="2048 个采样">2048 个采样</option>
+    </select>
+  </div>
+  <input type="hidden" id="i_status" value="pass">
+  <div class="full">
+    <span class="row-label">底层 IPC 对策名/算法描述 (由系统根据采样率自动推断组合)</span>
+    <input type="text" id="i_algo" readonly style="opacity:0.7; pointer-events:none; background:rgba(0,0,0,0.3);" value="Prefill Cushing 缓冲池 1:1 位对位直通 (0 SRC)">
+  </div>
+  <div class="full">
+    <span class="row-label" style="color:var(--cyan); font-weight:700; font-size:14px; margin-bottom:10px;">🎧 实际听感表述结论 (手动必填: 声音结像变化 / 底噪 / 失真度评价)</span>
+    <input type="text" id="i_feel" style="border:1px solid rgba(0,212,255,0.4); box-shadow:0 0 10px rgba(0,212,255,0.05);" placeholder="例如: 人声清晰度下降 / 高频无损细腻 / 偶发微弱跳音..." value="">
+  </div>
+  <div class="full">
+    <span class="row-label">📎 附加实录实测音频 (可选，支持高精度原始对齐检测，仅限载入 MP3 或 WAV)</span>
+    <input type="file" id="i_audio" accept="audio/mpeg, audio/wav, .mp3, .wav" style="cursor:pointer; padding:6px 10px;">
+    <input type="hidden" id="i_audio_b64" value="">
+  </div>
+  <div class="full action-bar">
+    <div style="flex:1; padding-right:16px;">
+      <span class="row-label">测试纪要记录 / 评级结果 (AI自动生成)</span>
+      <input type="text" id="i_desc" readonly style="opacity:0.7; pointer-events:none; background:rgba(0,0,0,0.3);" value="【AI诊断】底层不产生任何拉伸插值，彻底抛弃丢包与咔哒声，实机极冻静谧。">
+    </div>
+    <button class="add-btn" onclick="addEntry()">📥 写入到测试库</button>
+  </div>
+</div>
+
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+  <div class="sec-num" style="margin:0;">实地采集数据库 (Local Storage 保留)</div>
+  <div>
+    <button class="export-btn" onclick="exportData()">📦 导出数据 JSON</button>
+    <button class="export-btn" onclick="importData()">📂 导入 JSON</button>
+    <button class="export-btn" style="color:var(--red)" onclick="clearAll()">🗑️ 清空库</button>
+  </div>
+</div>
+
+<table class="mt">
+  <thead>
+    <tr>
+      <th width="12%">实机声卡型号</th>
+      <th width="12%">宿主 (DAW) 内核</th>
+      <th width="12%">系统 (WDM) 端</th>
+      <th width="10%">极限缓冲</th>
+      <th width="20%">底层 IPC 应答对策</th>
+      <th>实测评级与纪要说明</th>
+      <th width="70px">操作</th>
+    </tr>
+  </thead>
+  <tbody id="tb">
+    <!-- Rendered by JS -->
+  </tbody>
+</table>
+
+</div>
+
+<script>
+let logs = [];
+
+// default payload
+const defaultLogs = [
+  {id:1, card:'Avid MBOX Studio', host:'48000', wdm:'48000', buffer:'128 个采样', algo:'Prefill Cushing (50ms 空载垫池)', status:'pass', desc:'【AI诊断】底层完全1:1，防爆音级稳定性。', feel:'丝般顺滑，齿音完全消失，高低频延伸非常完美无破音。'},
+  {id:2, card:'Audient iD14', host:'48000', wdm:'16bit 44.1kHz', buffer:'128 个采样', algo:'动态浮点跨频补轨 (Adaptive SRC)', status:'pass', desc:'【AI诊断】由于是从低向高送频，平缓冲压通过无异常。', feel:'网易云切入Studio One几乎没有任何SRC失落感。'},
+  {id:3, card:'Behringer UM2', host:'44100', wdm:'16bit 48kHz', buffer:'256 个采样', algo:'强制上采样填零挤压矩阵', status:'warn', desc:'【AI诊断】频繁填补可能引发粗糙颗粒感。', feel:'轻微地损失了极高频穿透力，偶有一粒沙砾感杂流。'},
+  {id:4, card:'SSL 2', host:'88200', wdm:'16bit 48kHz', buffer:'128 个采样', algo:'超高载浮点跨域强算重切 SRC', status:'fail', desc:'【AI诊断】死区级：跨频加重算力压垮 128 buffer。', feel:'听感灾难！密集的电击声伴随着极强的断续音！'}
+];
+
+function loadData() {
+  const d = localStorage.getItem('asio_test_logs');
+  if (d) {
+    logs = JSON.parse(d);
+  } else {
+    logs = [...defaultLogs];
+    saveData();
+  }
+  render();
+}
+
+function saveData() {
+  localStorage.setItem('asio_test_logs', JSON.stringify(logs));
+}
+
+function getRateClass(r) {
+  if (r.includes('48000') || r.includes('48kHz')) return 'rate-48';
+  if (r.includes('44100') || r.includes('44.1kHz')) return 'rate-44';
+  if (r.includes('96000') || r.includes('88200') || r.includes('96kHz') || r.includes('192kHz')) return 'rate-96';
+  return 'rate-other';
+}
+
+function getStatusInfo(st) {
+  if (st === 'pass') return {c: 'st-pass', t: '✅ 极昼防爆 (0 Pop)'};
+  if (st === 'warn') return {c: 'st-warn', t: '⚠️ 合格 (但建议统一)'};
+  return {c: 'st-fail', t: '❌ 跨频死区限制'};
+}
+
+function render() {
+  const tb = document.getElementById('tb');
+  tb.innerHTML = '';
+  logs.forEach(l => {
+    const tr = document.createElement('tr');
+    const sti = getStatusInfo(l.status);
+    
+    // Support customized status if it is directly matched from old defaults
+    let dispStatus = sti.t;
+    if (l.status.includes('✅') || l.status.includes('❌') || l.status.includes('⚠️')) {
+      dispStatus = l.status;
+    } else {
+      let mapping = {
+        'pass': '✅ 绝对极昼防爆蓝屏级 (0 Pop/Click)',
+        'warn': '⚠️ 合格但强烈建议避让',
+        'fail': '❌ 跨频死区爆音：严禁使用'
+      };
+      dispStatus = mapping[l.status] || dispStatus;
+    }
+
+    tr.innerHTML = `
+      <td style="font-weight:600;color:var(--cyan)">${l.card || '通用设备'}</td>
+      <td><span class="rate-box ${getRateClass(l.host)}">${l.host} Hz</span></td>
+      <td><span class="rate-box ${getRateClass(l.wdm)}">${l.wdm.replace('16bit ','').replace('24bit ','').replace('32bit ','')}</span></td>
+      <td><span class="buf-box">${l.buffer}</span></td>
+      <td><span class="algo">${l.algo}</span></td>
+      <td>
+        <div class="${sti.c}">${dispStatus}</div>
+        <div class="desc" style="color:var(--txt2)">${l.desc}</div>
+        ${l.feel ? `<div class="desc" style="color:#fff; margin-top:8px; padding-top:8px; border-top:1px dashed rgba(255,255,255,0.1);"><strong>听感:</strong> ${l.feel}</div>` : ''}
+        ${l.audio ? `<div style="margin-top:10px;"><audio controls src="${l.audio}" style="height:35px; width:100%; outline:none; border-radius:16px;"></audio></div>` : ''}
+      </td>
+      <td><button class="rm-btn" onclick="removeEntry(${l.id})">删</button></td>
+    `;
+    tb.appendChild(tr);
+  });
+}
+
+function addEntry() {
+  const card = document.getElementById('i_card').value;
+  const host = document.getElementById('i_host').value;
+  const wdm = document.getElementById('i_wdm').value;
+  const buffer = document.getElementById('i_buffer').value;
+  const status = document.getElementById('i_status').value;
+  const algo = document.getElementById('i_algo').value;
+  const desc = document.getElementById('i_desc').value;
+  const feel = document.getElementById('i_feel').value;
+  const audio = document.getElementById('i_audio_b64').value;
+
+  if(!card || !buffer || !algo || !desc || !feel) {
+    alert("请填完所有必填字段（声卡、算法、听感与纪要）");
+    return;
+  }
+
+  try {
+    logs.unshift({
+      id: Date.now(),
+      card, host, wdm, buffer, status, algo, desc, feel, audio
+    });
+    saveData();
+    render();
+    
+    // Clear audio file input to save space in next entries
+    document.getElementById('i_audio').value = "";
+    document.getElementById('i_audio_b64').value = "";
+    saveFormCache();
+  } catch(e) {
+    alert("❌ 存储失败！可能是因为附加的音频数据过大导致浏览器 LocalStorage 存储容量超出（通常上限为 5MB）。\n建议清空一些包含大文件的历史记录后重试。");
+    logs.shift(); // remove the failed item
+  }
+}
+
+function checkAuth() {
+  return new Promise((resolve) => {
+    const modal = document.getElementById('authModal');
+    const input = document.getElementById('authInput');
+    const btnCancel = document.getElementById('authCancel');
+    const btnOk = document.getElementById('authOk');
+    
+    modal.style.display = 'flex';
+    input.value = '';
+    setTimeout(() => input.focus(), 50);
+    
+    const cleanup = () => {
+      modal.style.display = 'none';
+      btnCancel.onclick = null;
+      btnOk.onclick = null;
+      input.onkeydown = null;
+    };
+    
+    btnCancel.onclick = () => {
+      cleanup();
+      resolve(null); // Cancel returns null
+    };
+    
+    const submit = () => {
+      const val = input.value;
+      cleanup();
+      if(val === 'asmrtop') resolve(true);
+      else resolve(false);
+    };
+    
+    btnOk.onclick = submit;
+    input.onkeydown = (e) => {
+      if(e.key === 'Enter') submit();
+      if(e.key === 'Escape') btnCancel.onclick();
+    };
+  });
+}
+
+async function removeEntry(id) {
+  const auth = await checkAuth();
+  if (auth === null) return;
+  if (!auth) { alert("密码错误，权限拒绝！"); return; }
+  logs = logs.filter(l => l.id !== id);
+  saveData();
+  render();
+}
+
+async function clearAll() {
+  const auth = await checkAuth();
+  if (auth === null) return;
+  if (!auth) { alert("密码错误，权限拒绝！"); return; }
+  if(confirm("确定要清空全部数据吗？这会导致前端数据彻底归零。")) {
+    logs = [];
+    saveData();
+    render();
+  }
+}
+
+function exportData() {
+  const data = JSON.stringify(logs, null, 2);
+  const blob = new Blob([data], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'asio_crossrate_logs.json';
+  a.click();
+}
+
+async function importData() {
+  const auth = await checkAuth();
+  if (auth === null) return;
+  if (!auth) { alert("密码错误，权限拒绝！"); return; }
+  const jsonStr = prompt("请安全黏贴 JSON 备份数据：");
+  if(jsonStr) {
+    try {
+      const p = JSON.parse(jsonStr);
+      if(Array.isArray(p)) {
+        logs = p;
+        saveData();
+        render();
+      } else {
+        alert("JSON 格式不正确");
+      }
+    } catch(e) {
+      alert("解析失败");
+    }
+  }
+}
+
+// Persist form inputs on refresh
+const formIds = ['i_card','i_host','i_wdm','i_buffer','i_status','i_algo','i_desc','i_feel','i_audio_b64'];
+
+function loadFormCache() {
+  const cache = localStorage.getItem('form_cache');
+  if (cache) {
+    try {
+      const d = JSON.parse(cache);
+      formIds.forEach(id => {
+        if (d[id] !== undefined) {
+          document.getElementById(id).value = d[id];
+        }
+      });
+    } catch(e) {}
+  }
+}
+
+function saveFormCache() {
+  const d = {};
+  formIds.forEach(id => {
+    d[id] = document.getElementById(id).value;
+  });
+  localStorage.setItem('form_cache', JSON.stringify(d));
+}
+
+function autoPredict() {
+  const host = parseInt(document.getElementById('i_host').value);
+  const wdmStr = document.getElementById('i_wdm').value;
+  let wdm = 48000;
+  if(wdmStr.includes('44.1kHz')) wdm = 44100;
+  if(wdmStr.includes('96kHz')) wdm = 96000;
+  if(wdmStr.includes('192kHz')) wdm = 192000;
+  
+  const bufferStr = document.getElementById('i_buffer').value;
+  const buf = parseInt(bufferStr);
+  
+  let algo = '自适应跨频位移演算 (Adaptive SRC)';
+  let st = 'pass';
+  let descObj = document.getElementById('i_desc');
+  let autoDesc = '';
+  
+  if (host === wdm) {
+    algo = 'Prefill Cushing 缓冲池 1:1 位对位直通 (0 SRC)';
+    st = 'pass';
+    autoDesc = '底层不产生任何拉伸插值，彻底抛弃丢包与咔哒声，实机极冻静谧。';
+  } else if (host === 96000 && wdm === 48000 || host === 88200 && wdm === 44100) {
+    algo = '2X 整数倍劈位直降截取 (Integer Div Downsample)';
+    st = 'pass';
+    autoDesc = '纯算术抽稀拦截，负担极小，稳定防杂音。';
+  } else if (host > wdm) {
+    algo = '高冗余降频浮点对向缓推 (Hi-to-Lo Soft SRC)';
+    if (buf < 128) {
+      st = 'warn';
+      autoDesc = '缓冲极小时的高负载抽轨可能会逼近算力界限，建议提高宿主缓冲。';
+    } else {
+      st = 'pass';
+      autoDesc = '由于目标通道带宽更窄，平滑压缩浮点游刃有余。';
+    }
+  } else if (host < wdm) {
+    algo = '强制填零强提拉伸矩阵 (Lo-to-Hi Forced Upsample)';
+    st = 'warn';
+    autoDesc = '由于采样必须从低位推向高位，算法不得不填充极多冗余伪格，存在失真或拉扯感风险，建议修改Windows底层对齐。';
+  }
+  
+  if ((host === 88200 && wdm === 48000) || (host === 192000 && wdm === 44100)) {
+    algo = '非整倍数极恶劣碎点切分 SRC矩阵';
+    st = 'fail';
+    autoDesc = '跨频倍数不整，导致宿主和通讯端口时钟打架。强算力损耗，且存在必然爆音断流的死区。';
+  }
+
+  document.getElementById('i_algo').value = algo;
+  document.getElementById('i_status').value = st;
+  
+  if (autoDesc && (descObj.value.trim() === '' || descObj.value.startsWith('【AI诊断】') || descObj.value.startsWith('关闭拉伸补偿后的极致稳定'))) {
+     descObj.value = '【AI诊断】' + autoDesc;
+  }
+  
+  saveFormCache();
+}
+
+// Add event listeners to input fields
+document.querySelectorAll('.form-panel input:not([type="file"])').forEach(el => {
+  el.addEventListener('input', saveFormCache);
+});
+document.querySelectorAll('.form-panel select').forEach(el => {
+  el.addEventListener('change', () => {
+    autoPredict();
+  });
+});
+
+document.getElementById('i_audio').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) {
+    document.getElementById('i_audio_b64').value = "";
+    return;
+  }
+  
+  // Strict file format restriction
+  const validExts = ['mp3', 'wav'];
+  const fileName = file.name.toLowerCase();
+  const ext = fileName.split('.').pop();
+  if (!validExts.includes(ext) && !file.type.includes('mpeg') && !file.type.includes('wav')) {
+    alert("⛔ 格式错误：为保证兼容性以及系统稳定，只能上传或挂载标准的 MP3 或 WAV 音频格式！");
+    e.target.value = "";
+    document.getElementById('i_audio_b64').value = "";
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+    document.getElementById('i_audio_b64').value = evt.target.result;
+    saveFormCache(); // Also cache the Base64 audio string just in case they refresh
+  };
+  reader.readAsDataURL(file);
+});
+
+// Init
+loadFormCache();
+loadData();
+</script>
+
+<!-- Auth Modal Element -->
+<div class="modal-overlay" id="authModal">
+  <div class="modal-box">
+    <h3>⚠️ 敏感操作身份器</h3>
+    <input type="password" id="authInput" placeholder="请输入操作密钥">
+    <div class="modal-btns">
+      <button class="btn-cancel" id="authCancel">取消挂起</button>
+      <button class="btn-ok" id="authOk">确认执行</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
