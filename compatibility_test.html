@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>ASIO Ultra V7 · 跨采样测试日志</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -203,12 +206,18 @@ const defaultLogs = [
 
 function loadData() {
   const d = localStorage.getItem('asio_test_logs');
+  let userLogs = [];
   if (d) {
-    logs = JSON.parse(d);
-  } else {
-    logs = [...defaultLogs];
-    saveData();
+    let localLogs = JSON.parse(d);
+    // 只保留用户在本地生成的日志 (基于时间戳生成的大于 1000000 的 ID)，
+    // 强制舍弃旧版的本地 defaultLogs，换取上方最新硬编码的 defaultLogs
+    userLogs = localLogs.filter(l => l.id > 1000000);
   }
+  
+  // 将最新的原生默认数据库和用户的本地留存合并（用户新增排在前面）
+  logs = [...userLogs, ...defaultLogs];
+  
+  saveData();
   render();
 }
 
