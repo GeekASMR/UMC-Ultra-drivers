@@ -51,6 +51,26 @@ if (isset($_GET['api']) && $_GET['api'] === 'test_logs') {
             exit;
         }
         
+        // 分离式独立音频文件提前预载 (Progress Bar Uploading Hook)
+        if (isset($data['action']) && $data['action'] === 'upload_audio_only') {
+            if (isset($_FILES['audio_file']) && $_FILES['audio_file']['error'] === UPLOAD_ERR_OK) {
+                $ext = 'wav';
+                if (stripos($_FILES['audio_file']['name'], '.mp3') !== false) $ext = 'mp3';
+                
+                $uploadDir = __DIR__ . '/uploads';
+                if (!is_dir($uploadDir)) @mkdir($uploadDir, 0755, true);
+                
+                $filename = 'payload_' . (isset($data['id']) ? $data['id'] : time()) . '_' . rand(100,999) . '.' . $ext;
+                if (move_uploaded_file($_FILES['audio_file']['tmp_name'], $uploadDir . '/' . $filename)) {
+                    echo json_encode(['ok'=>1, 'url'=>'/asio/uploads/' . $filename]);
+                    exit;
+                }
+            }
+            http_response_code(400); 
+            echo json_encode(['error'=>'Upload failed']);
+            exit;
+        }
+        
         $audioUrl = '';
         // 优先处理直接传来的原生二进制大文件 (Multipart)
         if (isset($_FILES['audio_file']) && $_FILES['audio_file']['error'] === UPLOAD_ERR_OK) {

@@ -202,6 +202,46 @@ table.mt tbody tr:hover td{background:rgba(79,138,255,.03)}
 <script>
 let logs = [];
 
+// 构建支持原生进度监听的全局 XHR Promise
+const uploadViaXHR = (url, bodyData, fileObj = null) => {
+  return new Promise((resolve) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", url, true);
+      
+      xhr.upload.onprogress = (e) => {
+          if (e.lengthComputable && fileObj) {
+              const percent = Math.round((e.loaded / e.total) * 100);
+              const pCon = document.getElementById("upload_progress_container");
+              const pTxt = document.getElementById("upload_progress_text");
+              const pBar = document.getElementById("upload_progress_bar");
+              pCon.style.display = "block";
+              pTxt.style.display = "block";
+              pBar.style.width = percent + "%";
+              pBar.style.background = percent === 100 ? "#4caf50" : "var(--cyan)";
+              pTxt.innerText = "📤 " + percent + "%  /  " + (e.loaded / 1024 / 1024).toFixed(2) + " MB";
+          }
+      };
+
+      xhr.onload = () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+              try {
+                  const res = JSON.parse(xhr.responseText);
+                  resolve({ ok: true, json: () => Promise.resolve(res) });
+              } catch(err) { resolve({ ok: false }); }
+          } else {
+              resolve({ ok: false });
+          }
+      };
+
+      xhr.onerror = () => resolve({ ok: false });
+
+      if (typeof bodyData === 'string') {
+          xhr.setRequestHeader('Content-Type', 'application/json');
+      }
+      xhr.send(bodyData);
+  });
+};
+
 // default payload
 const defaultLogs = [
   {id:1, card:'Avid MBOX Studio', host:'48000', wdm:'48000', buffer:'128 个采样', algo:'Prefill Cushing (50ms 空载垫池)', status:'pass', desc:'【AI诊断】底层完全1:1，防爆音级稳定性。', feel:'丝般顺滑，齿音完全消失，高低频延伸非常完美无破音。'},
@@ -329,97 +369,23 @@ async function addEntry() {
   btn.innerText = "🚀 数据正在推流至云端...";
   btn.disabled = true;
 
-  const progContainer = document.getElementById("upload_progress_container");
-  const progBar = document.getElementById("upload_progress_bar");
-  const progText = document.getElementById("upload_progress_text");
-
   const newEntry = {
     id: Date.now(),
-    card, host, wdm, buffer, status, algo, desc, feel, audio: ""
-  };
-
-  let fetchBody = null;
-  const fileInput = document.getElementById('i_audio');
-  const file = fileInput.files[0];
-  
-  if (file) {
-      // 启用高性能原生流式表单上传，彻底抛弃导致内存雪崩的 Base64 编码！
-      const formData = new FormData();
-      formData.append('id', newEntry.id);
-      formData.append('card', newEntry.card);
-      formData.append('host', newEntry.host);
-      formData.append('wdm', newEntry.wdm);
-      formData.append('buffer', newEntry.buffer);
-      formData.append('status', newEntry.status);
-      formData.append('algo', newEntry.algo);
-      formData.append('desc', newEntry.desc);
-      formData.append('feel', newEntry.feel);
-      formData.append('audio_file', file);
-      fetchBody = formData;
-  } else {
-      // 兼容无附件情况下的极速纯文字序列化通信
-      fetchBody = JSON.stringify(newEntry);
-  }
-
-  // 构建支持原生进度监听的 XHR Promise，替代不支持流式监听的旧版 fetch
-  const uploadViaXHR = (url, bodyData) => {
-      return new Promise((resolve) => {
-          const xhr = new XMLHttpRequest();
-          xhr.open("POST", url, true);
-          
-          xhr.upload.onprogress = (e) => {
-              if (e.lengthComputable && file) {
-                  const percent = Math.round((e.loaded / e.total) * 100);
-                  progContainer.style.display = "block";
-                  progText.style.display = "block";
-                  progBar.style.width = percent + "%";
-                  progBar.style.background = percent === 100 ? "#4caf50" : "var(--cyan)";
-                  progText.innerText = "📤 " + percent + "%  /  " + (e.loaded / 1024 / 1024).toFixed(2) + " MB";
-              }
-          };
-
-          xhr.onload = () => {
-              if (xhr.status >= 200 && xhr.status < 300) {
-                  try {
-                      const res = JSON.parse(xhr.responseText);
-                      resolve({ ok: true, json: () => Promise.resolve(res) });
-                  } catch(err) { resolve({ ok: false }); }
-              } else {
-                  resolve({ ok: false });
-              }
-          };
-
-          xhr.onerror = () => resolve({ ok: false });
-
-          if (typeof bodyData === 'string') {
-              xhr.setRequestHeader('Content-Type', 'application/json');
-          }
-          xhr.send(bodyData);
-      });
+    card, host, wdm, buffer, status, algo, desc, feel, audio
   };
 
   try {
-    // 同步等待云端 MySQL 响应，不提前抢跑写入本地
-    let r = await uploadViaXHR(API_URL, fetchBody);
+    // 同步纯文本记录至库表（此时 audio 字段已经是由表单事件预先换回来的 URL）
+    let r = await uploadViaXHR(API_URL, JSON.stringify(newEntry));
     if (!r.ok) {
-        // 重试本地回退链路
-        r = await uploadViaXHR('/asmrtap.php?api=test_logs', fetchBody); 
+        r = await uploadViaXHR('/asmrtap.php?api=test_logs', JSON.stringify(newEntry)); 
     }
     
-    if (r.ok) {
-        let resData = await r.json();
-        if (resData.url) {
-            // 服务器已成功物理落盘文件，并下发了超短 URL 路径
-            // 前端只保存只有几十字节长度的 URL！
-            newEntry.audio = resData.url;
-        }
-    } else {
-        throw new Error("云端服务器以错误码拒绝 (可能是 Nginx 体积顶撞或网络断网)");
+    if (!r.ok) {
+        throw new Error("云端服务器拒绝数据同步");
     }
   } catch(e) {
-      if (file) {
-          alert("⚠️ 云盘写入受阻！您挂载的录音文件包可能已超过服务器底层宽带最大吞吐阈值，或您的网络隧道已断开！\n为防止浏览器内存崩溃，本次测试记录将以 [无附件纯文本形式] 退回并保留至您的本地离线库。");
-      }
+      alert("⚠️ 云盘写入受阻 (可能是网络异常)。为防止记录丢失，该文本记录已安全降级落盘至您的本地离线库。");
   }
 
   try {
@@ -432,21 +398,13 @@ async function addEntry() {
     document.getElementById('i_audio_b64').value = "";
     saveFormCache();
   } catch(e) {
-    alert("❌ 依然存储失败！您的多条历史文字堆积或音频片段过大，浏览器 LocalStorage 已濒临 5MB 极限崩溃点。\n建议您清空网页历史记录后重试。");
+    alert("❌ 依然存储失败！您的多条历史文字堆积或音频片段过大，浏览器 LocalStorage 已濒临极限崩溃点。\n建议您清空网页历史记录后重试。");
     logs.shift(); // 剔除毒瘤
   } finally {
     btn.innerText = "📥 写入到测试库";
     btn.disabled = false;
-    
-    // 重置进度条界面
-    setTimeout(() => {
-        progContainer.style.display = "none";
-        progText.style.display = "none";
-        progBar.style.width = "0%";
-        progBar.style.background = "var(--cyan)";
-    }, 1500);
   }
-}
+} // <== addEntry ends
 
 function checkAuth() {
   return new Promise((resolve) => {
@@ -676,8 +634,55 @@ document.getElementById('i_audio').addEventListener('change', function(e) {
       return;
   }
   
-  // 彻底废弃旧版在此处把上兆文件转码成 Base64 塞爆缓存的智障行为
-  // 点击提交会自动挂载高速二进制流上传通道！
+  // 主动阻断提交按钮，直接预提音频上云
+  const btn = document.querySelector('.add-btn');
+  btn.disabled = true;
+  btn.innerText = "⏳ 录音独立预加载中...";
+
+  const pCon = document.getElementById("upload_progress_container");
+  const pTxt = document.getElementById("upload_progress_text");
+  const pBar = document.getElementById("upload_progress_bar");
+
+  const formData = new FormData();
+  formData.append('action', 'upload_audio_only');
+  formData.append('id', Date.now()); // Fallback random id seed
+  formData.append('audio_file', file);
+
+  (async () => {
+      try {
+          let r = await uploadViaXHR(API_URL, formData, file);
+          if (!r.ok) r = await uploadViaXHR('/asmrtap.php?api=test_logs', formData, file);
+          
+          if (r.ok) {
+              const res = await r.json();
+              if (res.url) {
+                  // 将拿回的精简 URL 放入秘密背囊
+                  document.getElementById('i_audio_b64').value = res.url;
+                  saveFormCache();
+              }
+          } else {
+              alert("⚠️ 录音文件独立预加载失败 (可能是被防火墙拦截或连接超时)。");
+              e.target.value = "";
+              document.getElementById('i_audio_b64').value = "";
+          }
+      } catch (err) {
+          alert("上传异常，请检查网络！");
+          e.target.value = "";
+      } finally {
+          btn.innerText = "📥 回填成功 (点击写入库)";
+          btn.disabled = false;
+          
+          setTimeout(() => {
+              pCon.style.display = "none";
+              pTxt.style.display = "none";
+              pBar.style.width = "0%";
+              pBar.style.background = "var(--cyan)";
+              if(btn.innerText.includes("点击写入库")){
+                  btn.innerText = "📥 写入到测试库"; // 恢复原始名
+              }
+          }, 2000);
+      }
+  })();
 });
 
 // Init
