@@ -38,7 +38,7 @@ public:
     AsmrtopIpcChannel() : m_hMap(NULL), m_buf(nullptr),
         m_readPos(0), m_readPosFrac(0.0), m_lastReadL(0.0f), m_lastReadR(0.0f),
         m_writePosFrac(0.0), m_lastWriteL(0.0f), m_lastWriteR(0.0f),
-        m_channelId(-1), m_callCount(0), m_firstCall(true),
+        m_channelId(-1), m_callCount(0), m_firstCall(true), m_prefillMode(true),
         m_lastSeenWritePos(0), m_driftCounter(0), m_lastOpenTry(0) {
         m_direction[0] = '\0';
     }
@@ -105,6 +105,7 @@ public:
         m_lastSeenWritePos = 0;
         m_callCount = 0;
         m_firstCall = true;
+        m_prefillMode = true;
         m_driftCounter = 0;
     }
 
@@ -191,53 +192,50 @@ public:
         uint32_t r = m_readPos;
         int32_t available = (int32_t)(w - r);
 
-        const int32_t LOW_TH  = 1024;   // Below this: stuff (slow down read)
-        const int32_t HIGH_TH = 8192;   // Above this: drop (speed up read)
-
-        // Gross overflow/underflow or first call after reset: start exactly at write head.
-        // We do NOT rewind to w - 4096 here because grabbing old memory causes repetitive trash bursting on idle channels.
-        // The leaky integrator will naturally and smoothly build up the safety cushion over time.
-        if (m_firstCall || available < 0 || available > 16384) {
-            r = w;
+        // Gross overflow/underflow or first call after reset: start exactly at write head
+        if (m_firstCall || available < 0 || available > 131000) {
+            r = w; // We don't rewind. We just start empty and let prefill handle the cushion!
             available = 0;
             m_firstCall = false;
             m_lastReadL = 0.0f;
             m_lastReadR = 0.0f;
+            m_prefillMode = true; // Enter prefill to build safe cushion
         }
 
-        // Determine how many ring samples to consume for this callback.
-        // Normally consume exactly numFrames. Adjust ±1 for drift compensation.
-        int samplesToConsume = numFrames;
-        if (available < LOW_TH && available > numFrames) {
-            // Buffer running low - stuff: drift into positive compensation (~0.05% shift)
-            m_driftCounter += numFrames;
-            if (m_driftCounter >= 2000) {
-                int drops = m_driftCounter / 2000;
-                samplesToConsume -= drops;
-                m_driftCounter %= 2000;
+        if (m_prefillMode) {
+            // Need at least 2400 samples (~50ms @ 48kHz) to absorb Windows 10ms bursty WDM writes
+            if (available < 2400) {
+                if (left)  memset(left,  0, numFrames * sizeof(float));
+                if (right) memset(right, 0, numFrames * sizeof(float));
+                return;
+            } else {
+                m_prefillMode = false;
             }
-        } else if (available > HIGH_TH) {
-            // Buffer growing - drop: drift into negative compensation
-            m_driftCounter -= numFrames;
-            if (m_driftCounter <= -2000) {
-                int adds = (-m_driftCounter) / 2000;
-                samplesToConsume += adds;
-                m_driftCounter = -((-m_driftCounter) % 2000);
+        }
+
+        if (available < numFrames) {
+            // Underrun! WDM starved us. Fade out the remainder and re-enter prefill mode!
+            for (int i = 0; i < numFrames; i++) {
+                m_lastReadL *= 0.95f;
+                m_lastReadR *= 0.95f;
+                if (left)  left[i]  = m_lastReadL;
+                if (right) right[i] = m_lastReadR;
+                if (fabsf(m_lastReadL) < 1e-7f) m_lastReadL = 0.0f;
+                if (fabsf(m_lastReadR) < 1e-7f) m_lastReadR = 0.0f;
             }
-        } else {
-            // Leaky Integrator: Gently decay back to 0 when healthy, preventing sudden jitters from erasing our drift record
-            if (m_driftCounter > 0) m_driftCounter--;
-            else if (m_driftCounter < 0) m_driftCounter++;
+            m_prefillMode = true; // Wait for buffer to pile back up to 50ms next time
+            return; // We do NOT advance the read pointer, so remaining valid samples are preserved for the next burst
         }
 
-        // Make sure we don't consume more than available
-        if (samplesToConsume > available) {
-            samplesToConsume = available;
+        // If buffer gets excessively huge (> 16384 = ~340ms lag), we must cleanly skip forward
+        if (available > 16384) {
+            // Skip directly to a 2400-sample cushion to instantly recover zero-latency sync!
+            r = w - 2400;
+            available = 2400;
         }
 
-        // Create a fast path for perfect sync (99% of calls)
-        if (samplesToConsume == numFrames && available >= numFrames && left && right) {
-            // Seamless AVX auto-vectorization block via memcpy
+        // Fast path for perfect sync
+        if (left && right) {
             uint32_t rIdx = r & IPC_RING_MASK;
             if (rIdx + numFrames <= IPC_RING_SIZE) {
                 memcpy(left, &m_buf->ringL[rIdx], numFrames * sizeof(float));
@@ -252,44 +250,9 @@ public:
             }
             m_lastReadL = left[numFrames - 1];
             m_lastReadR = right[numFrames - 1];
-        } else {
-            // Drift compensation slow-path
-            for (int i = 0; i < numFrames; i++) {
-                double srcIdx = (samplesToConsume == numFrames) ? (double)i : (double)i * samplesToConsume / numFrames;
-
-                int s = (int)srcIdx;
-                if (samplesToConsume <= 0) s = -1; 
-                else if (s >= samplesToConsume) s = samplesToConsume - 1;
-
-                if (s >= 0 && s < available) {
-                    float sL, sR;
-                    if (s + 1 < available && s + 1 < samplesToConsume) {
-                        float frac = (float)(srcIdx - s);
-                        uint32_t i0 = (r + s) & IPC_RING_MASK;
-                        uint32_t i1 = (r + s + 1) & IPC_RING_MASK;
-                        sL = m_buf->ringL[i0] + (m_buf->ringL[i1] - m_buf->ringL[i0]) * frac;
-                        sR = m_buf->ringR[i0] + (m_buf->ringR[i1] - m_buf->ringR[i0]) * frac;
-                    } else {
-                        uint32_t idx = (r + s) & IPC_RING_MASK;
-                        sL = m_buf->ringL[idx];
-                        sR = m_buf->ringR[idx];
-                    }
-                    if (left)  left[i]  = sL;
-                    if (right) right[i] = sR;
-                    m_lastReadL = sL;
-                    m_lastReadR = sR;
-                } else {
-                    m_lastReadL *= 0.95f;
-                    m_lastReadR *= 0.95f;
-                    if (left)  left[i]  = m_lastReadL;
-                    if (right) right[i] = m_lastReadR;
-                    if (fabsf(m_lastReadL) < 1e-7f) m_lastReadL = 0.0f;
-                    if (fabsf(m_lastReadR) < 1e-7f) m_lastReadR = 0.0f;
-                }
-            }
         }
 
-        r += samplesToConsume;
+        r += numFrames;
         m_readPos = r;
         m_buf->readPos.store(r, std::memory_order_release);
     }
@@ -320,7 +283,7 @@ public:
         int32_t available = (int32_t)(w - r);
 
         // Gross anomaly or first call after reset: snap strictly to write head
-        if (m_firstCall || available < 0 || available > 16384) {
+        if (m_firstCall || available < 0 || available > 131000) {
             r = w;
             available = 0;
             m_lastReadL = 0.0f;
@@ -328,6 +291,17 @@ public:
             m_readPos = r;
             m_readPosFrac = 0.0;
             m_firstCall = false;
+            m_prefillMode = true;
+        }
+
+        if (m_prefillMode) {
+            if (available < 2400) {
+                if (left)  memset(left,  0, numFrames * sizeof(float));
+                if (right) memset(right, 0, numFrames * sizeof(float));
+                return;
+            } else {
+                m_prefillMode = false;
+            }
         }
 
         if (available < srcNeeded) {
@@ -340,7 +314,13 @@ public:
                 if (fabsf(m_lastReadL) < 1e-7f) m_lastReadL = 0.0f;
                 if (fabsf(m_lastReadR) < 1e-7f) m_lastReadR = 0.0f;
             }
+            m_prefillMode = true; // Wait for safe cushion again
             return;
+        }
+
+        if (available > 16384) {
+            r = w - 2400;
+            available = 2400;
         }
 
         // Math optimization & Hoisted branch
@@ -467,6 +447,7 @@ private:
     char m_direction[16];
     int m_callCount;         // Counter for periodic health check
     bool m_firstCall;        // Force snap on first read after reset
+    bool m_prefillMode;      // Absorbs initial burst variations by padding zeros until a safe 50ms cushion builds
 
     // Stale shared memory detection (hot-switch fix)
     uint32_t m_lastSeenWritePos;  // Last observed writePos value
