@@ -88,8 +88,8 @@ static const AsioBrandTarget g_CurrentTarget = {
 };
 #elif defined(ASMRTOP_TARGET_AVID_MBOX)
 static const AsioBrandTarget g_CurrentTarget = {
-    "Avid MBOX Studio", "Avid MBOX Ultra By ASMRTOP", "{0AB6600B-1DD2-4E2D-B951-58FF785FBBA8}",
-    { 0x0AB6600B, 0x1DD2, 0x4E2D, { 0xB9, 0x51, 0x58, 0xFF, 0x78, 0x5F, 0xBB, 0xA8 } }
+    "Avid MBOX Studio", "Avid MBOX Ultra By ASMRTOP", "{A1B2C3D4-E5F6-7890-ABCD-EF1234560115}",
+    { 0xA1B2C3D4, 0xE5F6, 0x7890, { 0xAB, 0xCD, 0xEF, 0x12, 0x34, 0x56, 0x01, 0x15 } }
 };
 #else
 // Default Generic Fallback for Testing
