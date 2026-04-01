@@ -22,6 +22,8 @@
 #include <cstring>
 #include <cmath>
 #include <atomic>
+#include <xmmintrin.h>
+#include <pmmintrin.h>
 
 #define IPC_RING_SIZE 131072
 #define IPC_RING_MASK (IPC_RING_SIZE - 1)
@@ -189,6 +191,10 @@ public:
     // - Target buffer: ~4096 samples (~85ms @ 48kHz)
     // =========================================================================
     void readDirect(float* left, float* right, int numFrames) {
+        // Protect AMD CPU from explosive denormal/subnormal FPU stalls!
+        _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
+        _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
+
         validateOrReconnect();
         if (!m_buf && !tryOpen()) {
             if (left)  memset(left,  0, numFrames * sizeof(float));
@@ -272,7 +278,11 @@ public:
     // When srcRate == dstRate: zero-overhead passthrough to readDirect()
     // When srcRate != dstRate: linear interpolation SRC
     // =========================================================================
-    void readStereoAdaptive(float* left, float* right, int numFrames, double /*deprecated_srcRate*/, double dstRate) {
+    void readStereoAdaptive(float* left, float* right, int numFrames, double dstRate) {
+        // Protect AMD CPU from explosive denormal/subnormal FPU stalls!
+        _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
+        _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
+
         validateOrReconnect(); // !! VERY IMPORTANT BUGBIX !!
         if (!m_buf && !tryOpen()) {
             if (left)  memset(left,  0, numFrames * sizeof(float));
@@ -305,7 +315,12 @@ public:
             uint64_t qpcNow;
             QueryPerformanceCounter((LARGE_INTEGER*)&qpcNow);
             double elapsedSec = (double)(qpcNow - m_qpcLastV) / (double)m_qpcFreq;
-            if (elapsedSec >= 0.1 || m_wpVelocityCount == 2) { // Evaluate every 100ms or instantly!
+            
+            // AMD Ryzen CCX-hop QPC anomaly protection (防时空扭曲及暴死)
+            if (elapsedSec < 0.0 || elapsedSec > 2.0) {
+                m_qpcLastV = qpcNow;
+                m_wpVelocityStart = w;
+            } else if (elapsedSec >= 0.1 || m_wpVelocityCount == 2) { // Evaluate every 100ms or instantly!
                 double velocity = (double)(w - m_wpVelocityStart) / elapsedSec;
                 // Snap to standard rates if close
                 double standardRates[] = {44100.0, 48000.0, 88200.0, 96000.0, 176400.0, 192000.0, 384000.0};

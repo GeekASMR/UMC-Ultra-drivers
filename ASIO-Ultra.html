@@ -123,7 +123,7 @@ details.brand-sec[open] { animation: fadeIn 0.3s ease-out; }
       <tr><td style="white-space:nowrap">2934616533</td><td style="white-space:nowrap">九哥</td><td class="model" style="color:var(--cyan);white-space:nowrap">Presonus Quantum HD8</td><td><span style="color:var(--green);font-weight:600">✅ 协助实机提供 Presonus Quantum HD8 的测试验证日志，证实了高难度专业级新型声卡与 V7 代理基岩的极度稳定兼容。</span></td></tr>
       <tr><td style="white-space:nowrap">2676646215</td><td style="white-space:nowrap">寒寒</td><td class="model" style="color:var(--cyan);white-space:nowrap">Roland UA-1010</td><td><span style="color:var(--green);font-weight:600">✅ 提交了极为复杂的 Roland OCTA-CAPTURE 实机诊断，深度协作 V7 引擎破除了 Roland 极度严苛的内存安全隔离校验，彻底端掉了导致部分宿主挂载宕机的奇葩防线。</span></td></tr>
       <tr><td style="white-space:nowrap">2759281169</td><td style="white-space:nowrap">瑞鸣Rm</td><td class="model" style="color:var(--cyan);white-space:nowrap">Steinberg UR22C</td><td><span style="color:var(--green);font-weight:600">✅ 提供经典的雅马哈 Steinberg UR22C 系列测试支持流，协助验证并修正了 V7 引擎动态雷达上限锁区的深层数学 Bug，促成最终极致防挂死版。</span></td></tr>
-      <tr><td style="white-space:nowrap">2561430394</td><td style="white-space:nowrap">麻雀捏</td><td class="model" style="color:var(--cyan);white-space:nowrap">Presonus Studio 26c</td><td><span style="color:var(--green);font-weight:600">✅ 提供 Presonus Studio 26c 实战日志，协助确认了 V7.1.1 在多声卡环境下的强悍适应力。</span></td></tr>
+      <tr><td style="white-space:nowrap">2561430394</td><td style="white-space:nowrap">麻雀捏</td><td class="model" style="color:var(--cyan);white-space:nowrap">Presonus Studio 26c</td><td><span style="color:var(--green);font-weight:600">✅ 提供 Presonus Studio 26c 实战日志，帮助完善Presonus Studio 系列驱动。</span></td></tr>
     </tbody>
   </table>
 </div>
@@ -208,7 +208,7 @@ details.brand-sec[open] { animation: fadeIn 0.3s ease-out; }
   <table class="mt">
     <thead><tr><th>系列</th><th>型号</th><th>通道 (I/O)</th><th>是否实机验证</th><th>架构兼容状态</th></tr></thead>
     <tbody>
-      <tr><td>UR-C</td><td class="model">UR22C</td><td>2×2</td><td><span style="color:var(--cyan)">💻 离线沙盒驱动测通</span></td><td><span class="stars s5">★★★★★</span></td></tr>
+      <tr class="hl-real"><td>UR-C</td><td class="model">UR22C</td><td>2×2</td><td><span style="color:var(--green);font-weight:700">✅ 实体硬件测试通过</span></td><td><span class="stars s5">★★★★★</span></td></tr>
       <tr><td>UR-C</td><td class="model">UR24C / UR44C</td><td>至 6×4</td><td><span style="color:var(--cyan)">💻 COM标识逆向关联测通</span></td><td><span class="stars s4">★★★★☆</span></td></tr>
       <tr><td>AG</td><td class="model">AG03 / AG06 (MK2)</td><td>—</td><td><span style="color:var(--cyan)">💻 理论推演可完美劫持</span></td><td><span class="stars s4">★★★★☆</span></td></tr>
       <tr><td>UR-C</td><td class="model">UR816C</td><td>16×8</td><td><span style="color:var(--cyan)">💻 多轨道沙盒理论推演</span></td><td><span class="stars s3">★★★☆☆</span></td></tr>
@@ -230,7 +230,7 @@ details.brand-sec[open] { animation: fadeIn 0.3s ease-out; }
   <table class="mt">
     <thead><tr><th>系列</th><th>型号</th><th>通道接口核心</th><th>是否实机验证</th><th>架构兼容状态</th></tr></thead>
     <tbody>
-      <tr><td>Studio USB</td><td class="model">Studio 24c / 26c / 68c</td><td>PaeStudioUsbasio_x64.dll</td><td><span style="color:var(--purple);font-weight:600">🧪 底层沙盒剥离重构过检</span></td><td><span class="stars s4">★★★★☆</span></td></tr>
+      <tr class="hl-real"><td>Studio USB</td><td class="model">Studio 24c / 26c / 68c</td><td>PaeStudioUsbasio_x64.dll</td><td><span style="color:var(--green);font-weight:700">✅ 实体硬件测试通过</span></td><td><span class="stars s5">★★★★★</span></td></tr>
       <tr><td>AudioBox</td><td class="model">AudioBox USB 96 / iTwo</td><td>paeusbaudioasio_x64.dll</td><td><span style="color:var(--purple);font-weight:600">🧪 驱动沙盒挂载无误</span></td><td><span class="stars s4">★★★★☆</span></td></tr>
       <tr><td>ioStation</td><td class="model">ioStation 24c</td><td>Pae_ioStationasio_x64.dll</td><td><span style="color:var(--purple);font-weight:600">🧪 驱动沙盒挂载无误</span></td><td><span class="stars s4">★★★★☆</span></td></tr>
       <tr><td>StudioLive</td><td class="model">StudioLive AR系列等</td><td>PaeStudioLiveARasio_x64.dll</td><td><span style="color:var(--cyan)">💻 依赖同源 PAE 体系</span></td><td><span class="stars s4">★★★★☆</span></td></tr>
@@ -253,7 +253,7 @@ details.brand-sec[open] { animation: fadeIn 0.3s ease-out; }
     <thead><tr><th>系列</th><th>型号</th><th>通道接口核心</th><th>是否实机验证</th><th>架构兼容状态</th></tr></thead>
     <tbody>
       <tr><td>Quantum</td><td class="model">Quantum LT2 / LT4</td><td>Fender PAE 通用核心</td><td><span style="color:var(--purple);font-weight:600">🧪 V7 组合靶向专供识别库强力寻址加载通关</span></td><td><span class="stars s5">★★★★★</span></td></tr>
-      <tr><td>Quantum HD</td><td class="model">Quantum HD 系列</td><td>高度保密 DSP + Fender 控制台</td><td><span style="color:var(--cyan)">💻 V7 基于PAE核心演化引擎智能接管推演</span></td><td><span class="stars s4">★★★★☆</span></td></tr>
+      <tr class="hl-real"><td>Quantum HD</td><td class="model">Quantum HD 系列</td><td>高度保密 DSP + Fender 控制台</td><td><span style="color:var(--green);font-weight:700">✅ 实体硬件测试通过</span></td><td><span class="stars s5">★★★★★</span></td></tr>
     </tbody>
   </table>
 </details>
@@ -354,7 +354,7 @@ details.brand-sec[open] { animation: fadeIn 0.3s ease-out; }
   <table class="mt">
     <thead><tr><th>系列</th><th>型号</th><th>通道 (I/O)</th><th>是否实机验证</th><th>架构兼容状态</th></tr></thead>
     <tbody>
-      <tr><td>OCTA-CAPTURE</td><td class="model">UA-1010</td><td>10×10</td><td><span style="color:var(--purple);font-weight:600">🧪 核心 COM 防御锁攻破通过</span></td><td><span class="stars s5">★★★★★</span></td></tr>
+      <tr class="hl-real"><td>OCTA-CAPTURE</td><td class="model">UA-1010</td><td>10×10</td><td><span style="color:var(--green);font-weight:700">✅ 实体硬件测试通过</span></td><td><span class="stars s5">★★★★★</span></td></tr>
       <tr><td>STUDIO-CAPTURE</td><td class="model">UA-1610</td><td>16×10</td><td><span style="color:var(--cyan)">💻 同核驱动矩阵推演通过</span></td><td><span class="stars s4">★★★★☆</span></td></tr>
     </tbody>
   </table>

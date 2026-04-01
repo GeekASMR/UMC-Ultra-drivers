@@ -172,7 +172,7 @@ public:
             
             if (playChannels[p].isOpen()) {
                 // Read from virtual speaker ring buffer
-                playChannels[p].readStereoAdaptive(outL[p], outR[p], bufSize, 48000.0, 48000.0);
+                playChannels[p].readStereoAdaptive(outL[p], outR[p], bufSize, 48000.0);
                 
                 // Convert float → write to DMA output buffers
                 if (dmaOutL) AudioBuffer::convertFloat32ToInt32(outL[p], dmaOutL, bufSize);

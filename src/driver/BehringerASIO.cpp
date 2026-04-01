@@ -631,7 +631,7 @@ void BehringerASIO::onBufferSwitch_Read(long bufferIndex) {
         if (m_vrtInProxies[pair * 2 + 1]) vrtR = (float*)m_vrtInProxies[pair * 2 + 1]->original.buffers[bufferIndex];
         
         if (vrtL || vrtR) {
-            m_playIpc[pair].readStereoAdaptive(vrtL, vrtR, m_bufferSize, 48000.0, m_sampleRate);
+            m_playIpc[pair].readStereoAdaptive(vrtL, vrtR, m_bufferSize, m_sampleRate);
         }
     }
     
