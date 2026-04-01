@@ -206,16 +206,19 @@ const defaultLogs = [
 
 function loadData() {
   const d = localStorage.getItem('asio_test_logs');
+  let deletedIds = JSON.parse(localStorage.getItem('deleted_ids') || '[]');
   let userLogs = [];
+  
   if (d) {
     let localLogs = JSON.parse(d);
-    // 只保留用户在本地生成的日志 (基于时间戳生成的大于 1000000 的 ID)，
-    // 强制舍弃旧版的本地 defaultLogs，换取上方最新硬编码的 defaultLogs
-    userLogs = localLogs.filter(l => l.id > 1000000);
+    // 过滤掉所有已删除的元素
+    userLogs = localLogs.filter(l => l.id > 1000000 && !deletedIds.includes(l.id));
   }
   
+  let activeDefaults = defaultLogs.filter(l => !deletedIds.includes(l.id));
+  
   // 将最新的原生默认数据库和用户的本地留存合并（用户新增排在前面）
-  logs = [...userLogs, ...defaultLogs];
+  logs = [...userLogs, ...activeDefaults];
   
   saveData();
   render();
@@ -352,7 +355,15 @@ async function removeEntry(id) {
   const auth = await checkAuth();
   if (auth === null) return;
   if (!auth) { alert("密码错误，权限拒绝！"); return; }
+  
   logs = logs.filter(l => l.id !== id);
+  
+  let deletedIds = JSON.parse(localStorage.getItem('deleted_ids') || '[]');
+  if (!deletedIds.includes(id)) {
+    deletedIds.push(id);
+    localStorage.setItem('deleted_ids', JSON.stringify(deletedIds));
+  }
+  
   saveData();
   render();
 }
@@ -361,7 +372,15 @@ async function clearAll() {
   const auth = await checkAuth();
   if (auth === null) return;
   if (!auth) { alert("密码错误，权限拒绝！"); return; }
-  if(confirm("确定要清空全部数据吗？这会导致前端数据彻底归零。")) {
+  if(confirm("确定要彻底抹除列表上的全部数据吗？(这只会在本地隐藏数据，给您一个干净的面板)")) {
+    
+    // 将目前屏幕上的全部 id 打入删除冷宫
+    let deletedIds = JSON.parse(localStorage.getItem('deleted_ids') || '[]');
+    logs.forEach(l => {
+      if (!deletedIds.includes(l.id)) deletedIds.push(l.id);
+    });
+    localStorage.setItem('deleted_ids', JSON.stringify(deletedIds));
+    
     logs = [];
     saveData();
     render();
