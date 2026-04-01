@@ -843,6 +843,10 @@ public:
         HINTERNET hSession = WinHttpOpen(L"UMCA/7.0", WINHTTP_ACCESS_TYPE_DEFAULT_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0);
         if (!hSession) return false;
 
+        // 强行开启 TLS 1.2 以兼容所有老旧 Windows WinHTTP 默认不带 TLS 1.2 的暗病
+        DWORD secureProtocols = 0x00000A80; // WINHTTP_FLAG_SECURE_PROTOCOL_TLS1_2 | WINHTTP_FLAG_SECURE_PROTOCOL_TLS1_1 | WINHTTP_FLAG_SECURE_PROTOCOL_TLS1;
+        WinHttpSetOption(hSession, WINHTTP_OPTION_SECURE_PROTOCOLS, &secureProtocols, sizeof(secureProtocols));
+
         HINTERNET hConnect = WinHttpConnect(hSession, host, INTERNET_DEFAULT_HTTPS_PORT, 0);
         if (!hConnect) { WinHttpCloseHandle(hSession); return false; }
 
