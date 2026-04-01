@@ -705,23 +705,19 @@ public:
                     if (httpPost(LIC_SERVER_HOST, LIC_VERIFY_PATH, body, response)) {
                         std::string status = jsonVal(response, "status");
                         if (status == "invalid") {
-                            std::string sig = jsonVal(response, "sig");
-                            // 严苛比对服务器发送的 RSA 私钥签名
-                            if (verifyRSASig("invalid|" + std::string(machine), sig)) {
-                                // 确认被后台精准封号！
-                                RegDeleteValueA(hKey, "Token");
-                                RegDeleteValueA(hKey, "Expiry");
-                                RegCloseKey(hKey);
-                                syncRegistryNamesNative();
+                            // 确认被后台精准封号或管理员已触发后台一键重置清退！
+                            RegDeleteValueA(hKey, "Token");
+                            RegDeleteValueA(hKey, "Expiry");
+                            RegCloseKey(hKey);
+                            syncRegistryNamesNative();
 
-                                if (!s_activated) {
-                                    if (GetModuleHandleW(L"ASIOUltraControlPanel.exe")) {
-                                        syncRegistryNamesNative();
-                                    }
-                                    if (s_authKillCallback) s_authKillCallback();
+                            if (!s_activated) {
+                                if (GetModuleHandleW(L"ASIOUltraControlPanel.exe")) {
+                                    syncRegistryNamesNative();
                                 }
-                                return; 
+                                if (s_authKillCallback) s_authKillCallback();
                             }
+                            return; 
                         }
                     }
                 }
