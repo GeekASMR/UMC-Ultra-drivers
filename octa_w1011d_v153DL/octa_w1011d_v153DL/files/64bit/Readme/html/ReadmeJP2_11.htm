@@ -1,0 +1,633 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN">
+<!-- saved from url=(0024)http://www.roland.co.jp/ -->
+<HTML lang="ja">
+<HEAD>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>README_JP - OCTA-CAPTURE Driver Ver.1.5.3 for Windows&reg; 11</TITLE>
+<STYLE type="text/css">
+<!--
+BODY	{background-color: #FFFFFF;	color: #000000;}
+DL	{margin-left: 15pt;}
+DT	{font-weight: bold;	margin-bottom: 5pt;}
+DT.FN	{font-weight: normal;	margin-bottom: 0pt;}
+DD.FS	{font-size: smaller;}
+OL.FS	{font-size: smaller;}
+LI.OL	{margin-bottom: 15pt;}
+TABLE	{margin-top: 3pt;	margin-bottom: 5pt;}
+TD	{vertical-align: top;	font-size: smaller;}
+TH	{vertical-align: middle;	font-size: smaller;}
+H3	{color: #000080;}
+-->
+</STYLE>
+</HEAD>
+<BODY>
+
+<H2>OCTA-CAPTURE Driver Ver.1.5.3 for Windows&reg; 11</H2>
+
+
+<TABLE><TR><TD>※</TD><TD>このドライバに関するファイルの内容その他を、ローランド株式会社（「ローランド」）の許諾なく改変、複製、配布、転載することは禁止します。またファイルの内容については、プログラム改良の為予告なく変更されることがあります。</TD></TR></TABLE>
+
+<TABLE cellspacing="0">
+	<TR><TD>※</TD><TD>	Microsoft、Windows は、米国 Microsoft Corporation の米国およびその他の国における登録商標です。</TD></TR>
+	<TR><TD>※</TD><TD>ASIO は独国 Steinberg Media Technologies GmbH の商標およびソフトウェアです。</TD></TR>
+	<TR><TD>※</TD><TD>文中記載のその他の会社名及び製品名は、各社の商標または登録商標です。</TD></TR>
+</TABLE>
+
+
+<P>
+	最新の情報については、ローランドのサポート・ページをご覧ください。<BR>
+<a href="https://www.roland.com/jp/support" target="_blank">https://www.roland.com/jp/support</a>
+</P>
+<HR>
+
+<H2><A name="anchor0000">Windows 11対応ドライバについて</A></H2>
+
+<P>
+<font color=red><strong><u>OCTA-CAPTURE 用Windows&reg; 11 対応ドライバは、OCTA-CAPTURE をコンピューターに接続すると、インターネットから自動的にダウンロードされます。</u></strong></font><BR>
+
+<UL><LI>ASIO(Steinberg Audio Stream I/O Interface) 2.0 にも対応しています。</LI></UL>
+
+
+
+
+
+	
+	
+  <TABLE><TR><TD>※</TD><TD>OCTA-CAPTURE システム・プログラム Ver.1.5.0 以降と合わせてお使いください。</TD></TR></TABLE>
+
+<TABLE><TR><TD>※</TD><TD>タッチ対応 PC では、文中の「クリック」を「タップ」に、「右クリック」を「長押し」に読み替えて操作してください。</TD></TR></TABLE>
+</P>
+
+<H3><A name="anchor0030">動作条件</A></H3>
+
+
+<DL>
+  <DT>対応 OS</DT>
+
+	<DD>Microsoft&reg; Windows&reg; 11</DD>
+	<DD>&nbsp;</DD>
+
+  <DT>対応パソコン</DT>
+    <DD>USB ポートを装備したWindows対応パソコン
+    </DD>
+
+<BLOCKQUOTE><TABLE>
+  <TR><TD>※</TD><TD>ARMベースのPCには対応していません。</TD></TR>
+  <TR><TD>※</TD><TD>仮想Windows環境ではお使いいただけません。</TD></TR>
+  <TR><TD>※</TD><TD>Mac 上で動作している Windows はサポート対象外となります。</TD></TR>
+</TABLE></BLOCKQUOTE>
+
+
+
+  <DT>その他</DT>
+    <DD>インターネット接続環境
+      <TABLE><TR><TD>※</TD><TD>ドライバのダウンロードに必要です。</TD></TR></TABLE>
+    </DD>
+</DL>
+
+<H3><A name="anchor0040">制限事項および注意事項</A></H3>
+<UL>
+	<LI>ご使用になるコンピューターの性能や設計仕様、および、ご使用になるアプリケーションやその使い方によっては、音切れなどが発生する場合があります。</LI>
+	<LI>スリープ状態からの復帰後、OCTA-CAPTURE が正しく動作しない場合は、使用しているアプリケーションをすべて終了し、OCTA-CAPTURE の電源を入れなおしてください。</LI>
+	<LI>OCTA-CAPTURE を使用中に USB ケーブルの抜き差しを行ったり、OCTA-CAPTURE の電源を入れなおしたりすると、正しく動作しなくなる場合があります。このような場合は、一度 OCTA-CAPTURE を使用しているアプリケーションをすべて終了し、OCTA-CAPTURE の電源を入れなおしてください。</LI>
+	<LI>OCTA-CAPTUREを使用中に、他のUSB機器（USBメモリなど）の抜き差しを行ったり、他のUSB機器の電源を入／切すると、再生／録音で音切れなどが発生する場合があります。</LI>
+	<LI>OCTA-CAPTUREとUSB接続のハードディスクを同時に使用した場合、十分な性能を得られない場合があります。再生／録音するオーディオ・データの保存先に、USB接続のハードディスクを使用しないでください。</LI>
+</UL>
+
+
+<HR>
+
+
+<H2><A name="anchor0100">インストールする</A></H2>
+
+<TABLE>
+	
+
+
+  <TR><TD>※</TD><TD>ドライバを再インストールする場合は、「<A href="#anchor0400">再インストールするには</A>」を参照してください。</TD></TR>
+</TABLE>
+
+<OL>
+  <LI class="OL">キーボード、マウスを除く、すべてのUSB機器をはずした状態で Windows を起動します。</LI>
+  <LI class="OL">コンピューターがインターネットに接続していることを確認します。</LI>
+  <LI class="OL">起動しているアプリケーションを終了します。</LI>
+  <LI class="OL">
+    OCTA-CAPTURE の電源を入れ、コンピューターと USB ケーブルで接続します。
+	<BR>
+    自動的にドライバのインストールが行われます。</LI>
+  <LI class="OL">数分後、スタート・ボタンをクリックし、「すべてのアプリ」をクリックします。
+  <LI class="OL">Roland フォルダを開き、「OCTA-CAPTURE」アイコンが表示されていれば、インストールは完了です。</LI>
+    <TABLE>
+    <TR><TD>※</TD><TD>通常、ドライバのインストールは、数分で完了します。ただし、インターネットの接続状態や、その他のデバイスがインストール中の場合などは、10分程度かかる場合があります。</TD></TR>
+    <TR><TD>※</TD><TD>OCTA-CAPTURE を接続後、10分以上経っても使用できない場合は、何らかの問題が発生している可能性があります。「<A href="#anchor0600">トラブルシューティング</A>」を参照してください。</TD></TR>
+    </TABLE>
+</OL>
+
+<HR>
+
+
+<H2><A name="anchor0200">お使いになる前に</A></H2>
+
+<H3><A name="anchor0220">アプリケーションの入出力デバイス設定</A></H3>
+
+<P>各アプリケーションを最適なパフォーマンスでお使いいただくために、以下を参照してアプリケーションの入出力デバイスを設定してください（設定方法については、アプリケーションの取扱説明書などを参照してください）。</P>
+
+<TABLE>
+  <TR><TD>※</TD><TD>OCTA-CAPTURE とアプリケーションのサンプリング周波数の設定が一致していることをご確認ください。設定が異なると、エラーメッセージが表示されたり、正しく録音・再生できない場合があります。</TD></TR>
+  <TR><TD>※</TD><TD>アプリケーションのデバイス設定で OCTA-CAPTURE のデバイスが選択できない場合は、何らかの問題が発生している可能性があります。「<A href="#anchor0600">トラブルシューティング</A>」を参照してください。</TD></TR>
+</TABLE>
+
+<H4>オーディオ再生／録音デバイス</H4>
+	<TABLE><TR><TD>※</TD><TD>192kHz 使用時は、4In / 4Out になります。残りのチャンネルは、使用できません（無音になります）。</TD></TR></TABLE>
+
+<DL>
+<DT class="FN">[再生デバイス]</DT>
+		<DD>1-2 (OCTA-CAPTURE)</DD>
+	<DD>3-4 (OCTA-CAPTURE)</DD>
+	<DD>5-6 (OCTA-CAPTURE)</DD>
+	<DD>7-8 (OCTA-CAPTURE)</DD>
+	<DD>9-10 (OCTA-CAPTURE)</DD>
+  <DD>&nbsp;</DD>
+
+<DT class="FN">[録音デバイス]</DT>
+		<DD>1-2 (OCTA-CAPTURE)</DD>
+	<DD>3-4 (OCTA-CAPTURE)</DD>
+	<DD>5-6 (OCTA-CAPTURE)</DD>
+	<DD>7-8 (OCTA-CAPTURE)</DD>
+	<DD>9-10 (OCTA-CAPTURE)</DD>
+	<DD>MAIN (OCTA-CAPTURE)</DD>
+  <DD>&nbsp;</DD>
+</DL>
+
+<H4>Windows アプリケーションで使用する再生／録音デバイスの設定</H4>
+<P>
+OCTA-CAPTURE を Windows アプリケーションで使用するための設定をします。
+<TABLE><TR><TD>※</TD><TD>アプリケーションによっては、個別に再生／録音デバイスを設定できる場合があります。</TD></TR></TABLE>
+</P>
+<OL>
+  <LI class="OL">スタート・ボタンをクリックし、「設定」をクリックします。</LI>
+  <LI class="OL">「システム」、「サウンド」の順にクリックします。</LI>
+  <LI class="OL">「出力」で、 OCTA-CAPTURE の「<B>1-2</B>」など、再生に使用するデバイスを選択します。<BR>「入力」で、 OCTA-CAPTURE の「<B>1-2</B>」など、録音に使用するデバイスを選択します。
+    <TABLE>
+	<TR><TD>※</TD><TD>上記のデバイスが選択できない場合は、何らかの問題が発生している可能性があります。 「<A href="#anchor0600">トラブルシューティング</A>」を参照してください。</TD></TR>
+	</TABLE></LI>
+  <LI class="OL">「設定」ダイアログを閉じます。</LI>
+</OL>
+
+<H4>ASIO 対応アプリケーションのデバイス設定</H4>
+<P>ASIO 対応アプリケーションで OCTA-CAPTURE を使用する場合、アプリケーションの ASIO の設定で「<B>OCTA-CAPTURE</B>」を選択してください。</P>
+<TABLE>
+    <TR><TD>※</TD><TD>オーディオのループ発振や二重のモニタリングを防ぐため、アプリケーションのモニタリングはオフ、または ASIO Direct Monitorを使用する設定でお使いください。</TD></TR>
+    <TR><TD>※</TD><TD>ASIO で OCTA-CAPTURE を使用中には、アプリケーションで Microsoft GS Wavetable Synth を使わない設定にすることをおすすめいたします。（負荷低減、ドライバのオーディオ入出力のバッファ・サイズ変更時の利便性のため）</TD></TR>
+</TABLE>
+
+<H4>MIDI入出力デバイス</H4>
+<TABLE><TR><TD>※</TD><TD>Windows Media Playerでは、OCTA-CAPTURE のMIDI入出力デバイスを使用することはできません。<BR>MIDI対応アプリケーションで以下のデバイスを選択してお使いください。</TD></TR></TABLE>
+
+<DL>
+<DT class="FN">[MIDI OUT デバイス]</DT>
+		<DD>MIDI (OCTA-CAPTURE)</DD>
+	<DD>CTRL (OCTA-CAPTURE)</DD>
+	<DD>&nbsp;</DD>
+
+<DT class="FN">[MIDI IN デバイス]</DT>
+		<DD>MIDI (OCTA-CAPTURE)</DD>
+	<DD>CTRL (OCTA-CAPTURE)
+	</DD>
+	<DD>&nbsp;</DD>
+
+</DL>
+
+
+<H3><A name="anchor0250">READMEファイルを参照する</A></H3>
+ドライバのインストールが完了すると、以下の手順で READMEファイル（このドキュメント）を参照することができます。<BR>ドライバの設定方法や、使用上のトラブルに関する解決策など参照することができます。
+<OL>
+  <LI class="OL">スタート・ボタンをクリックし、「すべてのアプリ」をクリックします。 
+  <LI class="OL">Roland フォルダを開き、「OCTA-CAPTURE Readme」をクリックします。</LI>
+</OL>
+
+<HR>
+
+<H2><A name="anchor0350">OCTA-CAPTURE Control Panel</A></H2>
+<P>OCTA-CAPTURE Control Panel は、OCTA-CAPTURE 内部のプリアンプ、4 系統のダイレクト・ミキサーとパッチ・ベイをコントロールします。</P>
+
+<H3><A name="anchor0360">OCTA-CAPTURE Control Panelを起動する</A></H3>
+<OL>
+  <LI class="OL">  スタート・ボタンをクリックし、「すべてのアプリ」をクリックします。 </LI>
+<LI class="OL">
+  Roland フォルダを開き、「OCTA-CAPTURE」をクリックします。
+</LI>
+  <LI class="OL">「<B>OCTA-CAPTURE Control Panel</B>」が表示されます。</LI>
+</OL>
+
+<H3><A name="anchor0370">OCTA-CAPTURE Control Panelの使い方</A></H3>
+<P>「<A href="ReadmeJP3.htm">OCTA-CAPTURE Control Panelの使い方</A>」を参照してください。</P>
+
+
+
+<H3><A name="anchor0310">ドライバの設定を変更／確認するには</A></H3>
+
+<OL>
+
+  <LI class="OL">「OCTA-CAPTURE Control Panel」を起動します。</LI>
+  <LI class="OL">ドライバ・メニューの「ドライバの設定...」を選択します。<BR>「<B>OCTA-CAPTURE Driver の設定</B>」ダイアログ・ボックスが表示されます。
+    <TABLE><TR><TD>※</TD><TD>設定項目の詳細については、「<A href="#anchor0320">設定ダイアログ・ボックスの項目について</A>」を参照してください。</TD></TR></TABLE>
+  </LI>
+</OL>
+
+<H3><A name="anchor0320">設定ダイアログ・ボックスの項目について</A></H3>
+
+<DL>
+		<DT>デバイス選択</DT>
+		<DD>OCTA-CAPTURE を2 台接続したときに、どちら側のOCTA-CAPTURE の設定を表示するかを切り替えます。<BR>
+    	</DD>
+	<BR>
+	<DT>SAMPLE RATE</DT>
+	<DD>現在のサンプルレートを表示します。
+		<BR>周波数を変更する場合は、メニューから目的の周波数を選択します。
+      <TABLE>
+      <TR><TD>※</TD><TD>サンプリング周波数が切り替わったとき、小さなPOPノイズが乗ることがありますが、故障ではありません。</TD></TR>
+      </TABLE>
+    </DD>
+
+	<DT>CLOCK</DT>
+	<DD>現在のクロック・ソースを表示します。 </DD>
+	<BLOCKQUOTE>
+	<TABLE border="1" cellspacing="0" bordercolordark="white" bordercolorlight="black">
+	<TR><TD>INTERNAL</TD>
+    <TD>内部クロックで動作しています。</TD>
+    </TR>
+	<TR><TD>EXTERNAL</TD>
+    <TD>デジタル入力に接続された機器に同期して動作しています。 <BR>
+    	※入力されたデジタル信号の周波数も表示されます。</TD>
+    </TR>
+    </TABLE>
+    </BLOCKQUOTE>
+
+  <DT>オーディオ入出力のバッファ・サイズ</DT>
+    <DD>オーディオ入出力のバッファサイズを調整することができます（初期設定は、左から6番目の位置です）。</DD>
+<DD>バッファ・サイズを小さくすると、レイテンシーが小さくなり、リアルタイム性が向上しますが、コンピューターの処理能力や曲データの負荷によっては、録音・再生に音切れなどが発生しやすくなります。<BR>バッファ・サイズを大きくすると、レイテンシーは大きくなりますが、オーディオ転送が安定し、音切れなどが起こりにくくなります。</DD>
+<DD>一般に、ソフトシンセをリアルタイムで演奏したり、DAWソフトウェアでオーディオ入力をスルーさせてモニターする場合などには、リアルタイム性をあげるため、バッファサイズを小さくします。<BR>逆にトラック数が多く負荷の高い曲データの録音や再生には、音切れなどを防ぐため、バッファサイズを大きくします。</DD>
+<DD>目的に応じてバッファサイズを変更し、音切れなどのトラブルが発生しないよう、リアルタイム性とオーディオ転送の安定性のバランスを調整してください。
+      <P><FONT size="-1">※注意！<BR>オーディオ機器のテスト機能を持ったアプリケーションをお使いの場合は、バッファ・サイズの変更後、そのテスト機能を実行してください。</FONT></P>
+  <DT>ASIOバッファ・サイズ</DT>
+    <DD>ASIOアプリケーションで設定できるバッファ・サイズです。
+    <DD>&nbsp;</DD>
+
+
+  <DT>「ASIO Direct Monitor を使う」チェック・ボックス</DT>
+    <DD>ASIO対応アプリケーションで ASIO Direct Monitor 機能をご利用になる場合にチェックを入れてください。</DD>
+    <DD>&nbsp;</DD>
+
+
+	<DT>「低レイテンシー・モード」チェックボックス</DT>
+	<DD>ASIO ドライバのレイテンシーをより小さくします。
+	<TABLE>
+		<TR><TD>※</TD><TD>再生／録音ができない場合や音切れが発生する場合はチェックをはずして、「オーディオ入出力のバッファ・サイズ」を大きくしてください。</TD></TR>
+		<TR><TD>※</TD><TD>2台のOCTA-CAPTURE (VS EXPAND) を使用している時は、この設定は無効になります。</TD></TR>
+	</TABLE>
+	</DD>
+
+		<DT>「VS EXPAND」チェックボックス</DT>
+    <DD>2台のOCTA-CAPTUREを使用する場合に、チェックを入れます。<BR>
+        チェックを入れると接続の状態が表示されます。<BR>
+        1台で使用している場合は、何も表示されません。<BR>
+        詳しくは、OCTA-CAPTUREの取扱説明書をご覧ください。</DD>
+    <DD>&nbsp;</DD>
+
+
+
+
+
+	<DT>「ASIOの周波数と合わせる」チェック・ボックス</DT>
+	<DD>Windowsサウンド(MME, DirectSound, WASAPI等)の周波数をASIOの周波数と一致させます。
+	ASIO対応アプリケーションと、メディア プレーヤーなどのWindowsサウンド対応 アプリケーションを同時に使用する場合にチェックを入れてください。<BR>
+	</DD>
+	
+	<DD>&nbsp;</DD>
+
+  <DT>「初期値に戻す」ボタン</DT>
+    <DD>設定を初期値に戻します。</DD>
+    <DD>&nbsp;</DD>
+
+  <DT>「README を表示」ボタン</DT>
+    <DD>READMEファイル（このドキュメント）を表示します。 </DD>
+    <DD>&nbsp;</DD>
+
+
+</DL>
+
+
+
+<HR>
+
+
+<H2><A name="anchor0400">再インストールするには</A></H2>
+
+<OL>
+  <LI class="OL">「<A href="#anchor0500">アンインストールするには</A>」の手順にしたがってドライバを削除します。
+    <TABLE>
+      <TR><TD>※</TD><TD>アンインストールすると、Driver の設定ダイアログ・ボックスの設定値が初期化されます。設定項目の詳細については、「<A href="#anchor0320">設定ダイアログ・ボックスの項目について</A>」を参照してください。</TD></TR>
+    </TABLE>
+  <LI class="OL">「<A href="#anchor0100">インストールする</A>」の手順にしたがってドライバをインストールします。</LI>
+</OL>
+
+
+<HR>
+
+
+<H2><A name="anchor0500">アンインストールするには</A></H2>
+
+<OL>
+  <LI class="OL">キーボード、マウスを除く、すべてのUSB機器をはずした状態で Windows を起動します。
+    <TABLE><TR><TD>※</TD><TD>OCTA-CAPTURE の USB ケーブルもはずしてください。</TD></TR></TABLE></LI>
+  <LI class="OL">アンインストールを行う前にすべてのアプリケーションを終了してください。
+    <TABLE>
+	<TR><TD>※</TD><TD>アプリケーションが完全に終了するまで、10秒程度お待ちください。</TD></TR>
+    </TABLE>
+  </LI>
+  <LI class="OL">スタート・ボタンをクリックし、「設定」をクリックします。</LI>
+  <LI class="OL">「アプリ」、「アプリと機能」の順にクリックします。</LI>
+  <LI class="OL">一覧の中から、 OCTA-CAPTURE Driver の「&#8285;」をクリックし、「アンインストール」を選択します。
+	<TABLE><TR><TD>※</TD><TD>一覧に OCTA-CAPTURE Driver が表示されていない場合は、ドライバはインストールされていません。アンインストールは必要ありません。</TD></TR></TABLE>
+  </LI>
+  <LI class="OL">アンインストールを確認するメッセージが表示された場合は、「アンインストール」をクリックします。</LI>
+  <LI class="OL">ユーザー アカウント制御に関するダイアログが表示された場合は、［はい］をクリックします。
+    <TABLE><TR><TD>※</TD><TD>管理者アカウントのパスワード入力が求められた場合は、アカウントの種類が<B>管理者</B>であるユーザーで Windows にサインインしてから、再度アンインストールを行ってください。</TD></TR></TABLE></LI>
+  <LI class="OL">「インストールされている OCTA-CAPTURE Driver をアンインストールします。」と表示されますので、［OK］をクリックします。</LI>
+  <LI class="OL">「アンインストールを完了しました。」と表示されますので、［OK］をクリックして Windows を再起動します。</LI>
+</OL>
+
+
+<HR>
+
+
+<H2><A name="anchor0600">トラブルシューティング</A></H2>
+
+<H3><A name="anchor0660">ドライバがインストールできない</A></H3>
+<DL>
+<DT>デバイスの状態を確認する</DT>
+	<DD class="FS">通常、ドライバのインストールは、数分で完了します。</DD>
+	<DD class="FS">OCTA-CAPTURE を接続後、10分以上経っても使用できない場合は、以下の手順でデバイスの状態を確認してください。</DD>
+	<OL class="FS">
+		<LI class="OL">
+		OCTA-CAPTURE の電源を入れ、コンピューターと USB ケーブルで接続します。
+		</LI>
+		<LI class="OL">スタート・ボタンをクリックし、「設定」をクリックします。</LI>
+		<LI class="OL">「システム」、「バージョン情報」の順にクリックします。</LI>
+		<LI class="OL">関連設定 にある「デバイス マネージャー」をクリックします。</LI>
+		<LI class="OL">表示 メニューの「デバイス (種類別)」をクリックます。</LI>
+		<LI class="OL">「サウンド、ビデオ、およびゲーム コントローラー」または「ほかのデバイス」をクリックしOCTA-CAPTUREのデバイスを表示します。</LI>
+		<LI class="OL">表示されたOCTA-CAPTUREをダブルクリックし、「OCTA-CAPTUREのプロパティ」画面を開きます。</LI>
+		<LI class="OL">全般 タブの「デバイスの状態」を確認します。</LI>
+	</OL>
+	<DD class="FS">「このデバイスは正常に動作しています。」と表示されている場合は、ドライバのインストールは完了しています。</DD>
+	<DD class="FS">それ以外の状態が表示されている場合は、ドライバのインストールに失敗している可能性があります。</DD>
+	<DD class="FS">ドライバのインストールに関するトラブルシューティングの他の項目を確認してください。</DD>
+	<DD class="FS">&nbsp;</DD>
+
+<DT>コンピュータはインターネットに接続されていますか？</DT>
+	<DD class="FS">このドライバをインストールするには、お使いのコンピュータがインターネットに接続されている必要があります。</DD>
+	<DD class="FS">Webブラウザなどを使用して、お使いのコンピュータがインターネットに接続されていることを確認し、再度「<A href="#anchor0100">インストールする</A>」の手順にしたがって、ドライバをインストールしてください。</DD>
+	<DD class="FS">&nbsp;</DD>
+
+<DT>OCTA-CAPTUREを接続しなおしてみてください</DT>
+	<DD class="FS">機器の認識に失敗している可能性があります。</DD>
+	<DD class="FS">一度、OCTA-CAPTUREの USB ケーブルを抜いてOCTA-CAPTUREの電源を入れ直し、再度コンピュータに接続してください。</DD>
+	<DD class="FS">&nbsp;</DD>
+
+
+<DT>Windows Update の実行中は、ドライバがインストールできない場合があります。</DT>
+	<DD class="FS">Windows Update が終了してから、再度「インストールする」の手順にしたがって、ドライバをインストールしてください。</DD>
+	<DD class="FS">&nbsp;</DD>
+</DL>
+
+<DL>
+
+
+
+
+
+</DL>
+
+<H3><A name="anchor0620">OCTA-CAPTURE のデバイスが選択できない／使用できない</A></H3>
+
+<DL>
+<DT><A name="anchor0621">ドライバは正しくインストールされていますか？</A></DT>
+	<DD class="FS">ドライバが正しくインストールされていない可能性があります。「<A href="#anchor0660">ドライバがインストールできない</A>」を参照してください。</DD>
+	<DD class="FS">ドライバをインストールしたにも関わらず、OCTA-CAPTURE を使用できない場合は、「<A href="#anchor0400">再インストールするには</A>」の手順にしたがって再度ドライバのインストールを行ってください。</DD>
+	<DD>&nbsp;</DD>
+
+<DT><A name="anchor0622">他のソフトウェアで OCTA-CAPTURE を使用していませんか？</A></DT>
+	<DD class="FS">	OCTA-CAPTURE を使用しているアプリケーションをすべて終了し、OCTA-CAPTURE の電源を入れなおしてください。<BR>それでも解決しない場合は、「<A href="#anchor0400">再インストールするには</A>」の手順にしたがって再度ドライバのインストールを行ってください。</DD>
+	<DD>&nbsp;</DD>
+
+<DT>OCTA-CAPTURE の MIDI/WAVE デバイス名は表示されていますか？</DT>
+	<DD class="FS">	デバイス名が表示されていない場合は、OCTA-CAPTURE を使用しているアプリケーションをすべて終了し、OCTA-CAPTURE の電源を入れなおしてください。<BR>それでも解決しない場合は、「<A href="#anchor0400">再インストールするには</A>」の手順にしたがって再度ドライバのインストールを行ってください。</DD>
+	<DD>&nbsp;</DD>
+
+<DT>		OCTA-CAPTURE が電源の入った状態で接続されているときにコンピューターがスリープ状態に入りませんでしたか？</DT>
+	<DD class="FS">	スリープ状態からの復帰後、OCTA-CAPTURE が正しく動作しない場合は、使用しているアプリケーションをすべて終了し、OCTA-CAPTURE の電源を入れなおしてください。</DD>
+	<DD>&nbsp;</DD>
+
+<DT>		OCTA-CAPTURE を使用中に USB ケーブルの抜き差しを行ったり、OCTA-CAPTURE の電源を入れなおしたりしませんでしたか？</DT>
+	<DD class="FS">	OCTA-CAPTURE を使用中に USB ケーブルの抜き差しを行ったり、OCTA-CAPTURE の電源を入れなおしたりすると、正しく動作しなくなる場合があります。このような場合は、OCTA-CAPTURE を使用しているアプリケーションをすべて終了し、OCTA-CAPTURE の電源を入れなおしてください。</DD>
+	<DD>&nbsp;</DD>
+
+<DT>		電源が入った OCTA-CAPTURE をパソコンに接続したままパソコンを起動すると、ドライバが正しく読み込まれず OCTA-CAPTURE が使えない場合があります。</DT>
+	<DD class="FS">	その場合は、OCTA-CAPTURE を他の USB ポートに接続しなおすか、または、パソコンが起動した後に OCTA-CAPTURE の電源を入れてお使いください。</DD>
+	<DD>&nbsp;</DD>
+
+<DT>マイクへのアクセスが許可されているか確認してください</DT>
+	<DD><OL class="FS">
+	<LI class="OL">スタート・ボタンをクリックし、「設定」をクリックします。</LI>
+	<LI class="OL">「プライバシーとセキュリティ」、「マイク」の順にクリックします。</LI>
+	<LI class="OL">「マイクへのアクセス」のスイッチをオンに切り替えます。</LI>
+	<LI class="OL">「設定」ダイアログを閉じます。</LI>
+	</OL></DD>
+	<DD>&nbsp;</DD>
+
+</DL>
+
+<H3><A name="anchor0680">ドライバの設定／アプリケーションから周波数の変更ができない</A></H3>
+<DL>
+<DT>再生／録音中は、ドライバの設定画面から周波数を変更することはできません。</DT>
+	<DD class="FS">お使いのアプリケーションから周波数を変更するか、アプリケーションを終了してから、ドライバ設定画面で周波数を変更してください。</DD>
+	<DD>&nbsp;</DD>
+
+<DT>他のアプリケーションで使用していませんか？</DT>
+	<DD class="FS">他のアプリケーションで再生／録音中は、周波数を変更することはできません。</DD>
+	<DD>&nbsp;</DD>
+
+<DT>デジタル入力に機器を接続している場合は、周波数を変更することはできません。</DD>
+	<DD class="FS">アプリケーションのオーディオ設定で、デジタル入力に接続されている機器の周波数と同じ周波数を選択して使用してください。</DD>
+	<DD>&nbsp;</DD>
+
+<DT>Windows の 設定 を開いていませんか？</DT>
+	<DD class="FS">Windows の 設定 を開いていると、周波数の変更ができない場合があります。</DD>
+	<DD>&nbsp;</DD>
+
+<DT>Windowsのサウンド コントロールパネルを開いていませんか？</DT>
+	<DD class="FS">Windowsのサウンド コントロールパネルを開いていると、周波数の変更ができない場合があります。</DD>
+	<DD>&nbsp;</DD>
+
+<DT>Windowsのモニタリング機能が有効になっていると、周波数を変更することができません。</DT>
+	<DD class="FS">「<A href="#TPC-CTLFBE">Windowsのモニタリング機能が有効になっていませんか？</A>」を参照して、モニタリング機能を無効にしてください。</DD>
+	<DD>&nbsp;</DD>
+
+<DT>Microsoft GS Wavetable Synth を使用していると、周波数を変更することができません。</DT>
+	<DD class="FS">Microsoft GS Wavetable Synth を使用しないようにしてください。</DD>
+	<DD>&nbsp;</DD>
+</DL>
+
+
+<H3><A name="SCT-DeviceCurrentlyUsed">「本機器を使用しているアプリケーションがあります。」と表示されて、ドライバの設定ができない</A></H3>
+<DL>
+<DT>他のアプリケーションで使用していませんか？</DT>
+	<DD class="FS">アプリケーションで使用中は、ドライバの設定を変更することができません。</DD>
+	<DD>&nbsp;</DD>
+
+<DT>Windows の 設定 を開いていませんか？</DT>
+	<DD class="FS">Windows の 設定 を開いていると、ドライバの設定を変更することができない場合があります。</DD>
+	<DD>&nbsp;</DD>
+
+<DT>Windowsのサウンド コントロールパネルを開いていませんか？</DT>
+	<DD class="FS">Windowsのサウンド コントロールパネルを開いていると、ドライバの設定を変更することができない場合があります。</DD>
+	<DD>&nbsp;</DD>
+
+<DT>Windowsのモニタリング機能が有効になっていると、ドライバの設定を変更することができません。</DT>
+    <DD class="FS">「<A href="#TPC-CTLFBE">Windowsのモニタリング機能が有効になっていませんか？</A>」を参照して、モニタリング機能を無効にしてください。</DD>
+    <DD>&nbsp;</DD>
+
+<DT>Microsoft GS Wavetable Synth を使用していると、ドライバの設定を変更することができません。</DT>
+	<DD class="FS">Microsoft GS Wavetable Synth を使用しないようにしてください。</DD>
+	<DD>&nbsp;</DD>
+	
+</DL>
+
+<H3><A name="anchor0630">音が鳴らない、再生／録音ができない</A></H3>
+<DL>
+  <DT><A href="#anchor0621">ドライバは正しくインストールされていますか？</A></DT>
+    <DD>&nbsp;</DD>
+
+  <DT><A href="#anchor0622">他のソフトウェアで OCTA-CAPTURE を使用していませんか？</A></DT>
+    <DD>&nbsp;</DD>
+
+<DT>「お使いになる前に」を参照して OCTA-CAPTURE を使用できるように設定しましたか？</DT>
+    <DD class="FS">この設定をしないと、OCTA-CAPTURE は使用できません。「<A href="#anchor0200">お使いになる前に</A>」を参照してください。</DD>
+    <DD>&nbsp;</DD>
+
+
+<DT>再生／録音中にコンピューターがスリープ状態に入りませんでしたか？</DT>
+	<DD class="FS">	スリープ状態からの復帰後、OCTA-CAPTURE が正しく動作しない場合は、使用しているアプリケーションをすべて終了し、OCTA-CAPTURE の電源を入れなおしてください。</DD>
+	<DD>&nbsp;</DD>
+
+<DT>		再生／録音中に USB ケーブルの抜き差しを行ったり、OCTA-CAPTURE の電源を入れなおしたりしませんでしたか？</DT>
+	<DD class="FS">	再生／録音中に USB ケーブルの抜き差しを行ったり、OCTA-CAPTURE の電源を入れなおしたりすると、OCTA-CAPTURE で再生／録音ができなくなる場合があります。一度、再生／録音を中止してから、再び再生／録音を行ってください。それでも再生／録音ができない場合は、OCTA-CAPTURE を使用しているアプリケーションをすべて終了し、OCTA-CAPTURE の電源を入れなおしてください。</DD>
+    <DD>&nbsp;</DD>
+
+
+<DT>ドライバのオーディオのバッファサイズを調整してみてください</DT>
+	<DD class="FS">ドライバのオーディオのバッファサイズが小さすぎると、音が鳴らなかったり、正常に再生／録音ができない場合があります。</DD>
+	<DD class="FS">「<A href="#anchor0300">ドライバの設定を変更／確認するには</A>」を参照してバッファサイズを大きくしてみてください。</DD>
+	<DD>&nbsp;</DD>
+<DT>「低レイテンシー・モード」チェック・ボックスのチェックが入っていませんか？ </DT>
+	<DD class="FS">ドライバのオーディオのバッファサイズが小さすぎたり、「低レイテンシー・モード」チェック・ボックスのチェックが入っていると音が鳴らなかったり、正常に再生／録音ができない場合があります。</DD>
+	<DD class="FS">「低レイテンシー・モード」チェック・ボックスのチェックをはずしてから、バッファサイズを大きくしてみてください。 </DD>
+	<DD>&nbsp;</DD>
+
+<DT>お使いのアプリケーションで選択した周波数と異なるデジタル信号が入力されていませんか？</DT>
+	<DD class="FS">デジタル入力に接続されている機器の周波数が、お使いのアプリケーションで選択した周波数と一致しているか確認してください。</DD>
+	<DD>&nbsp;</DD>
+
+<DT>192kHzで使用していませんか？</DT>
+	<DD class="FS">192kHz 使用時は、4In / 4Out になります。残りのチャンネルは、使用できません（無音になります）。</DD>
+	<DD>&nbsp;</DD>
+
+</DL>
+
+<H3><A name="SCT-SPBYCIIOTS">コンピューターで再生している音が聴こえない／音が小さい</A></H3>
+<DL>
+
+<DT>音量ミキサーでデバイスやアプリケーションのボリュームを絞っていませんか？</DT>
+		<DD class="FS">システムの音量ミキサーでは、デバイスごと、あるいはアプリケーションごとの音量を調整することができます。</DD>
+	<DD><OL class="FS">
+		<LI class="OL">スタート・ボタンをクリックし、「設定」をクリックします。</LI>
+		<LI class="OL">「システム」、「サウンド」の順にクリックします。</LI>
+		<LI class="OL">詳細設定 にある「音量ミキサー」をクリックします。</LI>
+		<LI class="OL">音量ミキサー が表示されますので、音量を調整します。</LI>
+		<LI class="OL">「設定」ダイアログを閉じます。</LI>
+	</OL></DD>
+
+</DL>
+
+<H3><A name="anchor0640">演奏中に音が途切れる、一部の音が抜ける、など演奏の一部がおかしい</A></H3>
+<P><FONT size="-1">以下の各設定を行うことで、解決されることがあります。</FONT></P>
+
+<DL>
+<DT><A name="TPC-TATABSOYS">ソフトウェアのオーディオのバッファサイズを調整してみてください</A></DT>
+	<DD class="FS">お使いのソフトウェアでオーディオのバッファサイズが調整できる場合は、設定を変更してみてください。</DD>
+	<DD class="FS">通常、バッファサイズを大きくすると音切れが解消されます。</DD>
+	<DD>&nbsp;</DD>
+
+<DT><A name="TPC-TATABSOTD">ドライバのオーディオのバッファサイズを調整してみてください</A></DT>
+	<DD class="FS">お使いのソフトウェアでバッファサイズを調整できない場合や、ソフトウェアのバッファサイズを調整しても改善しない場合は、ドライバのオーディオ入出力のバッファサイズを変更することで、解決することがあります。</DD>
+	<DD class="FS">「<A href="#anchor0300">ドライバの設定を変更／確認するには</A>」を参照してバッファサイズを調整してみてください。</DD>
+	<DD>&nbsp;</DD>
+
+
+
+<DT>Windows Update</A></DT>
+	<DD class="FS">Microsoft社より提供されている、Windows Update を適用し、システムを最新の状態にしてみてください。</DD>
+	<DD>&nbsp;</DD>
+
+<DT>電源モード の設定を確認してください</mode></DT>
+	<DD><OL class="FS">
+		<LI class="OL">スタート・ボタンをクリックし、「設定」をクリックします。</LI>
+		<LI class="OL">「システム」、「電源 &amp; バッテリー」の順にクリックします。</LI>
+		<LI class="OL">「電源モード」で「最適なパフォーマンス」を選択します。</LI>
+		<LI class="OL">「設定」ダイアログを閉じます。</LI>
+	</OL></DD>
+
+<DT>システムの「パフォーマンス オプション」の設定</DT>
+	<DD><OL class="FS">
+		<LI class="OL">スタート・ボタンをクリックし、「設定」をクリックします。</LI>
+		<LI class="OL">「システム」、「バージョン情報」の順にクリックします。</LI>
+		<LI class="OL">関連リンク の、「システムの詳細設定」をクリックします。</LI>
+		<LI class="OL">ユーザー アカウント制御に関するダイアログが表示された場合は、［はい］をクリックします。
+			<TABLE><TR><TD>※</TD><TD>管理者アカウントのパスワード入力が求められた場合は、アカウントの種類が<B>管理者</B>であるユーザーで Windows にサインインしてから、再度設定を行ってください。</TD></TR></TABLE>
+		<LI class="OL">パフォーマンスの［設定］をクリックし、「詳細設定」タブをクリックします。</li>
+		<LI class="OL">「バックグラウンド サービス」を選択して、［OK］をクリックします。</LI>
+		<LI class="OL">［OK］をクリックして、「システムのプロパティ」を閉じます。</LI>
+		<LI class="OL">「設定」ダイアログを閉じます。</LI>
+	</OL>
+
+<DT>お使いのアプリケーションで選択した周波数と異なるデジタル信号が入力されていませんか？</DT>
+	<DD class="FS">デジタル入力に接続されている機器の周波数が、お使いのアプリケーションで選択した周波数と一致しているか確認してください。</DD>
+	<DD>&nbsp;</DD>
+
+<DT><A name="TPC-CTLFBE">
+Windowsのモニタリング機能が有効になっていませんか？
+</A></DT>
+	<DD class="FS">Windowsのモニタリング機能が有効になっていると、入力された音が二重に聴こえたり（ダブリング）、ループ発振（フィードバック）する場合があります。<BR>
+	このような場合は、以下の手順で、Windowsのモニタリング機能を無効にしてください。</DD>
+	<DD><OL class="FS">
+		<LI class="OL">スタート・ボタンをクリックし、「設定」をクリックします。</LI>
+		<LI class="OL">「システム」、「サウンド」の順にクリックします。</LI>
+		<LI class="OL">詳細設定 にある「サウンドの詳細設定」をクリックします。</LI>
+    	<LI class="OL">「録音」で OCTA-CAPTURE の「<B>1-2</B>」など、入力に使用しているデバイスを選択し、「プロパティ」をクリックします。</LI>
+    	<LI class="OL">「聴く」タブを開き、「このデバイスを聴く」のチェックを外します。</LI>
+    	<LI class="OL">［OK］をクリックして、「プロパティ」を閉じます。</LI>
+    	<LI class="OL">［OK］をクリックして、「サウンド」を閉じます。</LI>
+		<LI class="OL">「設定」ダイアログを閉じます。</LI>
+	</OL></DD>
+
+
+</DL>
+
+<HR>
+
+<P>Copyright (C) 2021 Roland Corporation. All rights reserved.</P>
+
+</BODY>
+</HTML>

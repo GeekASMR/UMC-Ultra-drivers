@@ -1,0 +1,372 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN">
+<!-- saved from url=(0024)http://www.roland.co.jp/ -->
+<HTML lang="ja">
+<HEAD>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>README_JP - OCTA-CAPTURE Control Panel</TITLE>
+<STYLE type="text/css">
+<!--
+BODY	{background-color: #FFFFFF;	color: #000000;}
+DL	{margin-left: 15pt;}
+DL.NB	{margin-left: 0pt;}
+DT	{font-weight: bold;	margin-bottom: 5pt;	color: #000080;}
+DT.FN	{font-weight: normal;	margin-bottom: 0pt;	color: #000000;}
+DD.FS	{font-size: smaller;}
+OL.FS	{font-size: smaller;}
+LI.OL	{margin-bottom: 15pt;}
+TABLE	{margin-top: 3pt;	margin-bottom: 5pt;}
+TD	{vertical-align: top;	font-size: smaller;}
+TD.SI	{background-color: #C0C0C0;}
+H3	{color: #000080;}
+H3.FN	{color: #000000;	margin-bottom: 0pt;}
+P	{margin-left: 10pt;	margin-top: 3pt;}
+-->
+</STYLE>
+</HEAD>
+<BODY>
+
+
+<H2>OCTA-CAPTURE Control Panel の使い方</H2>
+
+
+<p>OCTA-CAPTURE Control Panel は、OCTA-CAPTURE 内部のプリアンプ、4 系統のダイレクト・ミキサーとパッチ・ベイをコントロールします。</p>
+<HR>
+
+
+<H3>各部のはたらき</H3>
+
+<H3 class="FN">メイン・ウィンドウ</H3>
+<DL><DT>画面切り替えボタン ([VS PREAMP] / [DIRECT MIXER]) </DT>
+<DD>プリアンプ・コントロール画面とダイレクト・ミキサー・コントロール画面を切り替えます。 </DD>
+</DL>
+
+<H3 class="FN">プリアンプ・コントロール</H3>
+
+<DL><DT>プリアンプ部</DT></DL>
+<BLOCKQUOTE>
+<TABLE border="1" cellspacing="0" bordercolordark="white" bordercolorlight="black">
+    <TR><TD class="SI"><b>設定</b></TD>
+        <TD class="SI"><b>説明</b></TD>
+    </TR>
+    <TR><TD>入力ゲイン (SENS)</TD>
+        <TD>入力信号の利得を調整します。</TD>
+    </TR>
+    <TR><TD>ファンタム電源 (+48)</TD>
+        <TD>+48Vファンタム電源を供給することができます。コンデンサー・マイクなど、ファンタム電源を必要とする機器に電源を供給するときはオンにします。</TD>
+    </TR>
+    <TR><TD>インピーダンス切り替え (Hi-Z)</TD>
+        <TD>ギターやベースを接続するときは、Hi-Z（オン）に、それ以外の機器を接続するときは、Lo-Z（オフ）に設定します。（チャンネル1、2 のみ）</TD>
+    </TR>
+    <TR><TD>ロー・カット (LO-CUT)</TD>
+        <TD>入力のロー・カット・フィルターを有効にします。カット・オフ周波数は100Hz です。</TD>
+    </TR>
+    <TR><TD>位相 (PHASE)</TD>
+        <TD>入力信号の極性を反転します。</TD>
+    </TR>
+    <TR><TD>レベル・メーター</TD>
+        <TD>プリアンプ部に入力される信号状態が表示されます。OCTA-CAPTURE本体の液晶部に表示されるインジケーターと同じ機能です。</TD>
+    </TR>
+    <TR><TD>オートセンス・ボタン</TD>
+        <TD>オートセンス機能の設定をします。クリックすると、AUTO-SENS設定ダイアログが開きます。AUTO-SENSを実行するチャンネルを選んで、[開始]をクリックします。</TD>
+    </TR>
+</TABLE>
+</BLOCKQUOTE>
+
+<DL><DT>コンプレッサー部</DT></DL>
+<BLOCKQUOTE>
+<TABLE border="1" cellspacing="0" bordercolordark="white" bordercolorlight="black">
+    <TR><TD class="SI"><b>設定</b></TD>
+        <TD class="SI"><b>説明</b></TD>
+    </TR>
+    <TR><TD>バイパス・スイッチ (BYPASS)</TD>
+        <TD>コンプレッサーの効果を無効にします。</TD>
+    </TR>
+    <TR><TD>ゲート (GATE)</TD>
+        <TD>設定値以下の信号はミュートされます。 [dB]</TD>
+    </TR>
+    <TR><TD>スレッショルド (THRES)</TD>
+        <TD>コンプレッサーの効果がかかる信号レベルを設定します。 [dB]</TD>
+    </TR>
+    <TR><TD>ゲイン (GAIN)</TD>
+        <TD>コンプレッサーの出力レベルを調節します。 [dB]</TD>
+    </TR>
+    <TR><TD>アタック・タイム (ATK)</TD>
+        <TD>入力レベルがスレッショルド・レベルを超えてから、コンプレッサーが効き始めるまでの時間を設定します。 [msec]</TD>
+    </TR>
+    <TR><TD>リリース・タイム (REL)</TD>
+        <TD>入力レベルがスレッショルド・レベルを下回ってから、コンプレッサーが切れるまでの時間を設定します。 [msec]</TD>
+    </TR>
+    <TR><TD>レシオ (RATIO)</TD>
+        <TD>オーディオ信号を圧縮する圧縮比を設定します。</TD>
+    </TR>
+    <TR><TD>ステレオ・リンク (LINK)</TD>
+        <TD>この設定をオンにすると、隣合う2つのチャンネルのコンプレッサー設定を、同じものにします。</TD>
+    </TR>
+    <TR><TD>コンプレッサー出力・レベル・メーター</TD>
+        <TD>コンプレッサ－部から出力される信号の状態を表示します。</TD>
+    </TR>
+</TABLE>
+</BLOCKQUOTE>
+
+<H3 class="FN">ダイレクト・ミキサー・コントロール</H3>
+
+<DL><DT>マルチモニター・ボタン (MULTIPLE DIRECT MIXER) </DT>
+<DD>ダイレクト・ミキサーAに加えて、B、C、Dが表示され、それぞれの出力がOUTPUT1～8へパッチングされます。 </DD>
+<TABLE><TR><TD>※</TD><TD>サンプリング周波数が192kHzで動作しているときは、ダイレクトミキサーはA のみに限定されます。</TD></TR></TABLE>
+</DL>
+
+<DL><DT>インプット・ミキサーA～D</DT>
+<DD>入力ジャック1～10から入力されるオーディオ・データのモニター・レベルやバランスをコントロールすることができます。<BR>4つのインプット・ミキサーを独立してコントロールすることができます。<BR>ミキサーA～D の切り替えは、ミキサー選択タブをクリックします。</DD>
+</DL>
+<BLOCKQUOTE>
+<TABLE border="1" cellspacing="0" bordercolordark="white" bordercolorlight="black">
+    <TR><TD class="SI"><b>設定</b></TD>
+        <TD class="SI"><b>説明</b></TD>
+    </TR>
+    <TR><TD>ステレオ・リンク (LINK)</TD>
+        <TD>この設定をオンにすると、隣り合う2つのチャンネルのミキサー設定(PANを除く)を、同じものにします。</TD>
+    </TR>
+    <TR><TD>ミュート (MUTE)</TD>
+        <TD>ミュートのオン／オフを設定します。</TD>
+    </TR>
+    <TR><TD>ソロ (SOLO)</TD>
+        <TD>ソロのオン／オフを設定します。</TD>
+    </TR>
+    <TR><TD>リバーブ (REVERB)</TD>
+        <TD>リバーブ・ユニットへのセンド量を調節します（インプット・ミキサーA のみ）。</TD>
+    </TR>
+    <TR><TD>パン (PAN)</TD>
+        <TD>音の定位を設定します。</TD>
+    </TR>
+    <TR><TD>スライダー</TD>
+        <TD>入力信号のモニターレベルを調節します。</TD>
+    </TR>
+    <TR><TD>レベル・メーター</TD>
+        <TD>ミキサー部に入力される信号の状態が表示されます。</TD>
+    </TR>
+</TABLE>
+</BLOCKQUOTE>
+
+<DL><DT>アウトプット・ミキサーA～D</DT>
+<DD>コンピューターから送信される10チャンネルの再生音のバランスをコントロールして、ヘッドホンなどのモニター部へ送ります。<BR>4つのアウトプット・ミキサーを独立してコントロールすることができます。<BR>ミキサーA～D の切り替えは、ミキサー選択タブをクリックします。</DD>
+</DL>
+<BLOCKQUOTE>
+<TABLE border="1" cellspacing="0" bordercolordark="white" bordercolorlight="black">
+    <TR><TD class="SI"><b>設定</b></TD>
+        <TD class="SI"><b>説明</b></TD>
+    </TR>
+    <TR><TD>ステレオ・リンク (LINK)</TD>
+        <TD>この設定をオンにすると、隣り合う2つのチャンネルのミキサー設定(PANを除く)を、同じものにします。</TD>
+    </TR>
+    <TR><TD>ミュート (MUTE)</TD>
+        <TD>ミュートのオン／オフを設定します。</TD>
+    </TR>
+    <TR><TD>ソロ (SOLO)</TD>
+        <TD>ソロのオン／オフを設定します。</TD>
+    </TR>
+    <TR><TD>パン (PAN)</TD>
+        <TD>音の定位を設定します。</TD>
+    </TR>
+    <TR><TD>スライダー</TD>
+        <TD>コンピューターの再生信号のモニター・レベルを調節します。</TD>
+    </TR>
+    <TR><TD>レベル・メーター</TD>
+        <TD>コンピューターから出力される信号の状態が表示されます。</TD>
+    </TR>
+</TABLE>
+</BLOCKQUOTE>
+
+<DL><DT>マスターA～D</DT>
+<DD>インプット・ミキサー、アウトプット・ミキサーのそれぞれのマスター出力レベルをコントロールします。</DD>
+</DL>
+<BLOCKQUOTE>
+<TABLE border="1" cellspacing="0" bordercolordark="white" bordercolorlight="black">
+    <TR><TD class="SI"><b>設定</b></TD>
+        <TD class="SI"><b>説明</b></TD>
+    </TR>
+    <TR><TD>リンク (LINK)</TD>
+        <TD>この設定をオンにすると、インプット・ミキサーとアウトプット・ミキサーのマスター・ボリュームが連動するようになります。</TD>
+    </TR>
+    <TR><TD>リバーブタイプ (REVERB TYPE)</TD>
+        <TD>リバーブ・ダイアログが表示されます。リバーブの種類、ディレイ時間などを調節することができます。</TD>
+    </TR>
+    <TR><TD>リターン (REVERB RETURN)</TD>
+        <TD>リバーブ・ユニットへからのリターン量を調節します（インプット・ミキサーA のみ）。</TD>
+    </TR>
+    <TR><TD>ステレオ・リンク (LINK)</TD>
+        <TD>この設定をオンにすると、左右のチャンネルのスライダーが連動するようになります。</TD>
+    </TR>
+    <TR><TD>スライダー</TD>
+        <TD>全体のモニター・レベルを調節します。</TD>
+    </TR>
+</TABLE>
+</BLOCKQUOTE>
+
+<H3 class="FN">リバーブ・ダイアログ</H3>
+<DL>
+<DD>[REVERB TYPE] ボタンをクリックすると、リバーブ・ダイアログが表示されます。<BR>リバーブの種類、ディレイ時間などを調節することができます。
+<TABLE><TR><TD>※</TD><TD>サンプリング周波数が192kHzで動作しているときは、リバーブは機能しません。</TD></TR></TABLE>
+</DD>
+</DL>
+<BLOCKQUOTE>
+<TABLE border="1" cellspacing="0" bordercolordark="white" bordercolorlight="black">
+    <TR><TD class="SI"><b>設定</b></TD>
+        <TD class="SI"><b>説明</b></TD>
+    </TR>
+    <TR><TD>TYPE</TD>
+        <TD>リバーブの種類を選択します。<BR>OFF を選択すると、リバーブが無効になります。</TD>
+    </TR>
+    <TR><TD>PRE DELAY</TD>
+        <TD>ダイレクト音が出力されてから、エフェクト音が出力されるまでの時間を調節します。<BR>プリ・ディレイを長くすると、複数の音が鳴っている効果（ダブリング効果）が得られます。</TD>
+    </TR>
+    <TR><TD>TIME</TD>
+        <TD>残響が消えるまでの長さを調節します。</TD>
+    </TR>
+</TABLE>
+</BLOCKQUOTE>
+<DL>
+<DD>TYPE ごとに、PRE-DELAY、TIME パラメーターを設定することができます。</DD>
+<DD>［初期設定］ボタンをクリックすると、工場出荷時の設定に戻ります。</DD>
+</DL>
+
+<H3 class="FN">デバイス・パネル</H3>
+
+<DL>
+<DD>OCTA-CAPTUREの設定状態を表示します。</DD>
+</DL>
+<BLOCKQUOTE>
+<TABLE border="1" cellspacing="0" bordercolordark="white" bordercolorlight="black">
+    <TR><TD class="SI"><b>項目</b></TD>
+        <TD class="SI"><b>説明</b></TD>
+    </TR>
+    <TR><TD>デバイス選択ボタン (OCTA-CAPTURE, OCTA-CAPTURE EXP)</TD>
+        <TD>OCTA-CAPTUREを2台接続したときに、どちら側のミキサーを表示するか切り替えます。<BR>ボタンをクリックすると、本体ディスプレイが反転表示されます。</TD>
+    </TR>
+    <TR><TD>サンプリング周波数 (SAMPLE RATE)</TD>
+        <TD>現在のサンプリング周波数を表示 / 設定します。</TD>
+    </TR>
+    <TR><TD>クロック・ソース (CLOCK)</TD>
+        <TD>現在のクロック・ソースを表示します。<BR>INTERNAL： OCTA-CAPTURE の内部クロックで動作しています。<BR>EXTERNAL： INPUT 9/10 に入力されたデジタル信号に同期して動作しています。</TD>
+    </TR>
+</TABLE>
+</BLOCKQUOTE>
+
+<DL><DT>サンプリング周波数を設定する </DT>
+<DD>再生するオーディオ・データ、または録音するときのDAW の設定によって、OCTA-CAPTURE のサンプリング周波数は自動で切り替わります。OCTA-CAPTURE のサンプリング周波数を手動で切り替えることもできます。 </DD>
+<DD>SAMPLE RATE の &#x25BC; をクリックし、別のサンプリング周波数をクリックします。</DD>
+<DD>この場合は、DAW のサンプリング周波数も変更する必要があります。</DD>
+<TABLE><TR><TD>※</TD><TD>再生や録音しているときやINPUT 端子9/10 に機器を接続しているときは、サンプリング周波数を変更することはできません。</TD></TR>
+		<TR><TD>※</TD><TD>サンプリング周波数が切り替わったとき、小さなPOPノイズが乗ることがありますが、故障ではありません。</TD></TR></TABLE>
+</DL>
+
+
+<HR>
+
+<H3>メニュー</H3>
+
+<H3 class="FN">「ドライバ」メニュー</H3>
+<DL>
+  <DT>ドライバの設定...</DT>
+    <DD>「OCTA-CAPTURE Driver の設定」ダイアログが開きます。「OCTA-CAPTURE Driver の設定」ダイアログではドライバのバッファ・サイズの調整などを行うことが出来ます。各設定項目については、「設定の変更／確認をするには」を参照してください。</DD>
+    <DD>&nbsp;</DD>
+
+  <DT>常に手前に表示</DT>
+    <DD>OCTA-CAPTURE Control Panel を常に手前に表示します。</DD>
+    <DD>&nbsp;</DD>
+
+  <DT>README を表示</DT>
+    <DD>ドライバのREADME（このドキュメント）を参照することができます。</DD>
+    <DD>&nbsp;</DD>
+
+  <DT>バージョン情報...</DT>
+    <DD>現在インストールされているドライバのバージョンが表示されます。</DD>
+    <DD>&nbsp;</DD>
+
+  <DT>終了</DT>
+    <DD>OCTA-CAPTURE Control Panel を終了します。</DD>
+    <DD>&nbsp;</DD>
+</DL>
+
+<H3 class="FN">「デバイス」メニュー</H3>
+<DL>
+
+  <DT>設定を保存する...／設定を読み込む...</DT>
+    <DD>OCTA-CAPTURE Control Panel では、現在の設定をファイルに保存したり、保存した設定をファイルから読み込むことができます。
+    	<BR>保存される設定は、以下の通りです。
+        <UL><LI>コンプレッサー設定
+            <LI>プリアンプ設定
+            <LI>ダイレクト・ミキサーA ～ D 設定
+            <LI>リバーブ設定
+            <LI>パッチ・ベイ設定
+        </UL>
+    </DD>
+    <DD>2 台つないでお使いのときは、1 台ずつ設定を保存／読み込みすることができます。<BR>2 台分保存／読み込みするときは、デバイス・パネルで選択してそれぞれ保存／読み込みしてください。</DD>
+    <DD>&nbsp;</DD>
+
+
+<DT>パッチ・ベイを開く</DT>
+<DD>4系統のダイレクト・ミキサーの出力先やコンピューターからの再生チャンネルの出力先を用途に応じて割り当てることができます。<BR>設定は、各出力ジャックに対して、パッチングしたいソースを選びます。</DD>
+<DD>［初期設定］ボタンをクリックすると、工場出荷時の設定に戻ります。<BR>初期設定では、出力ジャック1～2へは、ダイレクト・ミキサーAの出力音が、出力ジャック3～10 へは、コンピューターからの再生音（WAVE OUT 3～10）が出力されます。</DD>
+<DD>［マルチモニター］ボタンをクリックすると、OUTPUT 1～8へは、ダイレクト・ミキサーA ～ D が直接出力されます。<BR>
+<TABLE><TR><TD>※</TD><TD>サンプリング周波数が192kHzで動作しているときは、パッチベイは機能しません。アウトプットの設定は、OUT 1-2：Direct Mixer A、OUT 3-4：WAVE OUT 3-4 の4 チャンネルに固定されます。インプットはINPUT 1～4 に固定されます。</TD></TR></TABLE>
+</DD>
+
+<BLOCKQUOTE>
+<TABLE border="1" cellspacing="0" bordercolordark="white" bordercolorlight="black">
+    <TR><TD class="SI"><b>ソース名</b></TD>
+        <TD class="SI"><b>説明</b></TD>
+    </TR>
+    <TR><TD>WAVE OUT 1～10</TD>
+        <TD>コンピューターからの再生音</TD>
+    </TR>
+    <TR><TD>DIRECT MIX A～D</TD>
+        <TD>ダイレクト・ミキサーA～D の出力音</TD>
+    </TR>
+</TABLE>
+</BLOCKQUOTE>
+
+
+<DT>入力を直接出力する</DT>
+<DD>入力された信号が、そのまま出力端子にバイパスされます。</DD>
+<TABLE><TR><TD>※</TD><TD>ミキサーA ～ D の設定とパッチベイが切り替わります。</TD></TR></TABLE>
+<DD>OCTA-CAPTURE の内部ミキサーを使わず、ミキサー卓などでモニターレベルを調整するときに便利です。</DD>
+
+<DD>&nbsp;</DD>
+
+
+  <DT>初期設定に戻す...</DT>
+    <DD>OCTA-CAPTURE では、各設定を、個別に初期化することができます。</DD>
+<BLOCKQUOTE>
+<TABLE border="1" cellspacing="0" bordercolordark="white" bordercolorlight="black">
+    <TR><TD class="SI"><b>表示項目</b></TD>
+        <TD class="SI"><b>初期化される内容</b></TD>
+    </TR>
+    <TR><TD>すべて</TD>
+        <TD>プリアンプ、ダイレクト・ミキサー、リバーブ、パッチ・ベイ</TD>
+    </TR>
+    <TR><TD>プリアンプ</TD>
+        <TD>コンプレッサー設定とプリアンプ設定</TD>
+    </TR>
+    <TR><TD>ダイレクトミキサー</TD>
+        <TD>ダイレクト・ミキサーA～D の設定</TD>
+    </TR>
+    <TR><TD>リバーブ</TD>
+        <TD>リバーブ設定</TD>
+    </TR>
+    <TR><TD>パッチベイ</TD>
+        <TD>パッチベイ設定</TD>
+    </TR>
+</TABLE>
+</BLOCKQUOTE>
+    <DD>&nbsp;</DD>
+
+  <DT>シグナルフローを表示</DT>
+    <DD>OCTA-CAPTURE のシグナルフローを表示します。</DD>
+    <DD>&nbsp;</DD>
+</DL>
+<HR>
+
+<P>Copyright (C) 2021 Roland Corporation. All rights reserved.</P>
+
+</BODY>
+</HTML>
