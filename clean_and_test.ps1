@@ -18,6 +18,11 @@ foreach ($dir in $targetDirs) {
         Remove-Item -Path $dir -Recurse -Force -ErrorAction SilentlyContinue
     }
 }
+
+# Wipe license cache for strict testing
+Write-Host "Wiping License State from Registry"
+Remove-Item -Path "HKCU:\SOFTWARE\ASMRTOP\ASIOUltra" -Recurse -Force -ErrorAction SilentlyContinue
+
 Write-Host "Local cleanup OK!" -ForegroundColor Green
 
 # Trigger build
