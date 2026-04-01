@@ -655,12 +655,63 @@ document.getElementById('i_audio').addEventListener('change', function(e) {
     return;
   }
 
-  const reader = new FileReader();
-  reader.onload = function(evt) {
-    document.getElementById('i_audio_b64').value = evt.target.result;
-    saveFormCache(); // Also cache the Base64 audio string just in case they refresh
-  };
-  reader.readAsDataURL(file);
+  if (file.size > 20 * 1024 * 1024) {
+      alert("📦 文件体积过于庞大 (超过 20MB)！为保护通信服务器免受洪泛攻击，服务器拒收过大数据，请截取片段再传。");
+      e.target.value = "";
+      return;
+  }
+
+  // 主动阻断提交按钮，直接预提音频上传
+  const btn = document.querySelector('.add-btn');
+  btn.disabled = true;
+  btn.innerText = "⏳ 录音独立预加载中...";
+
+  const pCon = document.getElementById("upload_progress_container");
+  const pTxt = document.getElementById("upload_progress_text");
+  const pBar = document.getElementById("upload_progress_bar");
+
+  const formData = new FormData();
+  formData.append('action', 'upload_audio_only');
+  formData.append('id', Date.now()); // Fallback random id seed
+  formData.append('audio_file', file);
+
+  (async () => {
+      try {
+          let r = await uploadViaXHR(API_URL, formData, file);
+          if (!r.ok) r = await uploadViaXHR('/asmrtap.php?api=test_logs', formData, file);
+
+          if (r.ok) {
+              const res = await r.json();
+              if (res.url) {
+                  // 将拿回的精简 URL 放入秘密背囊
+                  document.getElementById('i_audio_b64').value = res.url;
+                  saveFormCache();
+              }
+          } else {
+              alert("⚠️ 录音文件独立预加载失败(可能是被防火墙拦截或连接超时)。");
+              e.target.value = "";
+              document.getElementById('i_audio_b64').value = "";
+          }
+      } catch (err) {
+          alert("上传异常，请检查网络！");
+          e.target.value = "";
+      } finally {
+          btn.innerText = "📥 回填成功 (点击写入测试库)";
+          btn.disabled = false;
+
+          setTimeout(() => {
+              if (pCon) pCon.style.display = "none";
+              if (pTxt) pTxt.style.display = "none";
+              if (pBar) {
+                  pBar.style.width = "0%";
+                  pBar.style.background = "var(--cyan)";
+              }
+              if(btn.innerText.includes("点击写入测试库")){
+                  btn.innerText = "📥 写入到测试库"; // 恢复原始名
+              }
+          }, 2000);
+      }
+  })();
 });
 
 // Init
