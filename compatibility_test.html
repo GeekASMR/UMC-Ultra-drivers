@@ -244,7 +244,22 @@ async function loadData() {
 }
   
 function saveData() {
-  localStorage.setItem('asio_test_logs', JSON.stringify(logs));
+  try {
+    const slimLogs = logs.map(l => {
+      if (l.audio && l.audio.startsWith('data:audio/') && l.audio.length > 50000) {
+        return { ...l, audio: '' };
+      }
+      return l;
+    });
+    // 只保留前 100 条数据至本地缓存，防止挤爆 5MB 限制
+    localStorage.setItem('asio_test_logs', JSON.stringify(slimLogs.slice(0, 100)));
+  } catch(e) {
+    // 终极保护：如果即使是截断后依然爆量（因极端情况），则彻底清空后只放 10 条
+    localStorage.removeItem('asio_test_logs');
+    try {
+      localStorage.setItem('asio_test_logs', JSON.stringify(logs.slice(0, 10).map(l => ({...l, audio:''} ))));
+    } catch(ex) {}
+  }
 }
 
 function getRateClass(r) {
