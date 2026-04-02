@@ -114,6 +114,15 @@ BehringerASIO::BehringerASIO(LPUNKNOWN pUnk, HRESULT* phr)
                                 HRESULT hr = CoCreateInstance(targetClsid, nullptr, CLSCTX_INPROC_SERVER, targetClsid, (void**)&m_baseAsio);
                                 if (SUCCEEDED(hr) && m_baseAsio) {
                                     LOG_INFO(LOG_MODULE, "Successfully hooked and instantiated universal ASIO proxy into: %s!", subKeyName);
+                                    
+                                    // 钩子互通：向控制面板播报当前被 DAW 加载激活的物理硬件型号
+                                    HKEY hRouteKey;
+                                    if (RegCreateKeyExA(HKEY_CURRENT_USER, "SOFTWARE\\ASMRTOP\\UltraRouter", 0, NULL, 0, KEY_WRITE, NULL, &hRouteKey, NULL) == ERROR_SUCCESS) {
+                                        RegSetValueExA(hRouteKey, "ActiveHardwareName", 0, REG_SZ, (const BYTE*)subKeyName, (DWORD)(strlen(subKeyName) + 1));
+                                        RegSetValueExA(hRouteKey, "ActiveHardwareCLSID", 0, REG_SZ, (const BYTE*)clsidStr, (DWORD)(strlen(clsidStr) + 1));
+                                        RegCloseKey(hRouteKey);
+                                    }
+                                    
                                     RegCloseKey(hSubKey);
                                     break;
                                 } else {
@@ -143,6 +152,14 @@ BehringerASIO::BehringerASIO(LPUNKNOWN pUnk, HRESULT* phr)
                 if (SUCCEEDED(fGetClass(CLSID_UmcAudioAsio, IID_IClassFactory, (void**)&pCF)) && pCF) {
                     pCF->CreateInstance(nullptr, CLSID_UmcAudioAsio, (void**)&m_baseAsio);
                     pCF->Release();
+                    
+                    // 钩子互通：向控制面板播报当前被 DAW 加载激活的物理硬件型号
+                    HKEY hRouteKey;
+                    if (RegCreateKeyExA(HKEY_CURRENT_USER, "SOFTWARE\\ASMRTOP\\UltraRouter", 0, NULL, 0, KEY_WRITE, NULL, &hRouteKey, NULL) == ERROR_SUCCESS) {
+                        RegSetValueExA(hRouteKey, "ActiveHardwareName", 0, REG_SZ, (const BYTE*)"UMC ASIO Driver", 16);
+                        RegSetValueExA(hRouteKey, "ActiveHardwareCLSID", 0, REG_SZ, (const BYTE*)"{0351302F-B1F1-4A5D-8613-787F77C20EA4}", 39);
+                        RegCloseKey(hRouteKey);
+                    }
                 }
             }
         }

@@ -8,6 +8,10 @@
 #include "../license/LicenseManager.h"
 #include "OptimizerManager.h"
 #include "../UMCVersion.h"
+#include "../AsioTargets.h"
+#include "../asio/iasiodrv.h"
+#include <objbase.h>
+#include <vector>
 
 #define WM_TRAYICON (WM_USER + 1)
 #define ID_TRAY_APP_ICON 1001
@@ -62,19 +66,204 @@ void RefreshUIPanelText(HWND hwndDlg) {
     }
 }
 
+struct DriverInfo {
+    std::wstring name;
+    std::string clsidStr;
+};
+
+std::vector<DriverInfo> g_validDrivers;
+HWND g_hComboHardware = NULL;
+
+void ScanValidPhysicalAsioDrivers() {
+    g_validDrivers.clear();
+    HKEY hKeyAsio;
+    if (RegOpenKeyExA(HKEY_LOCAL_MACHINE, "SOFTWARE\\ASIO", 0, KEY_READ, &hKeyAsio) != ERROR_SUCCESS) {
+        return;
+    }
+
+    char subKeyName[256];
+    DWORD index = 0;
+    while (true) {
+        DWORD nameLen = sizeof(subKeyName);
+        if (RegEnumKeyExA(hKeyAsio, index, subKeyName, &nameLen, nullptr, nullptr, nullptr, nullptr) != ERROR_SUCCESS) {
+            break;
+        }
+        index++;
+        
+        bool isBlacklisted = false;
+        const char* blacklist[] = {"RME", "Roland", "Universal Audio", "UAD", "Antelope", "Apogee", "Realtek", "Voicemeeter", "Virtual", "ASMRTOP", "Ultra", "WDM2VST", "Synchronous", "SAR", "Link"};
+        for (int b = 0; b < 15; b++) {
+            if (strstr(subKeyName, blacklist[b])) { isBlacklisted = true; break; }
+        }
+        if (isBlacklisted && strstr(subKeyName, "Volt")) isBlacklisted = false;
+
+        if (!isBlacklisted) {
+            bool isTarget = false;
+            const char* targets[] = {"BEHRINGER", "UMC", "Audient", "Solid State Logic", "TUSBAUDIO", "USB Audio", "Onyx", "TASCAM", "FiiO", "Topping", "iFi", "Yamaha", "Steinberg", "MOTU", "Presonus", "Focusrite", "Ploytec", "ART", "Audiolink", "LEWITT", "OCTA", "M-Audio", "M-Track", "Delta", "Volt", "Avid", "MBOX", "Apollo"};
+            for (int i = 0; i < 28; i++) {
+                if (strstr(subKeyName, targets[i])) { isTarget = true; break; }
+            }
+
+            if (isTarget) {
+                HKEY hSubKey;
+                if (RegOpenKeyExA(hKeyAsio, subKeyName, 0, KEY_READ, &hSubKey) == ERROR_SUCCESS) {
+                    char targetClsidStr[256] = {0};
+                    DWORD type;
+                    DWORD dataLen = sizeof(targetClsidStr);
+                    RegQueryValueExA(hSubKey, "CLSID", NULL, &type, (LPBYTE)targetClsidStr, &dataLen);
+                    RegCloseKey(hSubKey);
+                    
+                    if (targetClsidStr[0] != '\0') {
+                        DriverInfo info;
+                        int wLen = MultiByteToWideChar(CP_ACP, 0, subKeyName, -1, NULL, 0);
+                        std::wstring wName(wLen, 0);
+                        MultiByteToWideChar(CP_ACP, 0, subKeyName, -1, &wName[0], wLen);
+                        wName.resize(wLen - 1);
+                        
+                        info.name = wName;
+                        info.clsidStr = targetClsidStr;
+                        g_validDrivers.push_back(info);
+                    }
+                }
+            }
+        }
+    }
+    RegCloseKey(hKeyAsio);
+}
+
+std::wstring GetActiveHardwareName(char* outClsid = nullptr) {
+    HKEY hKey;
+    std::wstring result = L"";
+    if (RegOpenKeyExA(HKEY_CURRENT_USER, "SOFTWARE\\ASMRTOP\\UltraRouter", 0, KEY_READ, &hKey) == ERROR_SUCCESS) {
+        char nameBuf[256] = {0};
+        DWORD len = sizeof(nameBuf);
+        if (RegQueryValueExA(hKey, "ActiveHardwareName", NULL, NULL, (LPBYTE)nameBuf, &len) == ERROR_SUCCESS) {
+            int wLen = MultiByteToWideChar(CP_ACP, 0, nameBuf, -1, NULL, 0);
+            result.resize(wLen);
+            MultiByteToWideChar(CP_ACP, 0, nameBuf, -1, &result[0], wLen);
+            result.resize(wLen - 1);
+        }
+        if (outClsid) {
+            char clsidBuf[256] = {0};
+            DWORD clsidLen = 256;
+            if (RegQueryValueExA(hKey, "ActiveHardwareCLSID", NULL, NULL, (LPBYTE)clsidBuf, &clsidLen) == ERROR_SUCCESS) {
+                strcpy(outClsid, clsidBuf);
+            }
+        }
+        RegCloseKey(hKey);
+    }
+    return result;
+}
+
+void OpenNativeHardwareControlPanel(HWND hwnd) {
+    char activeClsid[256] = {0};
+    std::wstring activeName = GetActiveHardwareName(activeClsid);
+
+    if (activeName.empty() || activeClsid[0] == '\0') {
+        if (g_validDrivers.empty()) {
+            MessageBoxW(hwnd, L"宿主（DAW）当前未加载 ASIO Ultra，且底层未检测到任何备用的物理声卡控制台驱动。", L"拦截", MB_ICONINFORMATION);
+            return;
+        }
+
+        int selectedId = -1;
+
+        if (g_validDrivers.size() == 1) {
+            selectedId = 5000;
+        }
+        else {
+            HMENU hMenu = CreatePopupMenu();
+            for (size_t i = 0; i < g_validDrivers.size(); i++) {
+                AppendMenuW(hMenu, MF_STRING, 5000 + (int)i, g_validDrivers[i].name.c_str());
+            }
+
+            POINT pt;
+            GetCursorPos(&pt);
+            SetForegroundWindow(hwnd);
+            
+            selectedId = TrackPopupMenu(hMenu, TPM_BOTTOMALIGN | TPM_LEFTALIGN | TPM_RETURNCMD | TPM_NONOTIFY, pt.x, pt.y, 0, hwnd, NULL);
+            DestroyMenu(hMenu);
+        }
+
+        if (selectedId >= 5000 && selectedId < 5000 + (int)g_validDrivers.size()) {
+            int idx = selectedId - 5000;
+            strcpy(activeClsid, g_validDrivers[idx].clsidStr.c_str());
+        } else {
+            return; // 菜单被取消
+        }
+    }
+        
+    wchar_t wClsid[256];
+    MultiByteToWideChar(CP_ACP, 0, activeClsid, -1, wClsid, 256);
+    CLSID clsid;
+    if (SUCCEEDED(CLSIDFromString(wClsid, &clsid))) {
+        char clsidPath[256];
+        snprintf(clsidPath, sizeof(clsidPath), "CLSID\\%s\\InprocServer32", activeClsid);
+        HKEY hClsidKey;
+        IASIO* pAsio = nullptr;
+        
+        if (RegOpenKeyExA(HKEY_CLASSES_ROOT, clsidPath, 0, KEY_READ, &hClsidKey) == ERROR_SUCCESS) {
+            char dllPath[MAX_PATH];
+            DWORD dllLen = sizeof(dllPath);
+            if (RegQueryValueExA(hClsidKey, nullptr, NULL, nullptr, (LPBYTE)dllPath, &dllLen) == ERROR_SUCCESS) {
+                HMODULE hMod = LoadLibraryA(dllPath);
+                if (hMod) {
+                    typedef HRESULT(WINAPI *DllGetClassObject_t)(REFCLSID, REFIID, LPVOID*);
+                    auto fGetClass = (DllGetClassObject_t)GetProcAddress(hMod, "DllGetClassObject");
+                    if (fGetClass) {
+                        IClassFactory* pCF = nullptr;
+                        if (SUCCEEDED(fGetClass(clsid, IID_IClassFactory, (void**)&pCF)) && pCF) {
+                            pCF->CreateInstance(nullptr, clsid, (void**)&pAsio);
+                            pCF->Release();
+                        }
+                    }
+                }
+            }
+            RegCloseKey(hClsidKey);
+        }
+
+        if (pAsio) {
+            pAsio->init(hwnd);
+            pAsio->controlPanel();
+            pAsio->Release();
+        } else {
+            bool opened = false;
+            const wchar_t* paths[] = {
+                L"C:\\Program Files\\Behringer\\UMC_Audio_Driver\\UMCAudioCplApp.exe",
+                L"C:\\Program Files\\BEHRINGER\\UMC_Audio_Driver\\x64\\UMCAudioCplApp.exe",
+                L"C:\\Program Files\\Fender\\Universal Control\\Universal Control.exe",
+                L"C:\\Program Files\\PreSonus\\Universal Control\\Universal Control.exe",
+                L"C:\\Program Files\\FocusriteUSB\\Focusrite Control.exe",
+                L"C:\\Program Files\\MOTU\\M Series\\MOTU M Series Setup.exe"
+            };
+            for (int m = 0; m < 6; m++) {
+                if (GetFileAttributesW(paths[m]) != INVALID_FILE_ATTRIBUTES) {
+                    std::wstring execPath = paths[m];
+                    std::wstring workingDir = execPath.substr(0, execPath.find_last_of(L"\\/"));
+                    ShellExecuteW(NULL, L"open", paths[m], NULL, workingDir.c_str(), SW_SHOW);
+                    opened = true;
+                    break;
+                }
+            }
+            if (!opened) {
+                MessageBoxW(hwnd, L"该驱动已被破坏或设备严重掉线，底层无法实例化 IClassFactory 对象。\n此时亦未探测到原厂独立修复组件路径。", L"核心阻断", MB_ICONERROR);
+            }
+        }
+    }
+}
+
 LRESULT CALLBACK CustomUIPanelProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch (uMsg) {
         case WM_CREATE: {
             g_hFontTitle = CreateFontW(-24, 0, 0, 0, FW_BOLD, 0, 0, 0, GB2312_CHARSET, OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, DEFAULT_PITCH, L"Microsoft YaHei");
             g_hFontBody = CreateFontW(-14, 0, 0, 0, FW_NORMAL, 0, 0, 0, GB2312_CHARSET, OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, DEFAULT_PITCH, L"Microsoft YaHei");
 
-            CreateWindowW(L"BUTTON", L"更新授权", WS_CHILD | WS_VISIBLE | BS_OWNERDRAW, 30, 180, 170, 38, hwnd, (HMENU)202, g_hInstance, NULL);
-            CreateWindowW(L"BUTTON", L"全局中枢状态", WS_CHILD | WS_VISIBLE | BS_OWNERDRAW, 215, 180, 170, 38, hwnd, (HMENU)203, g_hInstance, NULL);
-            CreateWindowW(L"BUTTON", L"系统通道深度隔离工具", WS_CHILD | WS_VISIBLE | BS_OWNERDRAW, 30, 230, 355, 38, hwnd, (HMENU)204, g_hInstance, NULL);
+            ScanValidPhysicalAsioDrivers();
+
+            CreateWindowW(L"BUTTON", L"更新授权", WS_CHILD | WS_VISIBLE | BS_OWNERDRAW, 30, 200, 170, 38, hwnd, (HMENU)202, g_hInstance, NULL);
+            CreateWindowW(L"BUTTON", L"底层声卡控制台", WS_CHILD | WS_VISIBLE | BS_OWNERDRAW, 215, 200, 170, 38, hwnd, (HMENU)203, g_hInstance, NULL);
+            CreateWindowW(L"BUTTON", L"系统通道深度隔离工具", WS_CHILD | WS_VISIBLE | BS_OWNERDRAW, 30, 250, 355, 38, hwnd, (HMENU)204, g_hInstance, NULL);
 
             RefreshUIPanelText(hwnd);
-            
-            // 实时刷新倒计时/失效状态 (1000ms 刷新率)
             SetTimer(hwnd, 1, 1000, NULL);
             return 0;
         }
@@ -143,6 +332,28 @@ LRESULT CALLBACK CustomUIPanelProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
                 SetTextColor(hdc, RGB(220, 140, 140));
                 DrawTextW(hdc, L"▶ 为保障系统平稳，物理发声与拾音主干线现已切换为挂起拦截模式。\n▶点击下方获取激活密钥，所有声卡原生的全量极速音频流即可瞬间无缝回放。", -1, &textRect, DT_LEFT | DT_WORDBREAK);
             }
+
+            // Draw Detected Hardware Info
+            RECT hwRect = { 30, 175, clientRect.right - 30, 195 };
+            std::wstring activeName = GetActiveHardwareName();
+            std::wstring hwText;
+            
+            if (!activeName.empty()) {
+                hwText = L"当前运作通道: [" + activeName + L"]";
+                SetTextColor(hdc, RGB(0, 210, 120)); // Green meaning fully active
+            } else {
+                hwText = L"静默待命通道: ";
+                if (g_validDrivers.empty()) {
+                    hwText += L"未检测到设备";
+                    SetTextColor(hdc, RGB(160, 160, 160));
+                } else {
+                    for (size_t i = 0; i < g_validDrivers.size(); i++) {
+                        hwText += L"[" + g_validDrivers[i].name + L"] ";
+                    }
+                    SetTextColor(hdc, RGB(0, 150, 200)); // Blue meaning standby
+                }
+            }
+            DrawTextW(hdc, hwText.c_str(), -1, &hwRect, DT_LEFT | DT_TOP | DT_END_ELLIPSIS | DT_SINGLELINE);
             
             EndPaint(hwnd, &ps);
             return 0;
@@ -202,7 +413,7 @@ LRESULT CALLBACK CustomUIPanelProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
                 // 刷新界面内显文本
                 RefreshUIPanelText(hwnd);
             } else if (LOWORD(wParam) == 203) { 
-                MessageBoxW(hwnd, L"硬件设置已由 ASMRTOP 全局智能代理全权接管。\n您的底层硬件已处于安全的脱机流控模式，无需也无法通过此入口直接操作物理层设备。", L"ASMRTOP 代理守卫网络", MB_ICONINFORMATION | MB_OK);
+                OpenNativeHardwareControlPanel(hwnd);
             } else if (LOWORD(wParam) == 204) {
                 // 原生回归：不再以独立外部分支执行优化器，而是直接内嵌弹窗渲染优化器架构
                 OptimizerManager::ShowDialog(hwnd);
@@ -372,23 +583,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             } else if (LOWORD(wParam) == ID_TRAY_ACTIVATE) {
                 ShowCustomDarkPanel(hwnd);
             } else if (LOWORD(wParam) == ID_TRAY_HW_PANEL) {
-                const wchar_t* paths[] = {
-                    L"C:\\Program Files\\Behringer\\UMC_Audio_Driver\\UMCAudioCplApp.exe",
-                    L"C:\\Program Files\\BEHRINGER\\UMC_Audio_Driver\\x64\\UMCAudioCplApp.exe"
-                };
-                bool found = false;
-                for (int i = 0; i < 2; i++) {
-                    if (GetFileAttributesW(paths[i]) != INVALID_FILE_ATTRIBUTES) {
-                        std::wstring execPath = paths[i];
-                        std::wstring workingDir = execPath.substr(0, execPath.find_last_of(L"\\/"));
-                        ShellExecuteW(NULL, L"open", paths[i], NULL, workingDir.c_str(), SW_SHOW);
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) {
-                    MessageBoxW(hwnd, L"未检测到官方原厂核心组件 (UMCAudioCplApp.exe)。\n请确认您是否安装了原厂 USB 驱动包。", L"安全阻断", MB_ICONINFORMATION | MB_OK);
-                }
+                OpenNativeHardwareControlPanel(hwnd);
             }
             break;
 
