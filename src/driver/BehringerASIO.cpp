@@ -8,6 +8,8 @@
 #include <math.h>
 #include <vector>
 #include <objbase.h>
+#include <xmmintrin.h>
+#include <pmmintrin.h>
 
 #include "../AsioTargets.h"
 
