@@ -39,7 +39,7 @@ class AsmrtopIpcChannel {
 public:
     AsmrtopIpcChannel() : m_hMap(NULL), m_buf(nullptr),
         m_readPos(0), m_readPosFrac(0.0), m_lastReadL(0.0f), m_lastReadR(0.0f),
-        m_writePosFrac(0.0), m_lastWriteL(0.0f), m_lastWriteR(0.0f),
+        m_writePosFrac(0.0), m_lastWriteL(0.0f), m_lastWriteR(0.0f), m_smoothedWriteDiff(0.0),
         m_channelId(-1), m_callCount(0), m_firstCall(true), m_prefillMode(true),
         m_lastSeenWritePos(0), m_driftCounter(0), m_lastOpenTry(0),
         m_detectedWdmRate(48000.0), m_wpVelocityStart(0), m_wpVelocityCount(0) {
@@ -107,6 +107,7 @@ public:
         m_writePosFrac = 0.0;
         m_lastWriteL = 0.0f;
         m_lastWriteR = 0.0f;
+        m_smoothedWriteDiff = 0.0;
         m_lastSeenWritePos = 0;
         m_callCount = 0;
         m_firstCall = true;
@@ -155,6 +156,7 @@ public:
         if (!m_buf && !tryOpen()) return;
 
         uint32_t wp = m_buf->writePos.load(std::memory_order_relaxed);
+        _mm_lfence();
 
         if (left && right) {
             // AVX Fast Path via standard library memcpy (auto-vectorized)
@@ -178,6 +180,7 @@ public:
             }
         }
 
+        _mm_sfence();
         m_buf->writePos.store(wp + numFrames, std::memory_order_release);
     }
 
@@ -203,6 +206,7 @@ public:
         }
 
         uint32_t w = m_buf->writePos.load(std::memory_order_acquire);
+        _mm_lfence();
         uint32_t r = m_readPos;
         int32_t available = (int32_t)(w - r);
 
@@ -270,6 +274,7 @@ public:
 
         r += numFrames;
         m_readPos = r;
+        _mm_sfence();
         m_buf->readPos.store(r, std::memory_order_release);
     }
 
@@ -291,6 +296,7 @@ public:
         }
 
         uint32_t w = m_buf->writePos.load(std::memory_order_acquire);
+        _mm_lfence();
         uint32_t r = m_readPos;
         int32_t available = (int32_t)(w - r);
 
@@ -419,35 +425,50 @@ public:
         r += intConsumed;
 
         m_readPos = r;
+        _mm_sfence();
         m_buf->readPos.store(r, std::memory_order_release);
     }
 
     // =========================================================================
     // Write with optional SRC (DAW -> REC)
-    // When srcRate == dstRate: zero-overhead passthrough to writeDirect()
-    // When srcRate != dstRate: linear interpolation SRC
+    // Dynamic Push-Resampler ALWAYS active - tracks real-time IPC read pointer
+    // to dynamically throttle or push frames, combined with AMD Memory Fences
     // =========================================================================
     void writeStereoSRC(const float* left, const float* right, int numFrames, double srcRate, double dstRate) {
-        // Fast path: same rate = direct write
-        if (fabs(srcRate - dstRate) < 1.0) {
-            writeDirect(left, right, numFrames);
-            return;
-        }
-
         if (!m_buf && !tryOpen()) return;
 
-        double step = srcRate / dstRate;
+        double baseStep = srcRate / dstRate;
         
-        // Dynamically calculate the exact required number of output frames
-        // to consume precisely `numFrames` of input data based on current fractional phase
+        uint32_t wp = m_buf->writePos.load(std::memory_order_relaxed);
+        uint32_t rp = m_buf->readPos.load(std::memory_order_relaxed);
+        _mm_lfence();
+        
+        int32_t avail = (int32_t)(wp - rp);
+        
+        // Absolute fail-safe wrap safety lock
+        if (avail < 0 || avail > IPC_RING_SIZE) {
+            avail = 2400; // Reset safe cushion
+            wp = rp + 2400;
+            _mm_sfence();
+            m_buf->writePos.store(wp, std::memory_order_release);
+        }
+
+        // Target cushion: about 50ms = 2400 frames at 48000 Hz
+        double targetAvail = 2400.0; 
+        double diff = targetAvail - avail; 
+        
+        m_smoothedWriteDiff = m_smoothedWriteDiff * 0.99 + diff * 0.01;
+        double dynamicStep = baseStep - (m_smoothedWriteDiff * 0.00001); 
+        
+        if (dynamicStep < baseStep * 0.5) dynamicStep = baseStep * 0.5;
+        if (dynamicStep > baseStep * 1.5) dynamicStep = baseStep * 1.5;
+        
         int numOut = 0;
-        while ((m_writePosFrac + numOut * step) < numFrames) {
+        while ((m_writePosFrac + numOut * dynamicStep) < numFrames) {
             numOut++;
         }
         
         if (numOut <= 0) return;
-
-        uint32_t wp = m_buf->writePos.load(std::memory_order_relaxed);
 
         if (left || right) {
             auto getSampleL = [&](int i) -> float {
@@ -464,9 +485,9 @@ public:
             };
 
             for (int i = 0; i < numOut; i++) {
-                double srcPos = m_writePosFrac + i * step;
-                int idx = (int)srcPos; // integer phase [0 to numFrames]
-                float frac = (float)(srcPos - idx); // fractional phase [0.0 to 1.0)
+                double srcPos = m_writePosFrac + i * dynamicStep;
+                int idx = (int)srcPos; 
+                float frac = (float)(srcPos - idx); 
                 
                 float sL0 = getSampleL(idx - 1);
                 float sL1 = getSampleL(idx);
@@ -487,8 +508,9 @@ public:
             }
         }
 
-        m_writePosFrac = (m_writePosFrac + numOut * step) - numFrames;
+        m_writePosFrac = (m_writePosFrac + numOut * dynamicStep) - numFrames;
 
+        _mm_sfence();
         m_buf->writePos.store(wp + numOut, std::memory_order_release);
     }
 
@@ -506,6 +528,7 @@ private:
     double m_writePosFrac;   // Fractional position for SRC
     float m_lastWriteL;
     float m_lastWriteR;
+    double m_smoothedWriteDiff;
 
     int m_channelId;
     char m_direction[16];
