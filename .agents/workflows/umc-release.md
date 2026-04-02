@@ -21,15 +21,15 @@ git add -A
 git commit -m "chore(release): Build and release v7 ASIO Ultra unified driver architecture"
 ```
 
-3. **老主源库分发：GeekASMR/UMC-Ultra-drivers**
-此处**携源码全记录推流**。将更新好的老版本说明文档 (`release_v7_notes.txt`) 连同核心代码推至原作者老巢。因为其保有 UMC 的技术原味，文案需聚焦在底层构核（如“零结像撕裂 SRC” 等），规避其它 10 卡商抢戏。
+3. **主源库分发：GeekASMR/UMC-Ultra-drivers**
+此处**携源码推流**。注意：发布时的标题和描述说明**必须极简干练**。标题只写软件名和版本号（例如 `ASIO Ultra v7.1.5`），绝对不要写花哨文案或大标题。让用户轻松看懂，不要繁冗。
 ```powershell
 git push -u origin master -f
-gh release create v7.0.0 "E:\Antigravity\成品开发\UMC\v7\out\ASIOUltra_V7.0.0_Setup_Signed.exe" --title "UMC Ultra v7.0.0 - 核心重构纯净版" -F "d:\Autigravity\UMCasio\release_v7_notes.txt"
+gh release create v7.1.5 "e:\Antigravity\成品开发\UMC\v7\out\ASIOUltra_V7.1.5_Setup_Signed.exe" --title "ASIO Ultra v7.1.5" -F "d:\Autigravity\UMCasio\v7.1.5_clean_release_notes.txt"
 ```
 
-4. **发版独立星舰库静默部署：GeekASMR/ASIO-Ultra-drivers**
-此时需要**最高安全保密**，**绝对不能**把主线项目的 `master` 牵扯到这个用于公开客户端供用户下载的新版外库。故直接采用无头 `gh` API 或空壳映射直传，将涵盖 `11` 类大厂设备的霸气介绍文案（`asio_ultra_notes.txt`）跟新出炉的 EXE 挂在空中节点上。
+4. **外部分发库部署：GeekASMR/ASIO-Ultra-drivers**
+此处用于最终用户的直传下载更新。**绝对不能**携源码推送。同样，此处命名规则也是极致简洁干练，必须去除非必要的大标题及表情包内容（如禁用星空旗号等花哨描述），只允许单纯的 `ASIO Ultra v7.1.5`。
 ```powershell
-gh release create v7.0.0 "E:\Antigravity\成品开发\UMC\v7\out\ASIOUltra_V7.0.0_Setup_Signed.exe" --repo GeekASMR/ASIO-Ultra-drivers --title "🌌 ASIO Ultra v7.0.0 全制霸旗舰引擎版" -F "d:\Autigravity\UMCasio\asio_ultra_notes.txt"
+gh release create v7.1.5 "e:\Antigravity\成品开发\UMC\v7\out\ASIOUltra_V7.1.5_Setup_Signed.exe" --repo GeekASMR/ASIO-Ultra-drivers --title "ASIO Ultra v7.1.5" -F "d:\Autigravity\UMCasio\v7.1.5_clean_release_notes.txt"
 ```
